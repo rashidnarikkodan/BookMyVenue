@@ -3,9 +3,9 @@ import cors from 'cors';
 import helmet from 'helmet';
 import pinoHttp from 'pino-http'
 import logger from '@/libs/logger';
-import success from '@/utils/response';
 import notFound from '@/utils/notFound';
 import errorHandler from './utils/error';
+import routes from '@/routes';
 
 const app: Application = express();
 
@@ -56,12 +56,7 @@ app.get('/health', (req: Request, res: Response) => {
   });
 });
 
-app.use("/admin")
-app.use("/owner")
-
-app.get('/', (req: Request, res: Response) => {
-  success(res,200,'API running successfully',null)
-});
+app.use('/api', routes);
 
 app.use(notFound);
 app.use(errorHandler);
