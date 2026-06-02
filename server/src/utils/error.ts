@@ -1,13 +1,7 @@
-import { AppError } from "@/utils/AppError";
-import { NextFunction, Response, Request } from "express";
+import { AppError } from '@/utils/AppError';
+import { NextFunction, Response, Request } from 'express';
 
-
-const errorHandler = (
-  err: any,
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
   if (err instanceof AppError) {
     return res.status(err.statusCode).json({
       success: false,
@@ -15,12 +9,12 @@ const errorHandler = (
     });
   }
 
-  console.error("Unexpected error:", err);
+  console.error('Unexpected error:', err);
 
   return res.status(500).json({
     success: false,
-    message: "Internal Server Error",
+    message: 'Internal Server Error',
   });
 };
 
-export default errorHandler
+export default errorHandler;
