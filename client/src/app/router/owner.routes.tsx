@@ -13,7 +13,7 @@ export const ownerRoutes = {
     },
     {
       path: 'dashboard',
-      element: <div className="bg-primary">owner Dashboard</div>,
+      element: <div>owner Dashboard</div>,
     },
   ],
 };
