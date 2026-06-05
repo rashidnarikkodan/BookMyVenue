@@ -6,7 +6,7 @@ export const mainRoutes = {
   element: <MainLayout />,
 
   children: [
-    { index: true, element: <div>HomePage</div> },
+    { index: true, element: <>HomePage</> },
     { path: 'venues', element: <>VenueListPage</> },
     { path: 'venues/:id', element: <>VenueDetailsPage</> },
     { path: 'account/profile', element: <>ProfilePage</> },
