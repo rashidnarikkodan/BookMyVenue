@@ -12,4 +12,12 @@ export class UserRepository implements IUserRepository {
     const user = new User(userData);
     return await user.save();
   }
+
+  async update(userId: string, updateData: Partial<IUser>): Promise<IUser | null> {
+    return await User.findByIdAndUpdate(userId, updateData, { new: true });
+  }
+
+  async deleteById(userId: string): Promise<void> {
+    await User.findByIdAndDelete(userId);
+  }
 }

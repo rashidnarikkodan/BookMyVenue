@@ -16,3 +16,15 @@ export const signupSchema = z.object({
   message: "Passwords don't match",
   path: ["confirmPassword"],
 });
+
+export const verifyOtpSchema = z.object({
+  registrationToken: z.string().min(1, 'Registration token is required'),
+  otp: z
+    .string()
+    .length(6, 'OTP must be exactly 6 digits')
+    .regex(/^\d{6}$/, 'OTP must contain only digits'),
+});
+
+export const resendOtpSchema = z.object({
+  registrationToken: z.string().min(1, 'Registration token is required'),
+});

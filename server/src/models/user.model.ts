@@ -1,5 +1,6 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import { IUser } from './interfaces/user-scheme.interface';
+export type { IUser };
 
 const userSchema = new Schema<IUser>(
   {
@@ -17,11 +18,9 @@ const userSchema = new Schema<IUser>(
     },
     password: {
       type: String,
-      required: true,
     },
     phoneNumber: {
       type: String,
-      required: true,
     },
     role: {
       type: String,
@@ -35,6 +34,17 @@ const userSchema = new Schema<IUser>(
     isBlocked: {
       type: Boolean,
       default: false,
+    },
+    googleId: {
+      type: String,
+    },
+    avatar: {
+      type: String,
+    },
+    authProvider: {
+      type: String,
+      enum: ['local', 'google'],
+      default: 'local',
     },
   },
   {
