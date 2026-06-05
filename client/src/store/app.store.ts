@@ -12,9 +12,10 @@ interface User {
 
 interface AppState {
   token: string | null;
+  refreshToken: string | null;
   user: User | null;
   isAuthenticated: boolean;
-  setAuth: (token: string, user: User) => void;
+  setAuth: (token: string, refreshToken: string | undefined, user: User) => void;
   logout: () => void;
 }
 
@@ -22,11 +23,12 @@ export const useAppStore = create<AppState>()(
   persist(
     (set) => ({
       token: null,
+      refreshToken: null,
       user: null,
       isAuthenticated: false,
 
-      setAuth: (token, user) => set({ token, user, isAuthenticated: true }),
-      logout: () => set({ token: null, user: null, isAuthenticated: false }),
+      setAuth: (token, refreshToken, user) => set({ token, refreshToken: refreshToken || null, user, isAuthenticated: true }),
+      logout: () => set({ token: null, refreshToken: null, user: null, isAuthenticated: false }),
     }),
     {
       name: 'app-storage', // key in local storage

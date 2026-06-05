@@ -5,7 +5,7 @@ import { AUTH_ROUTES } from '../../constants/apiRoutes';
 import { useAuthStore } from './store/auth.store';
 
 interface OtpVerificationProps {
-  onSuccess: (token: string, user: object) => void;
+  onSuccess: () => void;
 }
 
 const OTP_LENGTH = 6;
@@ -87,8 +87,8 @@ const OtpVerification: React.FC<OtpVerificationProps> = ({ onSuccess }) => {
         registrationToken,
         otp: otpString,
       });
-      setSuccessMsg('Email verified! Signing you in…');
-      setTimeout(() => onSuccess(data.data.token, data.data.user), 800);
+      setSuccessMsg('Email verified successfully! Redirecting to login…');
+      setTimeout(() => onSuccess(), 1500);
     } catch (err: any) {
       const msg = err.response?.data?.message || 'Verification failed. Please try again.';
       setError(msg);
@@ -138,8 +138,8 @@ const OtpVerification: React.FC<OtpVerificationProps> = ({ onSuccess }) => {
     <>
       {/* Header */}
       <div className="mb-5 text-center">
-        <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-red-600/10 border border-red-500/30 mx-auto mb-3">
-          <ShieldCheck className="w-6 h-6 text-red-400" />
+        <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-primary-600/10 border border-primary-500/30 mx-auto mb-3">
+          <ShieldCheck className="w-6 h-6 text-primary-400" />
         </div>
         <h2 className="text-lg font-semibold text-white tracking-tight">Verify Your Email</h2>
         <p className="text-[11px] text-slate-400 mt-1 leading-5">
@@ -178,10 +178,10 @@ const OtpVerification: React.FC<OtpVerificationProps> = ({ onSuccess }) => {
             disabled={loading}
             className={`
               w-10 h-12 text-center text-lg font-bold rounded-xl border transition-all duration-150 outline-none
-              bg-[#0f172a]/70 text-white caret-red-500
+              bg-bg-base/70 text-white caret-primary-500
               ${digit
-                ? 'border-red-500 shadow-[0_0_0_1px_rgba(239,68,68,0.3)]'
-                : 'border-slate-700/60 focus:border-red-500 focus:shadow-[0_0_0_1px_rgba(239,68,68,0.3)]'}
+                ? 'border-primary-500 shadow-[0_0_0_1px_rgba(239,68,68,0.3)]'
+                : 'border-slate-700/60 focus:border-primary-500 focus:shadow-[0_0_0_1px_rgba(239,68,68,0.3)]'}
               disabled:opacity-50
             `}
           />
@@ -192,7 +192,7 @@ const OtpVerification: React.FC<OtpVerificationProps> = ({ onSuccess }) => {
       <button
         onClick={handleVerify}
         disabled={loading || !allFilled}
-        className="w-full bg-red-600 hover:bg-red-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold text-sm py-2.5 rounded-xl shadow-lg shadow-red-600/20 flex items-center justify-center gap-2 transition-all"
+        className="w-full bg-primary-600 hover:bg-primary-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold text-sm py-2.5 rounded-xl shadow-lg shadow-primary-600/20 flex items-center justify-center gap-2 transition-all"
       >
         {loading ? (
           <>
@@ -225,7 +225,7 @@ const OtpVerification: React.FC<OtpVerificationProps> = ({ onSuccess }) => {
             <button
               onClick={handleResend}
               disabled={resending}
-              className="text-[11px] text-red-400 hover:text-red-300 transition-colors flex items-center gap-1 mx-auto disabled:opacity-50"
+              className="text-[11px] text-primary-400 hover:text-primary-300 transition-colors flex items-center gap-1 mx-auto disabled:opacity-50"
             >
               <RefreshCw className={`w-3 h-3 ${resending ? 'animate-spin' : ''}`} />
               {resending ? 'Sending…' : 'Resend OTP'}
@@ -236,7 +236,7 @@ const OtpVerification: React.FC<OtpVerificationProps> = ({ onSuccess }) => {
             Max resends reached. Please{' '}
             <button
               onClick={resetSignupFlow}
-              className="text-red-400 hover:text-red-300 transition-colors underline"
+              className="text-primary-400 hover:text-primary-300 transition-colors underline"
             >
               start over
             </button>
