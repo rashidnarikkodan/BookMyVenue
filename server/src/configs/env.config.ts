@@ -18,6 +18,12 @@ const envSchema = z.object({
   JWT_REFRESH_SECRET: z.string().min(10),
 
   CORS_ORIGIN: z.string().default('*'),
+
+  GOOGLE_CLIENT_ID: z.string().min(1),
+
+  GOOGLE_CLIENT_SECRET: z.string().min(1),
+
+  GOOGLE_CALLBACK_URL: z.string(),
 });
 
 const env = envSchema.parse(process.env);
