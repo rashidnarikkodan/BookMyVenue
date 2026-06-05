@@ -28,3 +28,8 @@ export const verifyOtpSchema = z.object({
 export const resendOtpSchema = z.object({
   registrationToken: z.string().min(1, 'Registration token is required'),
 });
+
+export const signinSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(1, 'Password is required'),
+});

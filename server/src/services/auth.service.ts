@@ -61,7 +61,7 @@ export class AuthService implements IAuthService {
   }
 
   // ─── Step 2: Verify OTP and issue full access token ────────────────────────
-  async verifyOtp(registrationToken: string, otp: string): Promise<{ user: Partial<IUser>; token: string }> {
+  async verifyOtp(registrationToken: string, otp: string): Promise<{ user: Partial<IUser>; token: string; refreshToken: string }> {
     let payload: RegistrationTokenPayload;
     try {
       payload = jwt.verify(
@@ -95,10 +95,16 @@ export class AuthService implements IAuthService {
       { expiresIn: '7d' },
     );
 
+    const refreshToken = jwt.sign(
+      { userId: updatedUser._id },
+      env.JWT_REFRESH_SECRET,
+      { expiresIn: '30d' },
+    );
+
     const userObj = updatedUser.toObject();
     delete userObj.password;
 
-    return { user: userObj, token };
+    return { user: userObj, token, refreshToken };
   }
 
   // ─── Resend OTP (protected by registrationToken) ───────────────────────────
@@ -134,7 +140,7 @@ export class AuthService implements IAuthService {
   }
 
   // ─── Google OAuth (already verified) ───────────────────────────────────────
-  async googleAuth(idToken: string): Promise<{ user: Partial<IUser>; token: string }> {
+  async googleAuth(idToken: string): Promise<{ user: Partial<IUser>; token: string; refreshToken: string }> {
     const client = new OAuth2Client(env.GOOGLE_CLIENT_ID);
     const ticket = await client.verifyIdToken({
       idToken,
@@ -179,9 +185,55 @@ export class AuthService implements IAuthService {
       { expiresIn: '7d' },
     );
 
+    const refreshToken = jwt.sign(
+      { userId: user._id },
+      env.JWT_REFRESH_SECRET,
+      { expiresIn: '30d' },
+    );
+
     const userObj = user.toObject();
     delete userObj.password;
 
-    return { user: userObj, token };
+    return { user: userObj, token, refreshToken };
+  }
+
+  // ─── Sign In ───────────────────────────────────────────────────────────────
+  async signin(data: any): Promise<{ user: Partial<IUser>; token: string; refreshToken: string }> {
+    const email = (data.email as string).toLowerCase().trim();
+    
+    const user = await this.userRepository.findByEmail(email);
+    if (!user) {
+      throw new AppError(MESSAGES.INVALID_CREDENTIALS, HTTP_STATUS.UNAUTHORIZED);
+    }
+    
+    if (!user.isVerified) {
+      throw new AppError('Please verify your email first', HTTP_STATUS.FORBIDDEN);
+    }
+    
+    if (!user.password) {
+      throw new AppError('Please sign in with Google', HTTP_STATUS.UNAUTHORIZED);
+    }
+    
+    const isMatch = await argon2.verify(user.password, data.password);
+    if (!isMatch) {
+      throw new AppError(MESSAGES.INVALID_CREDENTIALS, HTTP_STATUS.UNAUTHORIZED);
+    }
+    
+    const token = jwt.sign(
+      { userId: user._id, role: user.role },
+      env.JWT_ACCESS_SECRET,
+      { expiresIn: '7d' },
+    );
+
+    const refreshToken = jwt.sign(
+      { userId: user._id },
+      env.JWT_REFRESH_SECRET,
+      { expiresIn: '30d' },
+    );
+
+    const userObj = user.toObject();
+    delete userObj.password;
+
+    return { user: userObj, token, refreshToken };
   }
 }

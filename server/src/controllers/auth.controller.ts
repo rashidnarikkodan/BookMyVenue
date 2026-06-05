@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { injectable, inject } from 'inversify';
 import { IAuthService } from '../services/interfaces/auth.service.interface';
 import { TYPES } from '../constants/types';
-import { signupSchema, verifyOtpSchema, resendOtpSchema } from '../utils/validations';
+import { signupSchema, verifyOtpSchema, resendOtpSchema, signinSchema } from '../utils/validations';
 import success from '../utils/response';
 import { AppError } from '../utils/AppError';
 import { MESSAGES } from '@/constants/messages';
@@ -73,6 +73,22 @@ export class AuthController {
       const result = await this.authService.googleAuth(credential);
       success(res, HTTP_STATUS.OK, 'Google Login Successful', result);
     } catch (error: unknown) {
+      next(error);
+    }
+  };
+
+  // ─── POST /api/auth/signin ────────────────────────────────────────────────
+  signin = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const validatedData = signinSchema.parse(req.body);
+      const result = await this.authService.signin(validatedData);
+      success(res, HTTP_STATUS.OK, 'Sign In Successful', result);
+    } catch (error: unknown) {
+      const err = error as Error;
+      if (err.name === 'ZodError') {
+        next(new AppError(err.message, HTTP_STATUS.BAD_REQUEST));
+        return;
+      }
       next(error);
     }
   };
