@@ -1,6 +1,10 @@
-import { Response, Request } from 'express';
+import { Response, Request, NextFunction } from 'express';
 import { AppError } from './AppError';
-const notFound = (req: Request, res: Response) => {
-  throw new AppError('Route not Found', 404);
+const notFound = (req: Request, res: Response, next: NextFunction) => {
+  try {
+    throw new AppError('Route not Found', 404);
+  } catch (error) {
+    next(error);
+  }
 };
 export default notFound;

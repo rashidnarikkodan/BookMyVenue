@@ -1,9 +1,11 @@
+import ErrorPage from '@/shared/pages/ErrorPage';
 import MainLayout from '../layouts/MainLayout';
 
 export const mainRoutes = {
   path: '/',
 
   element: <MainLayout />,
+  errorElement: <ErrorPage />,
 
   children: [
     { index: true, element: <>HomePage</> },

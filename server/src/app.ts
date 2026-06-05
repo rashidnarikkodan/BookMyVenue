@@ -1,4 +1,4 @@
-import express, { Application, Request, Response } from 'express';
+import express, { Application, NextFunction, Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import pinoHttp from 'pino-http';
@@ -20,40 +20,39 @@ app.use(
   })
 );
 
-//logger
 app.use(
   pinoHttp({
     logger,
-    autoLogging: {
-      ignore: (req) => req.url === '/favicon.ico',
-    },
+
     serializers: {
-      req(req) {
-        return {
-          method: req.method,
-          url: req.url,
-        };
-      },
-      res(res) {
-        return {
-          statusCode: res.statusCode,
-        };
-      },
+      req: () => undefined,
+      res: () => undefined,
     },
+
+    customLogLevel(req, res, err) {
+      if (err || res.statusCode >= 500) return 'error';
+      if (res.statusCode >= 400) return 'warn';
+      return 'info';
+    },
+
+    customSuccessMessage: (req, res) => `${req.method} ${req.url} ${res.statusCode}`,
+
+    customErrorMessage: (req, res, err) =>
+      `${req.method} ${req.url} ${res.statusCode} ${err.message}`,
   })
 );
-
 // JSON parser & Form data parse
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Health Check
-app.get('/health', (req: Request, res: Response) => {
-  res.status(200).json({
-    status: 'ok',
-    uptime: process.uptime(),
-    timestamp: Date.now(),
-  });
+app.get('/health', (req: Request, res: Response, next: NextFunction) => {
+  // res.status(200).json({
+  //   status: 'ok',
+  //   uptime: process.uptime(),
+  //   timestamp: Date.now(),
+  // });
+  next(new Error('sevrer error'));
 });
 
 app.use('/api', routes);

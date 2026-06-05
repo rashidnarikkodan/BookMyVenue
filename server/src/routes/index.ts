@@ -13,6 +13,7 @@ router.use('/auth', authRoutes);
 router.use('/users', userRoutes);
 router.use('/owners', ownerRoutes);
 router.use('/venues', venueRoutes);
+
 router.use('/bookings', bookingRoutes);
 router.use('/admin', adminRoutes);
 

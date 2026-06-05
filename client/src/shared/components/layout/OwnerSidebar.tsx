@@ -54,9 +54,7 @@ export default function OwnerSidebar() {
             >
               <path d="M12 2L2 7l10 5 10-5-10-5zm0 13L2 9v8l10 5 10-5V9l-10 6z" />
             </svg>
-            <span className="text-xl font-bold tracking-tight text-foreground">
-              BookMyVenue
-            </span>
+            <span className="text-xl font-bold tracking-tight text-foreground">BookMyVenue</span>
           </div>
 
           {/* Mobile Close Button */}

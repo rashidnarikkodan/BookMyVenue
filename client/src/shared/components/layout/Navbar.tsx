@@ -103,7 +103,11 @@ const Navbar = () => {
             aria-controls="mobile-menu"
             aria-expanded={mobileOpen}
           >
-            {mobileOpen ? <X className="h-6 w-6" aria-hidden="true" /> : <Menu className="h-6 w-6" aria-hidden="true" />}
+            {mobileOpen ? (
+              <X className="h-6 w-6" aria-hidden="true" />
+            ) : (
+              <Menu className="h-6 w-6" aria-hidden="true" />
+            )}
           </button>
         </div>
       </nav>
@@ -118,7 +122,12 @@ const Navbar = () => {
         <div className="p-4 flex flex-col h-full">
           <div className="flex items-center justify-between mb-6">
             <Link to="/" className="flex items-center gap-2">
-              <svg className="w-8 h-8 text-primary" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <svg
+                className="w-8 h-8 text-primary"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                aria-hidden="true"
+              >
                 <path d="M12 2L2 7l10 5 10-5-10-5zm0 13L2 9v8l10 5 10-5V9l-10 6z" />
               </svg>
               <span className="font-semibold text-lg text-foreground">BookMyVenue</span>
@@ -178,4 +187,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
