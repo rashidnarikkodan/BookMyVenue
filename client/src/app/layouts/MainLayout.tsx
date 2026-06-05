@@ -4,6 +4,7 @@ import { Outlet } from 'react-router-dom';
 import { ThemeProvider } from '@/shared/providers/ThemeProvider';
 
 export default function MainLayout() {
+  throw new Error('any')
   return (
     <>
       <ThemeProvider>

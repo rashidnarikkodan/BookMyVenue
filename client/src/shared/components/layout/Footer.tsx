@@ -7,8 +7,8 @@ const Footer = () => {
           <div className="lg:col-span-2">
             <h2 className="text-primary text-2xl font-bold">BookMyVenue</h2>
             <p className="text-muted mt-4 max-w-md">
-              Discover and book the perfect venue for weddings, parties,
-              corporate events, meetings, and special occasions.
+              Discover and book the perfect venue for weddings, parties, corporate events, meetings,
+              and special occasions.
             </p>
           </div>
 
@@ -100,28 +100,16 @@ const Footer = () => {
           </p>
 
           <div className="flex items-center gap-6">
-            <a
-              href="#"
-              className="text-muted hover:text-primary transition"
-            >
+            <a href="#" className="text-muted hover:text-primary transition">
               Instagram
             </a>
-            <a
-              href="#"
-              className="text-muted hover:text-primary transition"
-            >
+            <a href="#" className="text-muted hover:text-primary transition">
               Facebook
             </a>
-            <a
-              href="#"
-              className="text-muted hover:text-primary transition"
-            >
+            <a href="#" className="text-muted hover:text-primary transition">
               Twitter
             </a>
-            <a
-              href="#"
-              className="text-muted hover:text-primary transition"
-            >
+            <a href="#" className="text-muted hover:text-primary transition">
               LinkedIn
             </a>
           </div>

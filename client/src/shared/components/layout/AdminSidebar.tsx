@@ -1,13 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import {
-  LayoutDashboard,
-  Users,
-  Building2,
-  CalendarDays,
-  Settings,
-  LogOut,
-  X,
-} from 'lucide-react';
+import { LayoutDashboard, Users, Building2, CalendarDays, Settings, LogOut, X } from 'lucide-react';
 import { useUIStore } from '@/store/ui.store';
 
 const adminNavLinks = [
@@ -52,9 +44,7 @@ export default function AdminSidebar() {
             >
               <path d="M12 2L2 7l10 5 10-5-10-5zm0 13L2 9v8l10 5 10-5V9l-10 6z" />
             </svg>
-            <span className="text-xl font-bold tracking-tight text-foreground">
-              BookMyVenue
-            </span>
+            <span className="text-xl font-bold tracking-tight text-foreground">BookMyVenue</span>
           </div>
 
           {/* Mobile Close Button */}

@@ -20,12 +20,8 @@ const OwnerNavbar = () => {
           </button>
 
           <div>
-            <h1 className="text-lg font-semibold text-foreground">
-              Venue Manager Dashboard
-            </h1>
-            <p className="text-muted text-xs">
-              Manage venues, bookings, and revenue
-            </p>
+            <h1 className="text-lg font-semibold text-foreground">Venue Manager Dashboard</h1>
+            <p className="text-muted text-xs">Manage venues, bookings, and revenue</p>
           </div>
         </div>
 
@@ -64,4 +60,3 @@ const OwnerNavbar = () => {
 };
 
 export default OwnerNavbar;
-

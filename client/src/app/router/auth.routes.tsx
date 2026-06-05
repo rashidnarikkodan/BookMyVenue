@@ -1,10 +1,11 @@
+import ErrorPage from '@/shared/pages/ErrorPage';
 import AuthLayout from '../layouts/AuthLayout';
 
 export const authRoutes = {
   path: '/',
 
   element: <AuthLayout />,
-
+  errorElement: <ErrorPage />,
   children: [
     {
       path: 'login',

@@ -4,7 +4,7 @@ import { mainRoutes } from './mian.routes';
 import { ownerRoutes } from './owner.routes';
 import { adminRoutes } from './admin.routes';
 import { authRoutes } from './auth.routes';
-import PageNotFound from '@/features/not-found/PageNotFound';
+import PageNotFound from '@/shared/pages/PageNotFound';
 
 export const router = createBrowserRouter([
   authRoutes,
