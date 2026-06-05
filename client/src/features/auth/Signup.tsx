@@ -1,10 +1,18 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, Eye, EyeOff } from 'lucide-react';
 import axios from 'axios';
+import { GoogleLogin } from '@react-oauth/google';
 import { AUTH_ROUTES } from '../../constants/apiRoutes';
+import { useAuthStore } from './store/auth.store';
+import { useAppStore } from '../../store/app.store';
+import OtpVerification from './OtpVerification';
 
 const Signup = () => {
+  const navigate = useNavigate();
+  const { signupStep, setRegistrationData, resetSignupFlow } = useAuthStore();
+  const setAuth = useAppStore((state) => state.setAuth);
+
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -14,35 +22,71 @@ const Signup = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setError(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords don't match");
       return;
     }
+
     setLoading(true);
     setError(null);
-    setSuccess(false);
 
     try {
-      await axios.post(AUTH_ROUTES.SIGNUP, formData);
-      setSuccess(true);
-
-      //redirect into signin
+      const { data } = await axios.post(AUTH_ROUTES.SIGNUP, {
+        fullName:     formData.fullName,
+        email:        formData.email,
+        phoneNumber:  formData.phoneNumber,
+        password:     formData.password,
+        confirmPassword: formData.confirmPassword,
+      });
+      
+      setRegistrationData(data.data.email, data.data.registrationToken);
     } catch (err: any) {
       setError(err.response?.data?.message || err.message || 'Something went wrong');
     } finally {
       setLoading(false);
     }
   };
+
+  // Google OAuth signup
+  const handleGoogleSuccess = async (credentialResponse: any) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { data } = await axios.post(AUTH_ROUTES.GOOGLE_AUTH, {
+        credential: credentialResponse.credential,
+      });
+      // Google users are already verified
+      console.log('Google auth success', data);
+      setAuth(data.data.token, data.data.user);
+      navigate('/dashboard');
+    } catch (err: any) {
+      setError(err.response?.data?.message || err.message || 'Google Auth Failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // OTP verified
+  const handleOtpSuccess = (token: string, user: any) => {
+    resetSignupFlow();
+    setAuth(token, user);
+    navigate('/dashboard');
+  };
+
+  if (signupStep === 'otp') {
+    return <OtpVerification onSuccess={handleOtpSuccess} />;
+  }
 
   return (
     <>
@@ -52,18 +96,14 @@ const Signup = () => {
       </div>
 
       {error && (
-        <div className="bg-red-500/10 border border-red-500/50 text-red-500 text-sm p-3 rounded-lg mb-4">
-          {error}
-        </div>
-      )}
-
-      {success && (
-        <div className="bg-green-500/10 border border-green-500/50 text-green-500 text-sm p-3 rounded-lg mb-4">
-          Account created successfully! You can now log in.
+        <div className="bg-red-500/10 border border-red-500/50 text-red-400 text-xs p-3 rounded-xl mb-4 flex items-start gap-2">
+          <span className="mt-0.5">⚠</span>
+          <span>{error}</span>
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-2.5">
+        {/* Full Name */}
         <div className="flex flex-col gap-1">
           <label className="text-[10px] font-medium text-slate-400 tracking-wide">FULL NAME</label>
           <input
@@ -78,6 +118,7 @@ const Signup = () => {
           />
         </div>
 
+        {/* Email */}
         <div className="flex flex-col gap-1">
           <label className="text-[10px] font-medium text-slate-400 tracking-wide">EMAIL ADDRESS</label>
           <input
@@ -91,6 +132,7 @@ const Signup = () => {
           />
         </div>
 
+        {/* Phone Number */}
         <div className="flex flex-col gap-1">
           <label className="text-[10px] font-medium text-slate-400 tracking-wide">PHONE NUMBER</label>
           <input
@@ -106,6 +148,7 @@ const Signup = () => {
           />
         </div>
 
+        {/* Password */}
         <div className="flex flex-col gap-1">
           <label className="text-[10px] font-medium text-slate-400 tracking-wide">PASSWORD</label>
           <div className="relative">
@@ -118,19 +161,21 @@ const Signup = () => {
               required
               minLength={8}
               pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$"
-              title="Password must be at least 8 characters long, including at least one uppercase letter, one lowercase letter, one number, and one special character."
+              title="Min 8 chars with uppercase, lowercase, number and special character."
               className="w-full bg-[#0f172a]/50 border border-slate-700/60 rounded-xl px-3 py-2 pr-10 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all shadow-inner"
             />
             <button
               type="button"
               className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 focus:outline-none transition-colors"
               onClick={() => setShowPassword(!showPassword)}
+              tabIndex={-1}
             >
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
         </div>
 
+        {/* Confirm Password */}
         <div className="flex flex-col gap-1">
           <label className="text-[10px] font-medium text-slate-400 tracking-wide">CONFIRM PASSWORD</label>
           <div className="relative">
@@ -147,20 +192,52 @@ const Signup = () => {
               type="button"
               className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 focus:outline-none transition-colors"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              tabIndex={-1}
             >
               {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
         </div>
 
+        {/* Submit */}
         <button
           type="submit"
           disabled={loading}
           className="w-full mt-2 bg-red-600 hover:bg-red-500 text-white font-semibold text-sm py-2.5 rounded-xl shadow-lg shadow-red-600/20 flex items-center justify-center transition-all group disabled:opacity-50"
         >
-          {loading ? 'SIGNING UP...' : 'CREATE ACCOUNT'}
-          {!loading && <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />}
+          {loading ? (
+            <>
+              <svg className="w-4 h-4 animate-spin mr-2" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+              </svg>
+              SENDING OTP…
+            </>
+          ) : (
+            <>
+              CREATE ACCOUNT
+              <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+            </>
+          )}
         </button>
+
+        {/* Divider */}
+        <div className="flex items-center my-1">
+          <div className="flex-grow border-t border-slate-700/60"></div>
+          <span className="px-3 text-[10px] text-slate-500 uppercase tracking-wider">Or continue with</span>
+          <div className="flex-grow border-t border-slate-700/60"></div>
+        </div>
+
+        {/* Google Login */}
+        <div className="flex justify-center w-full">
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={() => setError('Google Login Failed')}
+            theme="filled_black"
+            text="continue_with"
+            width="100%"
+          />
+        </div>
       </form>
 
       <div className="mt-4 text-center text-xs text-slate-400">
