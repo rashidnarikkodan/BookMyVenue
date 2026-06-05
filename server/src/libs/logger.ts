@@ -7,11 +7,11 @@ const logger = pino({
   transport: isProd
     ? undefined
     : {
-         target: "pino-pretty",
+        target: 'pino-pretty',
         options: {
           colorize: true,
-          translateTime: "HH:MM:ss",
-          ignore: "pid,hostname",
+          translateTime: 'HH:MM:ss',
+          ignore: 'pid,hostname',
         },
       },
 });

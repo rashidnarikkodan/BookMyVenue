@@ -1,7 +1,7 @@
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import pinoHttp from 'pino-http'
+import pinoHttp from 'pino-http';
 import logger from '@/libs/logger';
 import notFound from '@/utils/notFound';
 import errorHandler from './utils/error';
@@ -25,7 +25,7 @@ app.use(
   pinoHttp({
     logger,
     autoLogging: {
-      ignore: (req) => req.url === "/favicon.ico",
+      ignore: (req) => req.url === '/favicon.ico',
     },
     serializers: {
       req(req) {
@@ -45,7 +45,7 @@ app.use(
 
 // JSON parser & Form data parse
 app.use(express.json());
-app.use(express.urlencoded({extended:true}));
+app.use(express.urlencoded({ extended: true }));
 
 // Health Check
 app.get('/health', (req: Request, res: Response) => {
