@@ -1,8 +1,10 @@
 import { Outlet } from 'react-router-dom';
+import { Toaster } from 'sonner';
 
 const AuthLayout = () => {
   return (
     <div className="min-h-screen bg-bg-base text-slate-200 flex flex-col p-4 relative">
+      <Toaster richColors position="top-center" />
       {/* Background ambient light effects */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-10">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-primary-600/10 blur-[120px]"></div>

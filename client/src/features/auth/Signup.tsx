@@ -8,10 +8,23 @@ import { useAuthStore } from './store/auth.store';
 import { useAppStore } from '../../store/app.store';
 import OtpVerification from './OtpVerification';
 
+const getRoleRedirect = (role: string) => {
+  if (role === 'owner') return '/owner/dashboard';
+  if (role === 'admin') return '/admin/dashboard';
+  return '/';
+};
+
 const Signup = () => {
   const navigate = useNavigate();
   const { signupStep, setRegistrationData, resetSignupFlow } = useAuthStore();
   const setAuth = useAppStore((state) => state.setAuth);
+
+  React.useEffect(() => {
+    resetSignupFlow();
+    return () => {
+      resetSignupFlow();
+    };
+  }, [resetSignupFlow]);
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -43,16 +56,22 @@ const Signup = () => {
 
     try {
       const { data } = await axios.post(AUTH_ROUTES.SIGNUP, {
-        fullName:     formData.fullName,
-        email:        formData.email,
-        phoneNumber:  formData.phoneNumber,
-        password:     formData.password,
+        fullName: formData.fullName,
+        email: formData.email,
+        phoneNumber: formData.phoneNumber,
+        password: formData.password,
         confirmPassword: formData.confirmPassword,
       });
-      
+
       setRegistrationData(data.data.email, data.data.registrationToken);
-    } catch (err: any) {
-      setError(err.response?.data?.message || err.message || 'Something went wrong');
+    } catch (err: unknown) {
+      let msg = 'Something went wrong';
+      if (axios.isAxiosError(err)) {
+        msg = err.response?.data?.message || msg;
+      } else if (err instanceof Error) {
+        msg = err.message;
+      }
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -69,9 +88,10 @@ const Signup = () => {
       // Google users are already verified
       console.log('Google auth success', data);
       setAuth(data.data.token, data.data.refreshToken, data.data.user);
-      navigate('/dashboard');
-    } catch (err: any) {
-      setError(err.response?.data?.message || err.message || 'Google Auth Failed');
+      navigate(getRoleRedirect(data.data.user.role));
+    } catch (error) {
+      console.log("Google auth Error: ", error);
+      setError('Google Auth Failed');
     } finally {
       setLoading(false);
     }

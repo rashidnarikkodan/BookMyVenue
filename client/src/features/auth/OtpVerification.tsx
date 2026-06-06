@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, RefreshCw, ShieldCheck, Mail } from 'lucide-react';
 import axios from 'axios';
 import { AUTH_ROUTES } from '../../constants/apiRoutes';
@@ -10,7 +12,7 @@ interface OtpVerificationProps {
 
 const OTP_LENGTH = 6;
 
-const OtpVerification: React.FC<OtpVerificationProps> = ({ onSuccess }) => {
+const OtpVerification: React.FC<OtpVerificationProps> = () => {
   const {
     pendingEmail,
     registrationToken,
@@ -28,7 +30,8 @@ const OtpVerification: React.FC<OtpVerificationProps> = ({ onSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+
+  const navigate = useNavigate();
   const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
 
   // Countdown timer
@@ -83,14 +86,19 @@ const OtpVerification: React.FC<OtpVerificationProps> = ({ onSuccess }) => {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await axios.post(AUTH_ROUTES.VERIFY_OTP, {
+      const res = await axios.post(AUTH_ROUTES.VERIFY_OTP, {
         registrationToken,
         otp: otpString,
       });
-      setSuccessMsg('Email verified successfully! Redirecting to login…');
-      setTimeout(() => onSuccess(), 1500);
-    } catch (err: any) {
-      const msg = err.response?.data?.message || 'Verification failed. Please try again.';
+      toast.success(res?.data?.message || 'User verified successfully!');
+      navigate('/signin');
+    } catch (err: unknown) {
+      let msg = 'Verification failed. Please try again.';
+      if (axios.isAxiosError(err)) {
+        msg = err.response?.data?.message || msg;
+      } else if (err instanceof Error) {
+        msg = err.message;
+      }
       setError(msg);
 
       setOtp(Array(OTP_LENGTH).fill(''));
@@ -98,7 +106,7 @@ const OtpVerification: React.FC<OtpVerificationProps> = ({ onSuccess }) => {
     } finally {
       setLoading(false);
     }
-  }, [otp, registrationToken, onSuccess]);
+  }, [otp, registrationToken, navigate]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -112,16 +120,21 @@ const OtpVerification: React.FC<OtpVerificationProps> = ({ onSuccess }) => {
     if (resendTimer > 0 || resendCount >= maxResends || resending) return;
     setResending(true);
     setError(null);
-    setSuccessMsg(null);
     try {
       await axios.post(AUTH_ROUTES.RESEND_OTP, { registrationToken });
       incrementResendCount();
       startResendTimer();
       setOtp(Array(OTP_LENGTH).fill(''));
       inputsRef.current[0]?.focus();
-      setSuccessMsg('A new OTP has been sent to your email.');
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Could not resend OTP. Please try again.');
+      toast.success('A new OTP has been sent to your email.');
+    } catch (err: unknown) {
+      let msg = 'Could not resend OTP. Please try again.';
+      if (axios.isAxiosError(err)) {
+        msg = err.response?.data?.message || msg;
+      } else if (err instanceof Error) {
+        msg = err.message;
+      }
+      setError(msg);
     } finally {
       setResending(false);
     }
@@ -129,7 +142,7 @@ const OtpVerification: React.FC<OtpVerificationProps> = ({ onSuccess }) => {
 
   const maskedEmail = pendingEmail
     ? pendingEmail.replace(/^(.{2})(.*)(@.*)$/, (_: string, a: string, b: string, c: string) =>
-        a + '*'.repeat(b.length) + c)
+      a + '*'.repeat(b.length) + c)
     : '';
 
   const allFilled = otp.every((d) => d !== '');
@@ -156,12 +169,7 @@ const OtpVerification: React.FC<OtpVerificationProps> = ({ onSuccess }) => {
           <span>{error}</span>
         </div>
       )}
-      {successMsg && (
-        <div className="bg-green-500/10 border border-green-500/40 text-green-400 text-xs p-3 rounded-xl mb-4 flex items-start gap-2">
-          <span className="mt-0.5">✓</span>
-          <span>{successMsg}</span>
-        </div>
-      )}
+
 
       {/* OTP Input Grid */}
       <div className="flex gap-2 justify-center mb-5" onPaste={handlePaste}>

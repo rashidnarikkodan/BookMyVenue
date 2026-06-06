@@ -77,7 +77,7 @@ export default function AdminSidebar() {
                 key={link.name}
                 to={link.href}
                 onClick={closeSidebar}
-                className={({ isActive }) => `
+                className={({ isActive }: { isActive: boolean }) => `
                   group flex items-center gap-3.5 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200
                   ${
                     isActive

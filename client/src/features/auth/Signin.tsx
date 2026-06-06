@@ -6,6 +6,12 @@ import { GoogleLogin } from '@react-oauth/google';
 import { AUTH_ROUTES } from '../../constants/apiRoutes';
 import { useAppStore } from '../../store/app.store';
 
+const getRoleRedirect = (role: string) => {
+  if (role === 'owner') return '/owner/dashboard';
+  if (role === 'admin') return '/admin/dashboard';
+  return '/';
+};
+
 const Signin = () => {
   const navigate = useNavigate();
   const setAuth = useAppStore((state) => state.setAuth);
@@ -36,9 +42,15 @@ const Signin = () => {
       });
       
       setAuth(data.data.token, data.data.refreshToken, data.data.user);
-      navigate('/dashboard');
-    } catch (err: any) {
-      setError(err.response?.data?.message || err.message || 'Something went wrong');
+      navigate(getRoleRedirect(data.data.user.role));
+    } catch (err: unknown) {
+      let msg = 'Something went wrong';
+      if (axios.isAxiosError(err)) {
+        msg = err.response?.data?.message || msg;
+      } else if (err instanceof Error) {
+        msg = err.message;
+      }
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -53,9 +65,15 @@ const Signin = () => {
         credential: credentialResponse.credential,
       });
       setAuth(data.data.token, data.data.refreshToken, data.data.user);
-      navigate('/dashboard');
-    } catch (err: any) {
-      setError(err.response?.data?.message || err.message || 'Google Auth Failed');
+      navigate(getRoleRedirect(data.data.user.role));
+    } catch (err: unknown) {
+      let msg = 'Google Auth Failed';
+      if (axios.isAxiosError(err)) {
+        msg = err.response?.data?.message || msg;
+      } else if (err instanceof Error) {
+        msg = err.message;
+      }
+      setError(msg);
     } finally {
       setLoading(false);
     }
