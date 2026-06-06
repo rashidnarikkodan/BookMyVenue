@@ -1,10 +1,11 @@
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Users, Building2, CalendarDays, Settings, LogOut, X } from 'lucide-react';
+import { LayoutDashboard, Users, Building2, CalendarDays, Settings, LogOut, X, Boxes } from 'lucide-react';
 import { useUIStore } from '@/store/ui.store';
 
 const adminNavLinks = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
   { name: 'Manage Users', href: '/admin/users', icon: Users },
+  { name: 'Categories', href: '/admin/categories', icon: Boxes },
   { name: 'Manage Venues', href: '/admin/venues', icon: Building2 },
   { name: 'Bookings Overview', href: '/admin/bookings', icon: CalendarDays },
   { name: 'System Settings', href: '/admin/settings', icon: Settings },

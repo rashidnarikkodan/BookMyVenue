@@ -1,6 +1,8 @@
 import { Navigate } from 'react-router-dom';
 import AdminLayout from '../layouts/AdminLayout';
 import ErrorPage from '@/shared/pages/ErrorPage';
+import CategoriesList from '@/features/categories/pages/CategoriesList';
+import CategoryDetails from '@/features/categories/pages/CategoryDetails';
 
 export const adminRoutes = {
   path: '/admin',
@@ -15,6 +17,14 @@ export const adminRoutes = {
     {
       path: 'dashboard',
       element: <>Admin Dashboard</>,
+    },
+    {
+      path: 'categories',
+      element: <CategoriesList/>,
+    },
+    {
+      path: 'categories/:id',
+      element: <CategoryDetails/>,
     },
   ],
 };

@@ -11,7 +11,6 @@ import {
 import { AppError } from '@/utils/AppError';
 import { CategoryDocument } from '@/types/category.types';
 import { HTTP_STATUS } from '@/constants/http';
-import mongoose from 'mongoose';
 
 type Return = Promise<CategoryDocument | null>;
 
