@@ -1,24 +1,18 @@
-import { injectable } from 'inversify';
 import nodemailer, { Transporter } from 'nodemailer';
 import env from '../configs/env.config';
 import { IEmailService } from './interfaces/email.service.interface';
 
-@injectable()
-export class EmailService implements IEmailService {
-  private transporter: Transporter;
+const transporter: Transporter = nodemailer.createTransport({
+  host: env.SMTP_HOST,
+  port: env.SMTP_PORT,
+  secure: env.SMTP_PORT === 465,
+  auth: {
+    user: env.SMTP_USER,
+    pass: env.SMTP_PASS,
+  },
+});
 
-  constructor() {
-    this.transporter = nodemailer.createTransport({
-      host: env.SMTP_HOST,
-      port: env.SMTP_PORT,
-      secure: env.SMTP_PORT === 465,
-      auth: {
-        user: env.SMTP_USER,
-        pass: env.SMTP_PASS,
-      },
-    });
-  }
-
+export const emailService: IEmailService = {
   async sendOtpEmail(to: string, otp: string): Promise<void> {
     const html = `
       <!DOCTYPE html>
@@ -72,11 +66,11 @@ export class EmailService implements IEmailService {
       </html>
     `;
 
-    await this.transporter.sendMail({
+    await transporter.sendMail({
       from: env.SMTP_FROM,
       to,
       subject: 'Your BookMyVenue OTP Code',
       html,
     });
-  }
-}
+  },
+};

@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import authRoutes from './auth.routes';
 import userRoutes from './user.routes';
+import authRoutes from './auth.routes';
 import ownerRoutes from './owner.routes';
 import venueRoutes from './venue.routes';
 import bookingRoutes from './booking.routes';
