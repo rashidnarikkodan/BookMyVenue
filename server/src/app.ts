@@ -47,12 +47,11 @@ app.use(express.urlencoded({ extended: true }));
 
 // Health Check
 app.get('/health', (req: Request, res: Response, next: NextFunction) => {
-  // res.status(200).json({
-  //   status: 'ok',
-  //   uptime: process.uptime(),
-  //   timestamp: Date.now(),
-  // });
-  next(new Error('sevrer error'));
+  res.status(200).json({
+    status: 'ok',
+    uptime: process.uptime(),
+    timestamp: Date.now(),
+  });
 });
 
 app.use('/api', routes);
