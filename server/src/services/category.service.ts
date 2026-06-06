@@ -11,6 +11,7 @@ import {
 import { AppError } from '@/utils/AppError';
 import { CategoryDocument } from '@/types/category.types';
 import { HTTP_STATUS } from '@/constants/http';
+import cloudinary from '@/configs/cloudinary.config';
 
 type Return = Promise<CategoryDocument | null>;
 
