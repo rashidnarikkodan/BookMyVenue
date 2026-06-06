@@ -11,11 +11,6 @@ import {
 import { AppError } from '@/utils/AppError';
 import { CategoryDocument } from '@/types/category.types';
 import { HTTP_STATUS } from '@/constants/http';
-<<<<<<< HEAD
-import mongoose from 'mongoose';
-=======
-import cloudinary from '@/configs/cloudinary.config';
->>>>>>> feat/category-client
 
 type Return = Promise<CategoryDocument | null>;
 
