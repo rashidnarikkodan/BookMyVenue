@@ -1,19 +1,22 @@
 export interface CreateCategoryDto {
   name: string;
   description: string;
-  image: string;
+  imageUrl: string;
+  image_public_id:string
 }
 export interface UpdateCategoryDto {
   id: string;
   name?: string;
   description?: string;
   image?: string;
+  image_public_id:string
 }
 export interface CategoryResponseDto {
   id: string;
   name: string;
   description: string;
-  image: string;
+  imageUrl: string;
+  image_public_id:string
 }
 
 export interface GetCategoriesQueryDto {

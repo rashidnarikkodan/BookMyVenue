@@ -6,6 +6,7 @@ import logger from '@/libs/logger';
 import notFound from '@/utils/notFound';
 import errorHandler from './utils/error';
 import routes from '@/routes';
+import env from './configs/env.config';
 
 const app: Application = express();
 
@@ -15,7 +16,8 @@ app.use(helmet());
 // CORS
 app.use(
   cors({
-    origin: '*',
+    origin: env.CORS_ORIGIN,
+    methods:['POST',"GET","PATCH","DELETE"],
     credentials: true,
   })
 );
