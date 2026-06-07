@@ -1,17 +1,15 @@
 import HeroSection from "@/features/home/components/sections/HeroSection";
-import SearchSection from "@/features/home/components/sections/SearchSection";
 import CategoriesSection from "@/features/home/components/sections/CategoriesSection";
-import FeaturedVenuesSection from "@/features/home/components/sections/FeaturedVenueSection";
-import NearbyVenuesSection from "@/features/home/components/sections/NearbyVenueSection";
+import EliteVenuesSection from "@/features/home/components/sections/EliteVenueSection";
+import ExploreVenuesSection from "@/features/home/components/sections/ExploreVenuesSection";
 
 export default function HomePage() {
   return (
-    <div className="flex flex-col gap-12">
+    <div className="w-full min-h-screen bg-background text-foreground flex flex-col gap-12 md:gap-16 pb-20 overflow-x-hidden transition-colors duration-300">
       <HeroSection />
-      <SearchSection />
       <CategoriesSection />
-      <FeaturedVenuesSection/>
-      <NearbyVenuesSection/>
+      <EliteVenuesSection />
+      <ExploreVenuesSection />
     </div>
-  )
+  );
 }
