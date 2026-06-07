@@ -16,9 +16,13 @@ const categorySchema = new mongoose.Schema(
       maxlength: 500,
     },
 
-    image: {
+    imageUrl: {
       type: String,
       default: null,
+    },
+    image_public_id:{
+      type: String,
+      default:null
     },
 
     isActive: {

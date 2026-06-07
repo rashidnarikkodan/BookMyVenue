@@ -1,10 +1,37 @@
 import { apiClient } from "@/services/apiClient";
+import type { Category, CategoryQuery } from "../types";
 
 export const categoriesApi = {
-  getAll: () => apiClient.get("/categories"),
-  getById: (id: string) => apiClient.get(`/categories/${id}`),
-  create: (data: any) => apiClient.post("/categories", data),
-  update: (id: string, data: any) => apiClient.patch(`/categories/${id}`, data),
-  remove: (id: string) => apiClient.delete(`/categories/${id}`),
-  restore: (id: string) => apiClient.patch(`/categories/${id}/restore`),
+  getAll: async (query: CategoryQuery): Promise<{ success: boolean; message: string; data: Category[] }> => {
+    const res = await apiClient.get(`/admin/categories?search=${query.search || ''}&sort=${query.sort || 'desc'}&status=${query.status || 'all'}`);
+    return res.data;
+  },
+  getById: async (id: string): Promise<{ success: boolean; message: string; data: Category }> => {
+    const res = await apiClient.get(`/admin/categories/${id}`);
+    return res.data;
+  },
+  create: async (formData: FormData): Promise<{ success: boolean; message: string; data: Category }> => {
+    const res = await apiClient.post("/admin/categories", formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return res.data;
+  },
+  update: async (id: string, formData: FormData): Promise<{ success: boolean; message: string; data: Category }> => {
+    const res = await apiClient.patch(`/admin/categories/${id}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return res.data;
+  },
+  remove: async (id: string): Promise<{ success: boolean; message: string; data: Category }> => {
+    const res = await apiClient.delete(`/admin/categories/${id}`);
+    return res.data;
+  },
+  restore: async (id: string): Promise<{ success: boolean; message: string; data: Category }> => {
+    const res = await apiClient.patch(`/admin/categories/${id}/restore`);
+    return res.data;
+  },
 };
