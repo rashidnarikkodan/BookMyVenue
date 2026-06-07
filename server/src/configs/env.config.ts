@@ -24,6 +24,8 @@ const envSchema = z.object({
   GOOGLE_CLIENT_SECRET: z.string().min(1),
 
   GOOGLE_CALLBACK_URL: z.string(),
+
+  CLOUDINARY_URL: z.string(), 
 });
 
 const env = envSchema.parse(process.env);

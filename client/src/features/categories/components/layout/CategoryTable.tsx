@@ -1,7 +1,7 @@
-import React from "react";
-import CategoryRow from "./CategoryRow";
-import type { Category } from "../../types";
-import { FolderOpen } from "lucide-react";
+import React from 'react';
+import CategoryRow from './CategoryRow';
+import type { Category } from '../../types';
+import { FolderOpen } from 'lucide-react';
 
 type Props = {
   categories: Category[];
@@ -43,9 +43,7 @@ const CategoryTable: React.FC<Props> = ({
                       <FolderOpen size={32} className="stroke-[1.2]" />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-foreground">
-                        No Categories Found
-                      </p>
+                      <p className="text-sm font-semibold text-foreground">No Categories Found</p>
                       <p className="text-xs text-muted mt-1">
                         Try adjusting your search terms or create a new category.
                       </p>

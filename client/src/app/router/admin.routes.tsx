@@ -20,11 +20,11 @@ export const adminRoutes = {
     },
     {
       path: 'categories',
-      element: <CategoriesList/>,
+      element: <CategoriesList />,
     },
     {
       path: 'categories/:id',
-      element: <CategoryDetails/>,
+      element: <CategoryDetails />,
     },
   ],
 };

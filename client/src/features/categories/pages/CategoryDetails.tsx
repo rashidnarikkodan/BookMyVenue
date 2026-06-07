@@ -1,12 +1,11 @@
-
-import { useEffect, useState } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
-import { categoriesApi } from "../services/categories.api";
-import { useAsyncFetch } from "@/shared/hooks/useAsyncFetch";
-import type { Category } from "../types";
-import { ChevronLeft, Pencil, Trash2, RotateCcw, Calendar, Layers } from "lucide-react";
-import AddEditModal from "../components/ui/AddEditModal";
-import { toast } from "sonner";
+import { useEffect, useState } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { categoriesApi } from '../services/categories.api';
+import { useAsyncFetch } from '@/shared/hooks/useAsyncFetch';
+import type { Category } from '../types';
+import { ChevronLeft, Pencil, Trash2, RotateCcw, Calendar, Layers } from 'lucide-react';
+import AddEditModal from '../components/ui/AddEditModal';
+import { toast } from 'sonner';
 
 const CategoryDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -15,7 +14,11 @@ const CategoryDetails = () => {
   const [imageError, setImageError] = useState(false);
 
   // useAsyncFetch hooks
-  const { data: fetchResponse, loading, execute: fetchCategory } = useAsyncFetch<{ success: boolean; message: string; data: Category }>();
+  const {
+    data: fetchResponse,
+    loading,
+    execute: fetchCategory,
+  } = useAsyncFetch<{ success: boolean; message: string; data: Category }>();
   const { loading: actionLoading, execute: executeAction } = useAsyncFetch<any>();
 
   const category = fetchResponse?.data;
@@ -33,15 +36,15 @@ const CategoryDetails = () => {
   // Soft delete category
   const handleDelete = async () => {
     if (!category) return;
-    const catId = category.id || category._id || "";
-    if (!window.confirm("Are you sure you want to disable this category?")) return;
+    const catId = category.id || category._id || '';
+    if (!window.confirm('Are you sure you want to disable this category?')) return;
 
     try {
       await executeAction(() => categoriesApi.remove(catId));
-      toast.success("Category disabled successfully");
+      toast.success('Category disabled successfully');
       loadCategory();
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Failed to disable category";
+      const msg = err instanceof Error ? err.message : 'Failed to disable category';
       toast.error(msg);
     }
   };
@@ -49,13 +52,13 @@ const CategoryDetails = () => {
   // Restore category
   const handleRestore = async () => {
     if (!category) return;
-    const catId = category.id || category._id || "";
+    const catId = category.id || category._id || '';
     try {
       await executeAction(() => categoriesApi.restore(catId));
-      toast.success("Category restored successfully");
+      toast.success('Category restored successfully');
       loadCategory();
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Failed to restore category";
+      const msg = err instanceof Error ? err.message : 'Failed to restore category';
       toast.error(msg);
     }
   };
@@ -92,24 +95,24 @@ const CategoryDetails = () => {
   }
 
   const formattedCreated = category.createdAt
-    ? new Date(category.createdAt).toLocaleString("en-US", {
-        month: "long",
-        day: "numeric",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
+    ? new Date(category.createdAt).toLocaleString('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
       })
-    : "N/A";
+    : 'N/A';
 
   const formattedUpdated = category.updatedAt
-    ? new Date(category.updatedAt).toLocaleString("en-US", {
-        month: "long",
-        day: "numeric",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
+    ? new Date(category.updatedAt).toLocaleString('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
       })
-    : "N/A";
+    : 'N/A';
 
   return (
     <div className="space-y-6">
@@ -117,7 +120,7 @@ const CategoryDetails = () => {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-5 mb-6">
         <div className="flex items-center gap-3">
           <button
-            onClick={() => navigate("/admin/categories")}
+            onClick={() => navigate('/admin/categories')}
             className="rounded-xl border border-border bg-background p-2.5 text-muted hover:text-foreground transition-all hover:bg-surface active:scale-95 cursor-pointer"
             title="Back to Categories"
           >
@@ -245,7 +248,7 @@ const CategoryDetails = () => {
             <div className="space-y-1">
               <span className="text-xs font-semibold text-muted">Description</span>
               <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
-                {category.description || "No description provided for this category."}
+                {category.description || 'No description provided for this category.'}
               </p>
             </div>
           </div>
@@ -265,9 +268,7 @@ const CategoryDetails = () => {
                   <span className="text-[10px] font-semibold text-muted uppercase tracking-wider block">
                     Created At
                   </span>
-                  <span className="text-xs font-semibold text-foreground">
-                    {formattedCreated}
-                  </span>
+                  <span className="text-xs font-semibold text-foreground">{formattedCreated}</span>
                 </div>
               </div>
 
@@ -279,9 +280,7 @@ const CategoryDetails = () => {
                   <span className="text-[10px] font-semibold text-muted uppercase tracking-wider block">
                     Last Modified
                   </span>
-                  <span className="text-xs font-semibold text-foreground">
-                    {formattedUpdated}
-                  </span>
+                  <span className="text-xs font-semibold text-foreground">{formattedUpdated}</span>
                 </div>
               </div>
             </div>

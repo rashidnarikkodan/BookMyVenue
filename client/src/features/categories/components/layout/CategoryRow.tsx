@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import type { Category } from "../../types";
-import { Pencil, Trash2, RotateCcw, Eye, Layers } from "lucide-react";
-import { Link } from "react-router-dom";
+import React, { useState } from 'react';
+import type { Category } from '../../types';
+import { Pencil, Trash2, RotateCcw, Eye, Layers } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 type Props = {
   category: Category;
@@ -21,12 +21,12 @@ const CategoryRow: React.FC<Props> = ({
   const [imageError, setImageError] = useState(false);
 
   const formattedDate = category.createdAt
-    ? new Date(category.createdAt).toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
+    ? new Date(category.createdAt).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
       })
-    : "N/A";
+    : 'N/A';
 
   return (
     <tr className="border-b border-border hover:bg-surface/50 transition-colors group">
@@ -52,7 +52,7 @@ const CategoryRow: React.FC<Props> = ({
           {category.name}
         </div>
         <div className="max-w-xs text-xs text-muted truncate mt-0.5" title={category.description}>
-          {category.description || "No description provided."}
+          {category.description || 'No description provided.'}
         </div>
       </td>
 

@@ -1,4 +1,4 @@
-import { Plus } from "lucide-react";
+import { Plus } from 'lucide-react';
 
 type Props = {
   onAddClick: () => void;
@@ -8,9 +8,7 @@ const CategoryHeader = ({ onAddClick }: Props) => {
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-5 mb-6">
       <div>
-        <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
-          Categories
-        </h1>
+        <h1 className="text-3xl font-extrabold tracking-tight text-foreground">Categories</h1>
         <p className="mt-1 text-sm text-muted">
           Organize, curate, and manage all venue categories in the system
         </p>

@@ -1,39 +1,38 @@
-import { useEffect, useState, useMemo } from "react";
-import CategoryHeader from "../components/layout/CategoryHeader";
-import CategoryTable from "../components/layout/CategoryTable";
-import CategoryToolbar from "../components/layout/CategoryToolbar";
-import AddEditModal from "../components/ui/AddEditModal";
-import { categoriesApi } from "../services/categories.api";
-import { useAsyncFetch } from "@/shared/hooks/useAsyncFetch";
-import type { Category } from "../types";
-import Loading from "@/shared/components/ui/Loading";
-import { toast } from "sonner";
-import { Layers, CheckCircle2, AlertTriangle } from "lucide-react";
+import { useEffect, useState, useMemo } from 'react';
+import CategoryHeader from '../components/layout/CategoryHeader';
+import CategoryTable from '../components/layout/CategoryTable';
+import CategoryToolbar from '../components/layout/CategoryToolbar';
+import AddEditModal from '../components/ui/AddEditModal';
+import { categoriesApi } from '../services/categories.api';
+import { useAsyncFetch } from '@/shared/hooks/useAsyncFetch';
+import type { Category } from '../types';
+import { Loading } from '@/shared/components/ui';
+import { toast } from 'sonner';
+import { Layers, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { useDebounce } from '@/shared/hooks/useDebounce';
 
 const CategoriesList = () => {
-  const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [sortBy, setSortBy] = useState<"asc" | "desc">("desc");
-  const [filter, setFilter] = useState<"all" | "active" | "inactive">("all");
+  const [search, setSearch] = useState('');
+  const [sortBy, setSortBy] = useState<'asc' | 'desc'>('desc');
+  const [filter, setFilter] = useState<'all' | 'active' | 'inactive'>('all');
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
 
   // useAsyncFetch hooks
-  const { data: listResponse, loading, execute: fetchCategories } = useAsyncFetch<{ success: boolean; message: string; data: Category[] }>();
+  const {
+    data: listResponse,
+    loading,
+    execute: fetchCategories,
+  } = useAsyncFetch<{ success: boolean; message: string; data: Category[] }>();
+
   const { loading: actionLoading, execute: executeAction } = useAsyncFetch<any>();
 
   // Extract categories array
   const categories = listResponse?.data || [];
 
   // Debounce Search Input
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(search);
-    }, 400);
-
-    return () => clearTimeout(timer);
-  }, [search]);
+  const debouncedSearch = useDebounce(search, 400);
 
   // Fetch Categories function
   const loadCategories = () => {
@@ -52,14 +51,14 @@ const CategoriesList = () => {
 
   // Delete Category (Soft Delete)
   const handleDelete = async (id: string) => {
-    if (!window.confirm("Are you sure you want to disable this category?")) return;
+    if (!window.confirm('Are you sure you want to disable this category?')) return;
 
     try {
       await executeAction(() => categoriesApi.remove(id));
-      toast.success("Category disabled successfully");
+      toast.success('Category disabled successfully');
       loadCategories();
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Failed to disable category";
+      const msg = err instanceof Error ? err.message : 'Failed to disable category';
       toast.error(msg);
     }
   };
@@ -68,10 +67,10 @@ const CategoriesList = () => {
   const handleRestore = async (id: string) => {
     try {
       await executeAction(() => categoriesApi.restore(id));
-      toast.success("Category restored successfully");
+      toast.success('Category restored successfully');
       loadCategories();
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Failed to restore category";
+      const msg = err instanceof Error ? err.message : 'Failed to restore category';
       toast.error(msg);
     }
   };
@@ -114,7 +113,7 @@ const CategoriesList = () => {
               Total Categories
             </p>
             <p className="text-2xl font-bold text-foreground mt-0.5">
-              {loading ? "..." : stats.total}
+              {loading ? '...' : stats.total}
             </p>
           </div>
         </div>
@@ -129,7 +128,7 @@ const CategoriesList = () => {
               Active Categories
             </p>
             <p className="text-2xl font-bold text-foreground mt-0.5">
-              {loading ? "..." : stats.active}
+              {loading ? '...' : stats.active}
             </p>
           </div>
         </div>
@@ -144,7 +143,7 @@ const CategoriesList = () => {
               Inactive Categories
             </p>
             <p className="text-2xl font-bold text-foreground mt-0.5">
-              {loading ? "..." : stats.inactive}
+              {loading ? '...' : stats.inactive}
             </p>
           </div>
         </div>

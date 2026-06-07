@@ -20,9 +20,9 @@ const categorySchema = new mongoose.Schema(
       type: String,
       default: null,
     },
-    image_public_id:{
+    image_public_id: {
       type: String,
-      default:null
+      default: null,
     },
 
     isActive: {

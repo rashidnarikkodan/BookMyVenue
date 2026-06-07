@@ -1,7 +1,7 @@
-import HeroSection from "@/features/home/components/sections/HeroSection";
-import CategoriesSection from "@/features/home/components/sections/CategoriesSection";
-import EliteVenuesSection from "@/features/home/components/sections/EliteVenueSection";
-import ExploreVenuesSection from "@/features/home/components/sections/ExploreVenuesSection";
+import HeroSection from '@/features/home/components/sections/HeroSection';
+import CategoriesSection from '@/features/home/components/sections/CategoriesSection';
+import EliteVenuesSection from '@/features/home/components/sections/EliteVenueSection';
+import ExploreVenuesSection from '@/features/home/components/sections/ExploreVenuesSection';
 
 export default function HomePage() {
   return (

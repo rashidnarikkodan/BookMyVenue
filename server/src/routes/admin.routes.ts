@@ -20,4 +20,3 @@ router
 router.route('/categories/:id/restore').patch(categoryController.restoreCategory);
 
 export default router;
-
