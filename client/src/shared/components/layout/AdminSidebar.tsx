@@ -1,5 +1,14 @@
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Users, Building2, CalendarDays, Settings, LogOut, X, Boxes } from 'lucide-react';
+import {
+  LayoutDashboard,
+  Users,
+  Building2,
+  CalendarDays,
+  Settings,
+  LogOut,
+  X,
+  Boxes,
+} from 'lucide-react';
 import { useUIStore } from '@/store/ui.store';
 
 const adminNavLinks = [

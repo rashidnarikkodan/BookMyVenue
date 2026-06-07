@@ -1,12 +1,12 @@
-import { Search, ArrowUpDown } from "lucide-react";
+import { Search, ArrowUpDown } from 'lucide-react';
 
 type Props = {
   search: string;
   onSearchChange: (value: string) => void;
-  sortBy: "asc" | "desc";
-  onSortChange: (value: "asc" | "desc") => void;
-  filter: "all" | "active" | "inactive";
-  onFilterChange: (value: "all" | "active" | "inactive") => void;
+  sortBy: 'asc' | 'desc';
+  onSortChange: (value: 'asc' | 'desc') => void;
+  filter: 'all' | 'active' | 'inactive';
+  onFilterChange: (value: 'all' | 'active' | 'inactive') => void;
 };
 
 const CategoryToolbar = ({
@@ -54,7 +54,7 @@ const CategoryToolbar = ({
       <div className="flex flex-wrap items-center gap-4">
         {/* Status Filter Tabs */}
         <div className="flex rounded-xl bg-background border border-border p-1">
-          {(["all", "active", "inactive"] as const).map((tab) => (
+          {(['all', 'active', 'inactive'] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => onFilterChange(tab)}
@@ -69,12 +69,12 @@ const CategoryToolbar = ({
                 duration-200
                 ${
                   filter === tab
-                    ? "bg-primary text-white shadow-sm"
-                    : "text-muted hover:text-foreground"
+                    ? 'bg-primary text-white shadow-sm'
+                    : 'text-muted hover:text-foreground'
                 }
               `}
             >
-              {tab === "all" ? "All" : tab}
+              {tab === 'all' ? 'All' : tab}
             </button>
           ))}
         </div>
@@ -87,7 +87,7 @@ const CategoryToolbar = ({
           />
           <select
             value={sortBy}
-            onChange={(e) => onSortChange(e.target.value as "asc" | "desc")}
+            onChange={(e) => onSortChange(e.target.value as 'asc' | 'desc')}
             className="
               w-full
               appearance-none

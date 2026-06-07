@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { categoriesApi } from "../../services/categories.api";
-import type { Category } from "../../types";
-import { useAsyncFetch } from "@/shared/hooks/useAsyncFetch";
-import { X, Upload } from "lucide-react";
-import { toast } from "sonner";
+import React, { useEffect, useState } from 'react';
+import { categoriesApi } from '../../services/categories.api';
+import type { Category } from '../../types';
+import { useAsyncFetch } from '@/shared/hooks/useAsyncFetch';
+import { X, Upload } from 'lucide-react';
+import { toast } from 'sonner';
 
 type Props = {
   category?: Category | null;
@@ -13,11 +13,11 @@ type Props = {
 
 const AddEditModal = ({ category, onClose, onSuccess }: Props) => {
   const isEdit = !!category;
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
 
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState("");
+  const [previewUrl, setPreviewUrl] = useState('');
   const [dragActive, setDragActive] = useState(false);
 
   const { loading, execute } = useAsyncFetch<any>();
@@ -25,13 +25,13 @@ const AddEditModal = ({ category, onClose, onSuccess }: Props) => {
   // Populate data if in Edit Mode
   useEffect(() => {
     if (category) {
-      setName(category.name || "");
-      setDescription(category.description || "");
-      setPreviewUrl(category.imageUrl || "");
+      setName(category.name || '');
+      setDescription(category.description || '');
+      setPreviewUrl(category.imageUrl || '');
     } else {
-      setName("");
-      setDescription("");
-      setPreviewUrl("");
+      setName('');
+      setDescription('');
+      setPreviewUrl('');
       setImageFile(null);
     }
   }, [category]);
@@ -56,9 +56,9 @@ const AddEditModal = ({ category, onClose, onSuccess }: Props) => {
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
+    if (e.type === 'dragenter' || e.type === 'dragover') {
       setDragActive(true);
-    } else if (e.type === "dragleave") {
+    } else if (e.type === 'dragleave') {
       setDragActive(false);
     }
   };
@@ -70,10 +70,10 @@ const AddEditModal = ({ category, onClose, onSuccess }: Props) => {
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const file = e.dataTransfer.files[0];
-      if (file.type.startsWith("image/")) {
+      if (file.type.startsWith('image/')) {
         setImageFile(file);
       } else {
-        toast.error("Please upload an image file");
+        toast.error('Please upload an image file');
       }
     }
   };
@@ -82,37 +82,33 @@ const AddEditModal = ({ category, onClose, onSuccess }: Props) => {
     event.preventDefault();
 
     if (!name.trim()) {
-      toast.error("Category name is required");
+      toast.error('Category name is required');
       return;
     }
 
     try {
       const formData = new FormData();
-      formData.append("name", name.trim());
-      formData.append("description", description.trim());
+      formData.append('name', name.trim());
+      formData.append('description', description.trim());
 
       if (imageFile) {
-        formData.append("image", imageFile);
+        formData.append('image', imageFile);
       }
 
       await execute(async () => {
         if (isEdit && category) {
-          const id = category.id || category._id || "";
+          const id = category.id || category._id || '';
           return await categoriesApi.update(id, formData);
         } else {
           return await categoriesApi.create(formData);
         }
       });
 
-      toast.success(
-        isEdit
-          ? "Category updated successfully"
-          : "Category created successfully"
-      );
+      toast.success(isEdit ? 'Category updated successfully' : 'Category created successfully');
       onSuccess();
       onClose();
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "An error occurred";
+      const msg = err instanceof Error ? err.message : 'An error occurred';
       toast.error(msg);
     }
   };
@@ -124,12 +120,12 @@ const AddEditModal = ({ category, onClose, onSuccess }: Props) => {
         <div className="mb-6 flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-bold tracking-tight text-foreground">
-              {isEdit ? "Edit Category" : "Create Category"}
+              {isEdit ? 'Edit Category' : 'Create Category'}
             </h2>
             <p className="text-xs text-muted mt-1">
               {isEdit
-                ? "Update category details and image properties"
-                : "Add a brand new category to the platform"}
+                ? 'Update category details and image properties'
+                : 'Add a brand new category to the platform'}
             </p>
           </div>
 
@@ -142,10 +138,7 @@ const AddEditModal = ({ category, onClose, onSuccess }: Props) => {
         </div>
 
         {/* Form */}
-        <form
-          onSubmit={handleSubmit}
-          className="grid gap-6 md:grid-cols-[1.2fr_1fr]"
-        >
+        <form onSubmit={handleSubmit} className="grid gap-6 md:grid-cols-[1.2fr_1fr]">
           {/* Left Panel: Fields */}
           <div className="space-y-5">
             <div>
@@ -192,11 +185,11 @@ const AddEditModal = ({ category, onClose, onSuccess }: Props) => {
               >
                 {loading
                   ? isEdit
-                    ? "Updating..."
-                    : "Creating..."
+                    ? 'Updating...'
+                    : 'Creating...'
                   : isEdit
-                  ? "Save Changes"
-                  : "Create Category"}
+                    ? 'Save Changes'
+                    : 'Create Category'}
               </button>
             </div>
           </div>
@@ -217,8 +210,8 @@ const AddEditModal = ({ category, onClose, onSuccess }: Props) => {
                 relative flex flex-1 flex-col items-center justify-center rounded-xl border-2 border-dashed p-6 text-center transition-all cursor-pointer min-h-[260px]
                 ${
                   dragActive
-                    ? "border-primary bg-primary/5"
-                    : "border-border hover:bg-background/40"
+                    ? 'border-primary bg-primary/5'
+                    : 'border-border hover:bg-background/40'
                 }
               `}
             >
@@ -248,12 +241,8 @@ const AddEditModal = ({ category, onClose, onSuccess }: Props) => {
                     <Upload size={22} />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-foreground">
-                      Upload an image
-                    </p>
-                    <p className="text-xs text-muted mt-1">
-                      Drag and drop, or click to browse
-                    </p>
+                    <p className="text-sm font-semibold text-foreground">Upload an image</p>
+                    <p className="text-xs text-muted mt-1">Drag and drop, or click to browse</p>
                     <p className="text-[10px] text-muted/65 mt-2">
                       Supports JPG, PNG, GIF up to 5MB
                     </p>

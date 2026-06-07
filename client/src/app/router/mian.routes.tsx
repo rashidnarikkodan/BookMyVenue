@@ -9,7 +9,7 @@ export const mainRoutes = {
   errorElement: <ErrorPage />,
 
   children: [
-    { index: true, element: <HomePage/> },
+    { index: true, element: <HomePage /> },
     { path: 'venues', element: <>VenueListPage</> },
     { path: 'venues/:id', element: <>VenueDetailsPage</> },
     { path: 'account/profile', element: <>ProfilePage</> },

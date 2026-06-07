@@ -25,7 +25,6 @@ export const createCategory = async (data: CreateCategoryDto): Return => {
 };
 
 export const updateCategory = async (data: UpdateCategoryDto): Return => {
-
   const category = await repo.getCategory(data.id);
 
   if (!category) {
@@ -44,7 +43,6 @@ export const updateCategory = async (data: UpdateCategoryDto): Return => {
 };
 
 export const deleteCategory = async (id: string): Return => {
-
   if (typeof id !== 'string') throw new AppError('Invalid Category ID', HTTP_STATUS.BAD_REQUEST);
   const category = await repo.getCategory(id);
 
@@ -56,7 +54,6 @@ export const deleteCategory = async (id: string): Return => {
 };
 
 export const restoreCategory = async (id: string): Return => {
-
   const category = await repo.getCategory(id);
 
   if (!category) {
@@ -67,7 +64,6 @@ export const restoreCategory = async (id: string): Return => {
 };
 
 export const getCategory = async (id: string): Return => {
-
   const category = await repo.getCategory(id);
 
   if (!category) {

@@ -1,12 +1,12 @@
-import { Star, Users, Shield } from "lucide-react";
-import travancoreImg from "@/features/home/assets/elite-travancore.png";
-import emeraldImg from "@/features/home/assets/hero-venue-2.png";
-import mistImg from "@/features/home/assets/hero-venue-4.png";
-import gourmetImg from "@/features/home/assets/elite-gourmet.png";
-import { useAsyncFetch } from "@/shared/hooks/useAsyncFetch";
-import { useEffect } from "react";
-import { getEliteVenues } from "../../services/home.services";
-import type { Venue } from "../../../venues/types/venues.types";
+import { Star, Users, Shield } from 'lucide-react';
+import travancoreImg from '@/features/home/assets/elite-travancore.png';
+import emeraldImg from '@/features/home/assets/hero-venue-2.png';
+import mistImg from '@/features/home/assets/hero-venue-4.png';
+import gourmetImg from '@/features/home/assets/elite-gourmet.png';
+import { useAsyncFetch } from '@/shared/hooks/useAsyncFetch';
+import { useEffect } from 'react';
+import { getEliteVenues } from '../../services/home.services';
+import type { Venue } from '../../../venues/types/venues.types';
 
 export default function EliteVenuesSection() {
   const { data, loading, error, execute } = useAsyncFetch<Venue[]>();
@@ -17,48 +17,65 @@ export default function EliteVenuesSection() {
 
   // Fallback / default data
   const defaultLargeVenue = {
-    name: "The Travancore Heritage Palace",
+    name: 'The Travancore Heritage Palace',
     image: travancoreImg,
-    rating: "4.9 (120 reviews)",
+    rating: '4.9 (120 reviews)',
     capacity: 800,
-    tag: "Most Booked"
+    tag: 'Most Booked',
   };
 
   const defaultTopVenue = {
-    name: "Emerald Water-Resort",
+    name: 'Emerald Water-Resort',
     image: emeraldImg,
-    location: "Kumarakom, Kerala",
-    price: "₹1,20,000 / Day"
+    location: 'Kumarakom, Kerala',
+    price: '₹1,20,000 / Day',
   };
 
   const defaultBottomVenue = {
-    name: "Mist-Valley Highlands",
+    name: 'Mist-Valley Highlands',
     image: mistImg,
-    location: "Munnar, Kerala",
-    price: "₹85,000 / Day"
+    location: 'Munnar, Kerala',
+    price: '₹85,000 / Day',
   };
 
-  const largeVenue = data && data[0] ? {
-    name: data[0].name,
-    image: data[0].images?.[0] || travancoreImg,
-    rating: "4.9 (120 reviews)", // Default rating since rating is not in DB schema
-    capacity: data[0].capacity,
-    tag: "Most Booked"
-  } : defaultLargeVenue;
+  const largeVenue =
+    data && data[0]
+      ? {
+          name: data[0].name,
+          image: data[0].images?.[0] || travancoreImg,
+          rating: '4.9 (120 reviews)', // Default rating since rating is not in DB schema
+          capacity: data[0].capacity,
+          tag: 'Most Booked',
+        }
+      : defaultLargeVenue;
 
-  const topVenue = data && data[1] ? {
-    name: data[1].name,
-    image: data[1].images?.[0] || emeraldImg,
-    location: data[1].address ? `${data[1].address.city}, ${data[1].address.state}` : "Kumarakom, Kerala",
-    price: data[1].pricing ? `₹${data[1].pricing.amount.toLocaleString('en-IN')} / ${data[1].pricing.unit === 'day' ? 'Day' : 'Hour'}` : "₹1,20,000 / Day"
-  } : defaultTopVenue;
+  const topVenue =
+    data && data[1]
+      ? {
+          name: data[1].name,
+          image: data[1].images?.[0] || emeraldImg,
+          location: data[1].address
+            ? `${data[1].address.city}, ${data[1].address.state}`
+            : 'Kumarakom, Kerala',
+          price: data[1].pricing
+            ? `₹${data[1].pricing.amount.toLocaleString('en-IN')} / ${data[1].pricing.unit === 'day' ? 'Day' : 'Hour'}`
+            : '₹1,20,000 / Day',
+        }
+      : defaultTopVenue;
 
-  const bottomVenue = data && data[2] ? {
-    name: data[2].name,
-    image: data[2].images?.[0] || mistImg,
-    location: data[2].address ? `${data[2].address.city}, ${data[2].address.state}` : "Munnar, Kerala",
-    price: data[2].pricing ? `₹${data[2].pricing.amount.toLocaleString('en-IN')} / ${data[2].pricing.unit === 'day' ? 'Day' : 'Hour'}` : "₹85,000 / Day"
-  } : defaultBottomVenue;
+  const bottomVenue =
+    data && data[2]
+      ? {
+          name: data[2].name,
+          image: data[2].images?.[0] || mistImg,
+          location: data[2].address
+            ? `${data[2].address.city}, ${data[2].address.state}`
+            : 'Munnar, Kerala',
+          price: data[2].pricing
+            ? `₹${data[2].pricing.amount.toLocaleString('en-IN')} / ${data[2].pricing.unit === 'day' ? 'Day' : 'Hour'}`
+            : '₹85,000 / Day',
+        }
+      : defaultBottomVenue;
 
   if (loading) {
     return (
@@ -66,9 +83,7 @@ export default function EliteVenuesSection() {
         <div className="max-w-6xl mx-auto px-6">
           {/* Centered Header */}
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold tracking-tight">
-              Elite Venues in Kerala
-            </h2>
+            <h2 className="text-3xl font-bold tracking-tight">Elite Venues in Kerala</h2>
             <div className="w-12 h-1 bg-[#e21a47] mx-auto mt-3 rounded-full" />
           </div>
 
@@ -111,24 +126,20 @@ export default function EliteVenuesSection() {
 
   // Log error if any, but continue displaying the fallback UI
   if (error) {
-    console.error("Failed to load elite venues:", error);
+    console.error('Failed to load elite venues:', error);
   }
 
   return (
     <section className="bg-transparent text-foreground py-12">
       <div className="max-w-6xl mx-auto px-6">
-
         {/* Centered Header with red line */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold tracking-tight">
-            Elite Venues in Kerala
-          </h2>
+          <h2 className="text-3xl font-bold tracking-tight">Elite Venues in Kerala</h2>
           <div className="w-12 h-1 bg-[#e21a47] mx-auto mt-3 rounded-full" />
         </div>
 
         {/* Asymmetric Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-
           {/* Left Large Card (3/5 width) */}
           <div className="lg:col-span-3 relative rounded-[28px] overflow-hidden aspect-[4/3] lg:h-[500px] bg-zinc-950 group cursor-pointer shadow-xl border border-border dark:border-zinc-800/40 hover:scale-[1.01] transition-all duration-300">
             {/* Image */}
@@ -166,7 +177,6 @@ export default function EliteVenuesSection() {
 
           {/* Right Column Stack (2/5 width) */}
           <div className="lg:col-span-2 flex flex-col gap-6 lg:h-[500px]">
-
             {/* Top smaller card */}
             <div className="flex-1 flex gap-4 p-4 rounded-[24px] bg-card border border-border dark:border-zinc-800/40 hover:border-zinc-700/60 transition-all duration-300 items-center group cursor-pointer min-h-[180px]">
               {/* Left Image */}
@@ -186,9 +196,7 @@ export default function EliteVenuesSection() {
                 <p className="text-xs text-muted-foreground dark:text-zinc-400 mt-1">
                   {topVenue.location}
                 </p>
-                <p className="text-sm font-bold text-[#e21a47] mt-3">
-                  {topVenue.price}
-                </p>
+                <p className="text-sm font-bold text-[#e21a47] mt-3">{topVenue.price}</p>
               </div>
             </div>
 
@@ -211,18 +219,14 @@ export default function EliteVenuesSection() {
                 <p className="text-xs text-muted-foreground dark:text-zinc-400 mt-1">
                   {bottomVenue.location}
                 </p>
-                <p className="text-sm font-bold text-[#e21a47] mt-3">
-                  {bottomVenue.price}
-                </p>
+                <p className="text-sm font-bold text-[#e21a47] mt-3">{bottomVenue.price}</p>
               </div>
             </div>
-
           </div>
         </div>
 
         {/* 3-Column Bottom Promo Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-
           {/* Card 1: Elite Membership */}
           <div className="bg-card border border-border dark:border-zinc-850/60 rounded-[24px] p-8 flex flex-col justify-between min-h-[260px] group hover:border-zinc-800 transition-all duration-300">
             <div className="flex justify-between items-start">
@@ -235,11 +239,10 @@ export default function EliteVenuesSection() {
             </div>
 
             <div className="mt-8">
-              <h4 className="text-lg font-bold text-foreground">
-                Elite Membership
-              </h4>
+              <h4 className="text-lg font-bold text-foreground">Elite Membership</h4>
               <p className="text-xs text-muted-foreground dark:text-zinc-400 mt-2 leading-relaxed">
-                Access to exclusive, non-listed private properties and direct negotiation with owners.
+                Access to exclusive, non-listed private properties and direct negotiation with
+                owners.
               </p>
             </div>
           </div>
@@ -247,11 +250,10 @@ export default function EliteVenuesSection() {
           {/* Card 2: Planning a Corporate Gala */}
           <div className="bg-[#e21a47] rounded-[24px] p-8 flex flex-col justify-between min-h-[260px] group hover:bg-[#c81239] transition-all duration-300 shadow-lg shadow-rose-950/20">
             <div>
-              <h4 className="text-lg font-bold text-white">
-                Planning a Corporate Gala?
-              </h4>
+              <h4 className="text-lg font-bold text-white">Planning a Corporate Gala?</h4>
               <p className="text-xs text-white/90 mt-2 leading-relaxed">
-                Get a dedicated event coordinator for your Kochi waterfront reservation and services.
+                Get a dedicated event coordinator for your Kochi waterfront reservation and
+                services.
               </p>
             </div>
 
@@ -274,14 +276,10 @@ export default function EliteVenuesSection() {
               <span className="text-[9px] font-bold text-[#e21a47] bg-white/90 px-2 py-0.5 rounded uppercase tracking-wider">
                 Elite Catering
               </span>
-              <h5 className="text-sm font-bold text-white mt-1.5">
-                Curated Banquet Dinners
-              </h5>
+              <h5 className="text-sm font-bold text-white mt-1.5">Curated Banquet Dinners</h5>
             </div>
           </div>
-
         </div>
-
       </div>
     </section>
   );

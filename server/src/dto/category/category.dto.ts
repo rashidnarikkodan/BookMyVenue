@@ -24,4 +24,3 @@ export interface GetCategoriesQueryDto {
   search?: string;
   sort?: 'asc' | 'desc';
 }
-

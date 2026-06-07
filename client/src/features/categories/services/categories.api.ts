@@ -1,24 +1,33 @@
-import { apiClient } from "@/services/apiClient";
-import type { Category, CategoryQuery } from "../types";
+import { apiClient } from '@/services/apiClient';
+import type { Category, CategoryQuery } from '../types';
 
 export const categoriesApi = {
-  getAll: async (query: CategoryQuery): Promise<{ success: boolean; message: string; data: Category[] }> => {
-    const res = await apiClient.get(`/admin/categories?search=${query.search || ''}&sort=${query.sort || 'desc'}&status=${query.status || 'all'}`);
+  getAll: async (
+    query: CategoryQuery
+  ): Promise<{ success: boolean; message: string; data: Category[] }> => {
+    const res = await apiClient.get(
+      `/admin/categories?search=${query.search || ''}&sort=${query.sort || 'desc'}&status=${query.status || 'all'}`
+    );
     return res.data;
   },
   getById: async (id: string): Promise<{ success: boolean; message: string; data: Category }> => {
     const res = await apiClient.get(`/admin/categories/${id}`);
     return res.data;
   },
-  create: async (formData: FormData): Promise<{ success: boolean; message: string; data: Category }> => {
-    const res = await apiClient.post("/admin/categories", formData, {
+  create: async (
+    formData: FormData
+  ): Promise<{ success: boolean; message: string; data: Category }> => {
+    const res = await apiClient.post('/admin/categories', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
     return res.data;
   },
-  update: async (id: string, formData: FormData): Promise<{ success: boolean; message: string; data: Category }> => {
+  update: async (
+    id: string,
+    formData: FormData
+  ): Promise<{ success: boolean; message: string; data: Category }> => {
     const res = await apiClient.patch(`/admin/categories/${id}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',

@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
-import heroImage1 from "@/features/home/assets/hero-venue.png";
-import heroImage2 from "@/features/home/assets/hero-venue-2.png";
-import heroImage3 from "@/features/home/assets/hero-venue-3.png";
-import heroImage4 from "@/features/home/assets/hero-venue-4.png";
-import { MapPin, Calendar, Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { useState, useEffect } from 'react';
+import heroImage1 from '@/features/home/assets/hero-venue.png';
+import heroImage2 from '@/features/home/assets/hero-venue-2.png';
+import heroImage3 from '@/features/home/assets/hero-venue-3.png';
+import heroImage4 from '@/features/home/assets/hero-venue-4.png';
+import { MapPin, Calendar, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const images = [heroImage1, heroImage2, heroImage3, heroImage4];
 
@@ -49,12 +49,12 @@ export default function HeroSection() {
       {/* Full-bleed background image carousel */}
       <div className="absolute inset-0 z-0 select-none pointer-events-none">
         {images.map((imgSrc, idx) => (
-          <img 
+          <img
             key={idx}
-            src={imgSrc} 
-            alt={`Hero Banner ${idx + 1}`} 
+            src={imgSrc}
+            alt={`Hero Banner ${idx + 1}`}
             className={`absolute inset-0 w-full h-full object-cover mix-blend-luminosity transition-opacity duration-1000 ease-in-out ${
-              idx === currentIdx ? "opacity-100" : "opacity-0"
+              idx === currentIdx ? 'opacity-100' : 'opacity-0'
             }`}
           />
         ))}
@@ -97,10 +97,14 @@ export default function HeroSection() {
               className="w-full flex items-center gap-3 px-4 py-3 bg-zinc-950/40 rounded-xl border border-zinc-800/40 hover:border-zinc-700/60 focus:outline-none focus:border-zinc-700/60 transition-all text-left cursor-pointer"
             >
               <Calendar className="text-zinc-500 w-5 h-5 flex-shrink-0" />
-              <span className={`text-sm ${selectedDate ? "text-white" : "text-zinc-500"}`}>
-                {selectedDate 
-                  ? selectedDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) 
-                  : "Select Date"}
+              <span className={`text-sm ${selectedDate ? 'text-white' : 'text-zinc-500'}`}>
+                {selectedDate
+                  ? selectedDate.toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })
+                  : 'Select Date'}
               </span>
             </button>
 
@@ -109,7 +113,7 @@ export default function HeroSection() {
               <>
                 {/* Backdrop catcher */}
                 <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-                
+
                 <div className="absolute top-full left-0 right-0 md:right-auto md:w-72 mt-2 z-50 bg-zinc-900/95 backdrop-blur-md border border-zinc-800 rounded-xl p-4 shadow-2xl select-none animate-in fade-in slide-in-from-top-2 duration-200">
                   {/* Calendar Header */}
                   <div className="flex items-center justify-between mb-4">
@@ -121,7 +125,7 @@ export default function HeroSection() {
                       <ChevronLeft className="w-4.5 h-4.5" />
                     </button>
                     <span className="text-xs font-semibold text-white tracking-wider uppercase">
-                      {currentMonth.toLocaleDateString("en-US", { month: "long", year: "numeric" })}
+                      {currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
                     </span>
                     <button
                       type="button"
@@ -134,8 +138,10 @@ export default function HeroSection() {
 
                   {/* Weekday Names */}
                   <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">
-                    {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((day) => (
-                      <div key={day} className="py-1">{day}</div>
+                    {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map((day) => (
+                      <div key={day} className="py-1">
+                        {day}
+                      </div>
                     ))}
                   </div>
 
@@ -149,16 +155,19 @@ export default function HeroSection() {
                     {/* Days */}
                     {days.map((day) => {
                       const date = new Date(year, month, day);
-                      const isSelected = selectedDate && 
-                        date.getDate() === selectedDate.getDate() && 
-                        date.getMonth() === selectedDate.getMonth() && 
+                      const isSelected =
+                        selectedDate &&
+                        date.getDate() === selectedDate.getDate() &&
+                        date.getMonth() === selectedDate.getMonth() &&
                         date.getFullYear() === selectedDate.getFullYear();
-                      
+
                       const isToday = (() => {
                         const today = new Date();
-                        return date.getDate() === today.getDate() && 
-                          date.getMonth() === today.getMonth() && 
-                          date.getFullYear() === today.getFullYear();
+                        return (
+                          date.getDate() === today.getDate() &&
+                          date.getMonth() === today.getMonth() &&
+                          date.getFullYear() === today.getFullYear()
+                        );
                       })();
 
                       return (
@@ -167,11 +176,11 @@ export default function HeroSection() {
                           type="button"
                           onClick={() => handleSelectDate(date)}
                           className={`aspect-square rounded-lg flex items-center justify-center text-xs font-medium transition-all cursor-pointer ${
-                            isSelected 
-                              ? "bg-[#e21a47] text-white font-bold" 
+                            isSelected
+                              ? 'bg-[#e21a47] text-white font-bold'
                               : isToday
-                                ? "bg-zinc-800/80 text-[#e21a47] font-semibold border border-[#e21a47]/30" 
-                                : "text-zinc-300 hover:bg-zinc-800 hover:text-white"
+                                ? 'bg-zinc-800/80 text-[#e21a47] font-semibold border border-[#e21a47]/30'
+                                : 'text-zinc-300 hover:bg-zinc-800 hover:text-white'
                           }`}
                         >
                           {day}
@@ -195,7 +204,9 @@ export default function HeroSection() {
         <div className="mt-12 flex flex-col sm:flex-row sm:items-center gap-4 text-xs font-semibold tracking-wider text-zinc-500">
           <span className="uppercase text-[10px] tracking-widest text-zinc-600">Trusted By</span>
           <div className="flex flex-wrap items-center gap-x-8 gap-y-2 text-zinc-400 font-medium text-sm">
-            <span className="hover:text-zinc-300 transition-colors cursor-default">EliteEvents</span>
+            <span className="hover:text-zinc-300 transition-colors cursor-default">
+              EliteEvents
+            </span>
             <span className="hover:text-zinc-300 transition-colors cursor-default">NexusCorp</span>
             <span className="hover:text-zinc-300 transition-colors cursor-default">VibeLux</span>
           </div>
