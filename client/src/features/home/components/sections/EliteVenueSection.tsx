@@ -3,12 +3,121 @@ import travancoreImg from "@/features/home/assets/elite-travancore.png";
 import emeraldImg from "@/features/home/assets/hero-venue-2.png";
 import mistImg from "@/features/home/assets/hero-venue-4.png";
 import gourmetImg from "@/features/home/assets/elite-gourmet.png";
+import { useAsyncFetch } from "@/shared/hooks/useAsyncFetch";
+import { useEffect } from "react";
+import { getEliteVenues } from "../../services/home.services";
+import type { Venue } from "../../../venues/types/venues.types";
 
 export default function EliteVenuesSection() {
+  const { data, loading, error, execute } = useAsyncFetch<Venue[]>();
+
+  useEffect(() => {
+    execute(getEliteVenues);
+  }, [execute]);
+
+  // Fallback / default data
+  const defaultLargeVenue = {
+    name: "The Travancore Heritage Palace",
+    image: travancoreImg,
+    rating: "4.9 (120 reviews)",
+    capacity: 800,
+    tag: "Most Booked"
+  };
+
+  const defaultTopVenue = {
+    name: "Emerald Water-Resort",
+    image: emeraldImg,
+    location: "Kumarakom, Kerala",
+    price: "₹1,20,000 / Day"
+  };
+
+  const defaultBottomVenue = {
+    name: "Mist-Valley Highlands",
+    image: mistImg,
+    location: "Munnar, Kerala",
+    price: "₹85,000 / Day"
+  };
+
+  const largeVenue = data && data[0] ? {
+    name: data[0].name,
+    image: data[0].images?.[0] || travancoreImg,
+    rating: "4.9 (120 reviews)", // Default rating since rating is not in DB schema
+    capacity: data[0].capacity,
+    tag: "Most Booked"
+  } : defaultLargeVenue;
+
+  const topVenue = data && data[1] ? {
+    name: data[1].name,
+    image: data[1].images?.[0] || emeraldImg,
+    location: data[1].address ? `${data[1].address.city}, ${data[1].address.state}` : "Kumarakom, Kerala",
+    price: data[1].pricing ? `₹${data[1].pricing.amount.toLocaleString('en-IN')} / ${data[1].pricing.unit === 'day' ? 'Day' : 'Hour'}` : "₹1,20,000 / Day"
+  } : defaultTopVenue;
+
+  const bottomVenue = data && data[2] ? {
+    name: data[2].name,
+    image: data[2].images?.[0] || mistImg,
+    location: data[2].address ? `${data[2].address.city}, ${data[2].address.state}` : "Munnar, Kerala",
+    price: data[2].pricing ? `₹${data[2].pricing.amount.toLocaleString('en-IN')} / ${data[2].pricing.unit === 'day' ? 'Day' : 'Hour'}` : "₹85,000 / Day"
+  } : defaultBottomVenue;
+
+  if (loading) {
+    return (
+      <section className="bg-transparent text-foreground py-12">
+        <div className="max-w-6xl mx-auto px-6">
+          {/* Centered Header */}
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold tracking-tight">
+              Elite Venues in Kerala
+            </h2>
+            <div className="w-12 h-1 bg-[#e21a47] mx-auto mt-3 rounded-full" />
+          </div>
+
+          {/* Asymmetric Grid Skeleton */}
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+            {/* Left Large Card Skeleton */}
+            <div className="lg:col-span-3 rounded-[28px] overflow-hidden aspect-[4/3] lg:h-[500px] bg-zinc-900/40 dark:bg-zinc-900/60 border border-border dark:border-zinc-800/40 animate-pulse flex flex-col justify-end p-8">
+              <div className="h-4 bg-zinc-700/60 rounded w-20 mb-3" />
+              <div className="h-8 bg-zinc-700/60 rounded w-3/4 mb-4" />
+              <div className="flex gap-4">
+                <div className="h-4 bg-zinc-700/60 rounded w-28" />
+                <div className="h-4 bg-zinc-700/60 rounded w-28" />
+              </div>
+            </div>
+
+            {/* Right Column Stack Skeleton */}
+            <div className="lg:col-span-2 flex flex-col gap-6 lg:h-[500px]">
+              <div className="flex-1 flex gap-4 p-4 rounded-[24px] bg-zinc-900/40 dark:bg-zinc-900/60 border border-border dark:border-zinc-800/40 items-center animate-pulse min-h-[180px]">
+                <div className="w-1/3 aspect-[3/4] h-full rounded-2xl bg-zinc-700/60" />
+                <div className="flex-1 space-y-3">
+                  <div className="h-5 bg-zinc-700/60 rounded w-3/4" />
+                  <div className="h-4 bg-zinc-700/60 rounded w-1/2" />
+                  <div className="h-5 bg-zinc-700/60 rounded w-1/3 pt-2" />
+                </div>
+              </div>
+              <div className="flex-1 flex gap-4 p-4 rounded-[24px] bg-zinc-900/40 dark:bg-zinc-900/60 border border-border dark:border-zinc-800/40 items-center animate-pulse min-h-[180px]">
+                <div className="w-1/3 aspect-[3/4] h-full rounded-2xl bg-zinc-700/60" />
+                <div className="flex-1 space-y-3">
+                  <div className="h-5 bg-zinc-700/60 rounded w-3/4" />
+                  <div className="h-4 bg-zinc-700/60 rounded w-1/2" />
+                  <div className="h-5 bg-zinc-700/60 rounded w-1/3 pt-2" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Log error if any, but continue displaying the fallback UI
+  if (error) {
+    console.error("Failed to load elite venues:", error);
+  }
+
   return (
     <section className="bg-transparent text-foreground py-12">
       <div className="max-w-6xl mx-auto px-6">
-        
+
         {/* Centered Header with red line */}
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold tracking-tight">
@@ -19,14 +128,14 @@ export default function EliteVenuesSection() {
 
         {/* Asymmetric Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-          
+
           {/* Left Large Card (3/5 width) */}
           <div className="lg:col-span-3 relative rounded-[28px] overflow-hidden aspect-[4/3] lg:h-[500px] bg-zinc-950 group cursor-pointer shadow-xl border border-border dark:border-zinc-800/40 hover:scale-[1.01] transition-all duration-300">
             {/* Image */}
-            <img 
-              src={travancoreImg} 
-              alt="The Travancore Heritage Palace" 
-              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+            <img
+              src={largeVenue.image}
+              alt={largeVenue.name}
+              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
             />
 
             {/* Dark overlay at bottom */}
@@ -35,21 +144,21 @@ export default function EliteVenuesSection() {
             {/* Content overlayed at bottom */}
             <div className="absolute bottom-0 inset-x-0 p-8 flex flex-col justify-end">
               <span className="bg-[#e21a47] text-white text-[10px] font-bold tracking-wider px-2.5 py-1 rounded w-fit uppercase mb-3">
-                Most Booked
+                {largeVenue.tag}
               </span>
               <h3 className="text-2xl md:text-3xl font-bold text-white group-hover:text-zinc-200 transition-colors">
-                The Travancore Heritage Palace
+                {largeVenue.name}
               </h3>
-              
+
               <div className="flex flex-wrap items-center gap-4 mt-3 text-xs md:text-sm text-zinc-300 font-medium">
                 <div className="flex items-center gap-1">
                   <Star className="w-4 h-4 text-[#e21a47] fill-[#e21a47]" />
-                  <span>4.9 (120 reviews)</span>
+                  <span>{largeVenue.rating}</span>
                 </div>
                 <span className="text-zinc-600">•</span>
                 <div className="flex items-center gap-1">
                   <Users className="w-4 h-4 text-zinc-400" />
-                  <span>Up to 800 Guests</span>
+                  <span>Up to {largeVenue.capacity} Guests</span>
                 </div>
               </div>
             </div>
@@ -57,28 +166,28 @@ export default function EliteVenuesSection() {
 
           {/* Right Column Stack (2/5 width) */}
           <div className="lg:col-span-2 flex flex-col gap-6 lg:h-[500px]">
-            
+
             {/* Top smaller card */}
             <div className="flex-1 flex gap-4 p-4 rounded-[24px] bg-card border border-border dark:border-zinc-800/40 hover:border-zinc-700/60 transition-all duration-300 items-center group cursor-pointer min-h-[180px]">
               {/* Left Image */}
               <div className="w-1/3 aspect-[3/4] h-full rounded-2xl bg-zinc-950 relative overflow-hidden flex-shrink-0">
-                <img 
-                  src={emeraldImg} 
-                  alt="Emerald Water-Resort" 
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                <img
+                  src={topVenue.image}
+                  alt={topVenue.name}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
               </div>
-              
+
               {/* Right Content */}
               <div className="flex-1 pr-2">
                 <h4 className="text-lg font-bold text-foreground group-hover:text-[#e21a47] transition-colors leading-tight">
-                  Emerald Water-Resort
+                  {topVenue.name}
                 </h4>
                 <p className="text-xs text-muted-foreground dark:text-zinc-400 mt-1">
-                  Kumarakom, Kerala
+                  {topVenue.location}
                 </p>
                 <p className="text-sm font-bold text-[#e21a47] mt-3">
-                  ₹1,20,000 / Day
+                  {topVenue.price}
                 </p>
               </div>
             </div>
@@ -87,23 +196,23 @@ export default function EliteVenuesSection() {
             <div className="flex-1 flex gap-4 p-4 rounded-[24px] bg-card border border-border dark:border-zinc-800/40 hover:border-zinc-700/60 transition-all duration-300 items-center group cursor-pointer min-h-[180px]">
               {/* Left Image */}
               <div className="w-1/3 aspect-[3/4] h-full rounded-2xl bg-zinc-950 relative overflow-hidden flex-shrink-0">
-                <img 
-                  src={mistImg} 
-                  alt="Mist-Valley Highlands" 
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                <img
+                  src={bottomVenue.image}
+                  alt={bottomVenue.name}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
               </div>
-              
+
               {/* Right Content */}
               <div className="flex-1 pr-2">
                 <h4 className="text-lg font-bold text-foreground group-hover:text-[#e21a47] transition-colors leading-tight">
-                  Mist-Valley Highlands
+                  {bottomVenue.name}
                 </h4>
                 <p className="text-xs text-muted-foreground dark:text-zinc-400 mt-1">
-                  Munnar, Kerala
+                  {bottomVenue.location}
                 </p>
                 <p className="text-sm font-bold text-[#e21a47] mt-3">
-                  ₹85,000 / Day
+                  {bottomVenue.price}
                 </p>
               </div>
             </div>
@@ -113,7 +222,7 @@ export default function EliteVenuesSection() {
 
         {/* 3-Column Bottom Promo Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-          
+
           {/* Card 1: Elite Membership */}
           <div className="bg-card border border-border dark:border-zinc-850/60 rounded-[24px] p-8 flex flex-col justify-between min-h-[260px] group hover:border-zinc-800 transition-all duration-300">
             <div className="flex justify-between items-start">
@@ -124,7 +233,7 @@ export default function EliteVenuesSection() {
                 Concierge Included
               </span>
             </div>
-            
+
             <div className="mt-8">
               <h4 className="text-lg font-bold text-foreground">
                 Elite Membership
@@ -145,7 +254,7 @@ export default function EliteVenuesSection() {
                 Get a dedicated event coordinator for your Kochi waterfront reservation and services.
               </p>
             </div>
-            
+
             <button className="w-full mt-6 py-3 bg-white hover:bg-zinc-100 transition-colors text-[#e21a47] font-semibold rounded-xl text-xs text-center cursor-pointer">
               Download Brochure
             </button>
@@ -153,14 +262,14 @@ export default function EliteVenuesSection() {
 
           {/* Card 3: Gourmet Dining Promo */}
           <div className="bg-zinc-950 border border-border dark:border-zinc-800/40 rounded-[24px] relative overflow-hidden flex items-center justify-center min-h-[260px] group shadow-xl">
-            <img 
-              src={gourmetImg} 
-              alt="Gourmet Dining Experience" 
-              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+            <img
+              src={gourmetImg}
+              alt="Gourmet Dining Experience"
+              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
             />
             {/* Soft overlay gradient */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
-            
+
             <div className="absolute bottom-6 left-6 right-6">
               <span className="text-[9px] font-bold text-[#e21a47] bg-white/90 px-2 py-0.5 rounded uppercase tracking-wider">
                 Elite Catering
