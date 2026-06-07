@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 
 export function useAsyncFetch<T>() {
     const [data, setData] = useState<T | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const execute = async (apiCall: () => Promise<T>) => {
+    const execute = useCallback(async (apiCall: () => Promise<T>) => {
         try {
             setLoading(true);
             setError(null);
@@ -18,12 +18,12 @@ export function useAsyncFetch<T>() {
             const message = err instanceof Error ? err.message : 'Something went wrong!';
             setError(message);
 
-            console.error('Async fetch error:', error);
-            throw error
+            console.error('Async fetch error:', message);
+            throw err;
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
-    }
+    }, []);
 
     return {
         data,
