@@ -1,6 +1,7 @@
 import { AppError } from "@/utils/AppError";
 import { NextFunction, Response, Request } from "express";
 import logger from "@/libs/logger";
+import { ZodError } from "zod";
 
 const errorHandler = (
   err: any,
@@ -15,6 +16,19 @@ const errorHandler = (
     path: req.path,
     method: req.method,
   });
+
+  if (err instanceof ZodError) {
+    const formattedErrors = err.issues.map((e) => ({
+      field: e.path.join("."),
+      message: e.message,
+    }));
+
+    return res.status(400).json({
+      success: false,
+      message: "Validation Error",
+      errors: formattedErrors,
+    });
+  }
 
   if (err instanceof AppError) {
     return res.status(err.statusCode).json({
