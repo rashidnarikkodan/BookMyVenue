@@ -1,17 +1,13 @@
-import { apiClient } from '@/services/apiClient';
-import type { Venue } from '../../venues/types/venues.types';
+import { apiClient } from "@/services/apiClient";
+import type { Venue } from "@/features/venues/types/venues.types";
+import type { Category } from "@/features/categories/types";
 
-export const getEliteVenues = async (): Promise<Venue[]> => {
-  const res = await apiClient.get('/elite-venues');
-  return res.data;
-};
+export interface HomeDataResponse {
+  venues: Venue[];
+  categories: Category[];
+}
 
-export const getCategories = async () => {
-  const res = await apiClient.get('/categories');
-  return res.data;
-};
-
-export const getCities = async () => {
-  const res = await apiClient.get('/cities');
-  return res.data;
+export const getHomeData = async (): Promise<HomeDataResponse> => {
+  const res = await apiClient.get('/users/home');
+  return res.data.data;
 };

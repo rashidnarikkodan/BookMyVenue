@@ -1,11 +1,9 @@
-import repo from "@/repositories/home.repository";
-import { VenueCardDto } from "@/dto/venue/venue-card.dto";
+import repo, { HomeDataDto } from "@/repositories/home.repository";
 
-
-const getEliteVenues = async(): Promise<VenueCardDto[]>   =>  {
-    return await repo.getEliteVenues();
-}
+const getHomeData = async (): Promise<HomeDataDto> => {
+  return await repo.getHomeData();
+};
 
 export default {
-    getEliteVenues
-}
+  getHomeData,
+};
