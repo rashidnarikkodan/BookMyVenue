@@ -27,7 +27,7 @@ const AdminNavbar = () => {
         </div>
 
         {/* Center */}
-        <div className="hidden w-full max-w-md lg:block">
+        {/* <div className="hidden w-full max-w-md lg:block">
           <div className="relative">
             <Search size={18} className="text-muted absolute top-1/2 left-3 -translate-y-1/2" />
 
@@ -50,7 +50,7 @@ const AdminNavbar = () => {
               "
             />
           </div>
-        </div>
+        </div> */}
 
         {/* Right */}
         <div className="flex items-center gap-3">

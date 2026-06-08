@@ -3,12 +3,7 @@ import { NextFunction, Response, Request } from "express";
 import logger from "@/libs/logger";
 import { ZodError } from "zod";
 
-const errorHandler = (
-  err: any,
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
   // 🔥 LOG REAL ERROR (THIS IS WHAT YOU ARE MISSING)
   logger.error({
     message: err.message,
@@ -39,7 +34,7 @@ const errorHandler = (
 
   return res.status(500).json({
     success: false,
-    message: "Internal Server Error",
+    message: 'Internal Server Error',
   });
 };
 
