@@ -15,3 +15,11 @@ export const uploadToCloudinary = async (filePath: string, folder = 'bmv') => {
     throw new Error('Cloudinary upload failed');
   }
 };
+export const deleteFromCloudinary = async (publicId:string|undefined|null) => {
+  try {
+    if(!publicId)return
+    return await cloudinary.uploader.destroy(publicId)
+  } catch (err) {
+    throw new Error('Cloudinary upload failed');
+  }
+};
