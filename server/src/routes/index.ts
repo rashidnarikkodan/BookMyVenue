@@ -5,10 +5,11 @@ import ownerRoutes from './owner.routes';
 import venueRoutes from './venue.routes';
 import bookingRoutes from './booking.routes';
 import adminRoutes from './admin.routes';
+import homeRoutes from './home.routes';
 
 const router = Router();
 
-// Feature-based routing
+router.use('/', homeRoutes);
 router.use('/auth', authRoutes);
 router.use('/users', userRoutes);
 router.use('/owners', ownerRoutes);

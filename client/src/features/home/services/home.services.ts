@@ -2,7 +2,7 @@ import { apiClient } from '@/services/apiClient';
 import type { Venue } from '../../venues/types/venues.types';
 
 export const getEliteVenues = async (): Promise<Venue[]> => {
-  const res = await apiClient.get('/venues/elite');
+  const res = await apiClient.get('/elite-venues');
   return res.data;
 };
 

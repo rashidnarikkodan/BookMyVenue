@@ -27,8 +27,11 @@ export interface IVenue {
   verifiedAt: Date | null;
   rejectionReason: string | null;
   isActive: boolean;
+  isFeatured: boolean;
+  isElite: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
+
 
 export type VenueDocument = HydratedDocument<IVenue>;

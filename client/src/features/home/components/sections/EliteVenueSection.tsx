@@ -13,7 +13,11 @@ export default function EliteVenuesSection() {
 
   useEffect(() => {
     execute(getEliteVenues);
-  }, [execute]);
+  }, []);
+
+  useEffect(() => {
+  console.log('Elite venues:', data);
+}, [data]);
 
   // Fallback / default data
   const defaultLargeVenue = {
