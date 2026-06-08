@@ -85,7 +85,7 @@ const Signup = () => {
       const { data } = await axios.post(AUTH_ROUTES.GOOGLE_AUTH, {
         credential: credentialResponse.credential,
       });
-      // Google users are already verified
+
       console.log('Google auth success', data);
       setAuth(data.data.token, data.data.refreshToken, data.data.user);
       navigate(getRoleRedirect(data.data.user.role));

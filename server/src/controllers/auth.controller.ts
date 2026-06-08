@@ -1,39 +1,38 @@
 import { Request, Response, NextFunction } from 'express';
-import { signupSchema, verifyOtpSchema, resendOtpSchema, signinSchema } from '../utils/validations';
 import success from '../utils/response';
 import { AppError } from '../utils/AppError';
 import { MESSAGES } from '@/constants/messages';
 import { HTTP_STATUS } from '@/constants/http';
-import { authService } from '../services/auth.service';
-import { handleControllerError } from '@/utils/handleControllerError';
+import { authService, refreshTokenService } from '../services/auth.service';
+
 
 export const signup = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const validatedData = signupSchema.parse(req.body);
+    const validatedData = req.body;
     const result = await authService.signup(validatedData);
     success(res, HTTP_STATUS.CREATED, MESSAGES.USER_CREATED, result);
   } catch (error: unknown) {
-    handleControllerError(error, next);
+    next(error);
   }
 };
 
 export const verifyOtp = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { registrationToken, otp } = verifyOtpSchema.parse(req.body);
+    const { registrationToken, otp } = req.body;
     const result = await authService.verifyOtp(registrationToken, otp);
     success(res, HTTP_STATUS.OK, MESSAGES.USER_VERIFIED, result);
   } catch (error: unknown) {
-    handleControllerError(error, next);
+    next(error);
   }
 };
 
 export const resendOtp = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { registrationToken } = resendOtpSchema.parse(req.body);
+    const { registrationToken } = req.body;
     await authService.resendOtp(registrationToken);
     success(res, HTTP_STATUS.OK, MESSAGES.OTP_RESENT, null);
   } catch (error: unknown) {
-    handleControllerError(error, next);
+    next(error);
   }
 };
 
@@ -53,10 +52,52 @@ export const googleAuth = async (req: Request, res: Response, next: NextFunction
 
 export const signin = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const validatedData = signinSchema.parse(req.body);
+    const validatedData = req.body;
+
     const result = await authService.signin(validatedData);
+
+    res.cookie("refreshToken", result.refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    res.cookie("accessToken", result.accessToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
+      maxAge: 1 * 60 * 1000, // 15 minutes
+    });
+
     success(res, HTTP_STATUS.OK, 'Sign In Successful', result);
   } catch (error: unknown) {
-    handleControllerError(error, next);
+    next(error);
   }
 };
+
+
+export const refreshToken = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    try {
+      const refreshToken = req.cookies.refreshToken;
+      if (!refreshToken) throw new AppError("Unauthorized access", HTTP_STATUS.UNAUTHORIZED);
+
+      const result = await refreshTokenService(refreshToken);
+
+      res.cookie("accessToken", result.accessToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "lax",
+        maxAge: 15 * 60 * 1000, // 15 minutes
+      });
+
+      success(res, HTTP_STATUS.OK, 'Sign In Successful', result);
+
+    } catch (error) {
+      next(error);
+    }
+  } catch (error) {
+    next(error)
+  }
+}

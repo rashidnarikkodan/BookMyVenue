@@ -17,6 +17,14 @@ const envSchema = z.object({
 
   JWT_REFRESH_SECRET: z.string().min(10),
 
+  ACCESS_TOKEN_EXPIRES_IN: z
+    .string()
+    .regex(/^\d+[smhd]$/, "Invalid token expiry format"),
+
+  REFRESH_TOKEN_EXPIRES_IN: z
+    .string()
+    .regex(/^\d+[smhd]$/, "Invalid token expiry format"),
+
   CORS_ORIGIN: z.string().default('*'),
 
   GOOGLE_CLIENT_ID: z.string().min(1),
@@ -44,6 +52,7 @@ const envSchema = z.object({
   RESEND_COOLDOWN_SECONDS: z.coerce.number().default(60),
   MAX_RESEND_COUNT: z.coerce.number().default(3),
   MAX_VERIFY_ATTEMPTS: z.coerce.number().default(5),
+
 });
 
 const env = envSchema.parse(process.env);

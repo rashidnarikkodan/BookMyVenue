@@ -1,6 +1,5 @@
 import { Redis } from '@upstash/redis';
 import env from '../configs/env.config';
-import { IRedisService } from './interfaces/redis.service.interface';
 import logger from '@/libs/logger';
 
 const client = new Redis({
@@ -10,7 +9,7 @@ const client = new Redis({
 
 logger.info('[Redis] Redis client initialized');
 
-export const redisService: IRedisService = {
+export const redisService = {
   async get(key: string): Promise<string | null> {
     const val = await client.get<string | number>(key);
     return val !== null && val !== undefined ? String(val) : null;
