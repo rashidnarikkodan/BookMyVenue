@@ -1,6 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 
-import { mainRoutes } from './mian.routes';
+import { mainRoutes } from './main.routes';
 import { ownerRoutes } from './owner.routes';
 import { adminRoutes } from './admin.routes';
 import { authRoutes } from './auth.routes';
