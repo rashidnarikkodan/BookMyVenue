@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, Eye, EyeOff } from 'lucide-react';
-import axios from 'axios';
 import { GoogleLogin } from '@react-oauth/google';
-import { AUTH_ROUTES } from '../../constants/apiRoutes';
+import { signinApi, googleAuthApi } from './services/auth.api';
 import { useAppStore } from '../../store/app.store';
 
 const getRoleRedirect = (role: string) => {
@@ -36,17 +35,17 @@ const Signin = () => {
     setError(null);
 
     try {
-      const { data } = await axios.post(AUTH_ROUTES.SIGNIN, {
+      const { data } = await signinApi({
         email: formData.email,
         password: formData.password,
       });
       
-      setAuth(data.data.token, data.data.refreshToken, data.data.user);
+      setAuth(data.data.accessToken, data.data.refreshToken, data.data.user);
       navigate(getRoleRedirect(data.data.user.role));
-    } catch (err: unknown) {
+    } catch (err: any) {
       let msg = 'Something went wrong';
-      if (axios.isAxiosError(err)) {
-        msg = err.response?.data?.message || msg;
+      if (err.response?.data?.message) {
+        msg = err.response.data.message;
       } else if (err instanceof Error) {
         msg = err.message;
       }
@@ -61,15 +60,13 @@ const Signin = () => {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await axios.post(AUTH_ROUTES.GOOGLE_AUTH, {
-        credential: credentialResponse.credential,
-      });
-      setAuth(data.data.token, data.data.refreshToken, data.data.user);
+      const { data } = await googleAuthApi(credentialResponse.credential);
+      setAuth(data.data.accessToken, data.data.refreshToken, data.data.user);
       navigate(getRoleRedirect(data.data.user.role));
-    } catch (err: unknown) {
+    } catch (err: any) {
       let msg = 'Google Auth Failed';
-      if (axios.isAxiosError(err)) {
-        msg = err.response?.data?.message || msg;
+      if (err.response?.data?.message) {
+        msg = err.response.data.message;
       } else if (err instanceof Error) {
         msg = err.message;
       }

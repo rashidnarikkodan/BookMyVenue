@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, Eye, EyeOff } from 'lucide-react';
-import axios from 'axios';
 import { GoogleLogin } from '@react-oauth/google';
-import { AUTH_ROUTES } from '../../constants/apiRoutes';
+import { signupApi, googleAuthApi } from './services/auth.api';
 import { useAuthStore } from './store/auth.store';
 import { useAppStore } from '../../store/app.store';
 import OtpVerification from './OtpVerification';
@@ -55,7 +54,7 @@ const Signup = () => {
     setError(null);
 
     try {
-      const { data } = await axios.post(AUTH_ROUTES.SIGNUP, {
+      const { data } = await signupApi({
         fullName: formData.fullName,
         email: formData.email,
         phoneNumber: formData.phoneNumber,
@@ -64,10 +63,10 @@ const Signup = () => {
       });
 
       setRegistrationData(data.data.email, data.data.registrationToken);
-    } catch (err: unknown) {
+    } catch (err: any) {
       let msg = 'Something went wrong';
-      if (axios.isAxiosError(err)) {
-        msg = err.response?.data?.message || msg;
+      if (err.response?.data?.message) {
+        msg = err.response.data.message;
       } else if (err instanceof Error) {
         msg = err.message;
       }
@@ -82,9 +81,7 @@ const Signup = () => {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await axios.post(AUTH_ROUTES.GOOGLE_AUTH, {
-        credential: credentialResponse.credential,
-      });
+      const { data } = await googleAuthApi(credentialResponse.credential);
 
       console.log('Google auth success', data);
       setAuth(data.data.token, data.data.refreshToken, data.data.user);

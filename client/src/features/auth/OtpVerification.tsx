@@ -2,8 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, RefreshCw, ShieldCheck, Mail } from 'lucide-react';
-import axios from 'axios';
-import { AUTH_ROUTES } from '../../constants/apiRoutes';
+import { verifyOtpApi, resendOtpApi } from './services/auth.api';
 import { useAuthStore } from './store/auth.store';
 
 interface OtpVerificationProps {
@@ -86,16 +85,13 @@ const OtpVerification: React.FC<OtpVerificationProps> = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await axios.post(AUTH_ROUTES.VERIFY_OTP, {
-        registrationToken,
-        otp: otpString,
-      });
+      const res = await verifyOtpApi(registrationToken, otpString);
       toast.success(res?.data?.message || 'User verified successfully!');
       navigate('/signin');
-    } catch (err: unknown) {
+    } catch (err: any) {
       let msg = 'Verification failed. Please try again.';
-      if (axios.isAxiosError(err)) {
-        msg = err.response?.data?.message || msg;
+      if (err.response?.data?.message) {
+        msg = err.response.data.message;
       } else if (err instanceof Error) {
         msg = err.message;
       }
@@ -121,16 +117,16 @@ const OtpVerification: React.FC<OtpVerificationProps> = () => {
     setResending(true);
     setError(null);
     try {
-      await axios.post(AUTH_ROUTES.RESEND_OTP, { registrationToken });
+      await resendOtpApi(registrationToken);
       incrementResendCount();
       startResendTimer();
       setOtp(Array(OTP_LENGTH).fill(''));
       inputsRef.current[0]?.focus();
       toast.success('A new OTP has been sent to your email.');
-    } catch (err: unknown) {
+    } catch (err: any) {
       let msg = 'Could not resend OTP. Please try again.';
-      if (axios.isAxiosError(err)) {
-        msg = err.response?.data?.message || msg;
+      if (err.response?.data?.message) {
+        msg = err.response.data.message;
       } else if (err instanceof Error) {
         msg = err.message;
       }
