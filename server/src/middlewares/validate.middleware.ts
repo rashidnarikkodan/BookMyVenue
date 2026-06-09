@@ -7,9 +7,8 @@ export const validateInputs = (schema: ZodSchema) => {
         
         try {
             const validatedData = schema.parse(req.body);
-            console.log(validateInputs,' ----')
             req.body = validatedData;
-            logger.info(`Inputs: ${req.body}`);
+            logger.info(`Inputs: ${JSON.stringify(req.body)}`);
 
             next();
         } catch (error) {

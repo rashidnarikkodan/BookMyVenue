@@ -8,7 +8,7 @@ const refreshScreteKey = env.JWT_REFRESH_SECRET as string;
 export const generateAccessToken = (user: IUser) => {
     const accessToken = jwt.sign(
         {
-            userId: user._id,
+            id: user._id,
             role: user.role,
         },
         accessScreteKey,
@@ -21,7 +21,8 @@ export const generateRefreshToken = (user: IUser) => {
 
     const refreshToken = jwt.sign(
         {
-            userId: user._id,
+            id: user._id,
+            role: user.role,
         },
         refreshScreteKey,
         { expiresIn: '30d' },

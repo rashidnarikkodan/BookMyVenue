@@ -16,27 +16,6 @@ type RegistrationTokenPayload = {
   purpose: 'email-verification';
 };
 
-
-const verifyRegistrationToken = (registrationToken: string): RegistrationTokenPayload => {
-  try {
-    const payload = jwt.verify(
-      registrationToken,
-      env.JWT_REGISTRATION_SECRET as string,
-    ) as RegistrationTokenPayload;
-
-    if (payload.purpose !== 'email-verification') {
-      throw new Error();
-    }
-
-    return payload;
-  } catch {
-    throw new AppError(
-      MESSAGES.INVALID_TOKEN,
-      HTTP_STATUS.UNAUTHORIZED,
-    );
-  }
-};
-
 const signup = async (
   userData: Partial<IUser>,
 ): Promise<{ email: string; registrationToken: string }> => {
@@ -52,10 +31,10 @@ const signup = async (
   }
 
   if (existingUser && !existingUser.isVerified) {
-    await userRepository.deleteById(existingUser._id!.toString());
+    await userRepository.deleteById(existingUser._id.toString());
   }
 
-  const hashedPassword = await argon2.hash(userData.password!);
+  const hashedPassword = await argon2.hash(userData.password as string);
 
   await userRepository.create({
     ...userData,
@@ -81,6 +60,27 @@ const signup = async (
   };
 };
 
+const verifyRegistrationToken = (registrationToken: string): RegistrationTokenPayload => {
+  try {
+    const payload = jwt.verify(
+      registrationToken,
+      env.JWT_REGISTRATION_SECRET as string,
+    ) as RegistrationTokenPayload;
+
+    if (payload.purpose !== 'email-verification') {
+      throw new Error();
+    }
+
+    return payload;
+  } catch {
+    throw new AppError(
+      MESSAGES.INVALID_TOKEN,
+      HTTP_STATUS.UNAUTHORIZED,
+    );
+  }
+};
+
+
 const verifyOtp = async (
   registrationToken: string,
   otp: string,
@@ -99,7 +99,7 @@ const verifyOtp = async (
   }
 
   const updatedUser = await userRepository.update(
-    user._id!.toString(),
+    user._id.toString(),
     {
       isVerified: true,
     },
@@ -195,9 +195,7 @@ const signin = async (data: {
   const REFRESH_TOKEN_TTL = 7 * 24 * 60 * 60;
 
   const key = `refresh_token:${user._id}`;
-  const ttl = Number(env.ACCESS_TOKEN_EXPIRES_IN);
-  await redisService.set(key, refreshToken, ttl);
-  await redisService.expire(key, REFRESH_TOKEN_TTL);
+  await redisService.set(key, refreshToken, REFRESH_TOKEN_TTL);
 
   const userObj = user.toObject();
   delete userObj.password;
@@ -274,6 +272,10 @@ const googleAuth = async (idToken: string,): Promise<{
   const accessToken = generateAccessToken(user);
   const refreshToken = generateRefreshToken(user);
 
+  const REFRESH_TOKEN_TTL = 7 * 24 * 60 * 60;
+  const key = `refresh_token:${user._id}`;
+  await redisService.set(key, refreshToken, REFRESH_TOKEN_TTL);
+
   const userObj = user.toObject();
   delete userObj.password;
 
@@ -300,9 +302,9 @@ export const refreshTokenService = async (refreshToken: string) => {
   const key = `refresh_token:${decoded?.id}`;
   const storedToken = await redisService.get(key);
 
-  // if (!storedToken || storedToken?.refreshToken !== refreshToken) {
-  //   throw new AppError("Refresh token not found or already revoked", HTTP_STATUS.UNAUTHORIZED);
-  // }
+  if (!storedToken || storedToken !== refreshToken) {
+    throw new AppError("Refresh token not found or already revoked", HTTP_STATUS.UNAUTHORIZED);
+  }
 
   const user = await userRepository.findById(decoded.id);
   if (!user) throw new AppError("User not found", HTTP_STATUS.NOT_FOUND);

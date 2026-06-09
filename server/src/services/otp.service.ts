@@ -1,6 +1,5 @@
 import crypto from 'crypto';
 import argon2 from 'argon2';
-import { IOtpService } from './interfaces/otp.service.interface';
 import { redisService } from './redis.service';
 import { emailService } from './email.service';
 import { AppError } from '../utils/AppError';
@@ -10,19 +9,19 @@ import env from '../configs/env.config';
 import logger from '@/libs/logger';
 
 const keys = {
-  otp:         (email: string) => `otp:hash:${email}`,
+  otp: (email: string) => `otp:hash:${email}`,
   verifyCount: (email: string) => `otp:verify_count:${email}`,
   resendCount: (email: string) => `otp:resend_count:${email}`,
-  resendAt:    (email: string) => `otp:resend_at:${email}`,
+  resendAt: (email: string) => `otp:resend_at:${email}`,
 };
 
-export const otpService: IOtpService = {
+export const otpService = {
   async generateAndSendOtp(emailAddr: string): Promise<void> {
     const otp = crypto.randomInt(100000, 999999).toString();
     logger.info(`OTP: ${otp}`);
 
     const hashed = await argon2.hash(otp);
-
+    
     // Store hashed OTP with expiry
     await redisService.set(keys.otp(emailAddr), hashed, env.OTP_EXPIRY_SECONDS);
 

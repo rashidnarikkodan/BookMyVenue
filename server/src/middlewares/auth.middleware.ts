@@ -20,6 +20,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
         const userId = decoded.id;
 
         const user = await userRepository.findById(userId);
+
         if (!user) throw new AppError("User not found", HTTP_STATUS.NOT_FOUND);
 
         if (user.isBlocked) {

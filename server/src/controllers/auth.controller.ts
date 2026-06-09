@@ -67,7 +67,7 @@ export const signin = async (req: Request, res: Response, next: NextFunction): P
       httpOnly: true,
       secure: true,
       sameSite: "lax",
-      maxAge: 1 * 60 * 1000, // 15 minutes
+      maxAge: 15 * 60 * 1000, // 15 minutes
     });
 
     success(res, HTTP_STATUS.OK, 'Sign In Successful', result);
@@ -77,27 +77,22 @@ export const signin = async (req: Request, res: Response, next: NextFunction): P
 };
 
 
-export const refreshToken = async (req: Request, res: Response, next: NextFunction) => {
+export const refreshToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    try {
-      const refreshToken = req.cookies.refreshToken;
-      if (!refreshToken) throw new AppError("Unauthorized access", HTTP_STATUS.UNAUTHORIZED);
+    const refreshToken = req.cookies.refreshToken;
+    if (!refreshToken) throw new AppError("Unauthorized access", HTTP_STATUS.UNAUTHORIZED);
 
-      const result = await refreshTokenService(refreshToken);
+    const result = await refreshTokenService(refreshToken);
 
-      res.cookie("accessToken", result.accessToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "lax",
-        maxAge: 15 * 60 * 1000, // 15 minutes
-      });
+    res.cookie("accessToken", result.accessToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
+      maxAge: 15 * 60 * 1000, // 15 minutes
+    });
 
-      success(res, HTTP_STATUS.OK, 'Sign In Successful', result);
-
-    } catch (error) {
-      next(error);
-    }
-  } catch (error) {
-    next(error)
+    success(res, HTTP_STATUS.OK, 'Token Refreshed Successfully', result);
+  } catch (error: unknown) {
+    next(error);
   }
-}
+};
