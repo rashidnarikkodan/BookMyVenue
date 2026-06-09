@@ -19,8 +19,6 @@
     "esModuleInterop": true,
 
     "forceConsistentCasingInFileNames": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
 
     "noEmit": true
   },
