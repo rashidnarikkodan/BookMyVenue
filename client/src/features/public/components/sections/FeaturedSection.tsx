@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { MapPin, Users, Star, ArrowLeft, ArrowRight, ShieldCheck } from 'lucide-react';
 import type { Venue } from '@/features/venues/types/venues.types';
-import travancoreImg from '@/features/home/assets/elite-travancore.png';
-import emeraldImg from '@/features/home/assets/hero-venue-2.png';
-import mistImg from '@/features/home/assets/hero-venue-4.png';
-import FeaturedSectionSkeleton from './FeaturedSectionSkeleton';
+import travancoreImg from '@/features/public/assets/elite-travancore.png';
+import emeraldImg from '@/features/public/assets/hero-venue-2.png';
+import mistImg from '@/features/public/assets/hero-venue-4.png';
+import FeaturedSectionSkeleton from '../loaders/FeaturedSectionSkeleton';
 
 interface FeaturedSectionProps {
   venues: Venue[];
