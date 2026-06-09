@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { Menu, X, Search, Bell, Heart, User } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { Menu, X, Search, Bell, Heart, User, ChevronDown, LogOut, Calendar, Settings, Building2 } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
 import { ThemeToggle } from '@/shared/components/ui';
 
 // Helper for navigation links
@@ -12,174 +12,406 @@ const navLinks = [
   { name: 'About', href: '/about' },
 ];
 
+const mockNotifications = [
+  { id: 1, text: 'Your booking at Grand Palace has been confirmed!', time: '2 hours ago', read: false },
+  { id: 2, text: 'New venue "Orchid Garden" is now available in your area.', time: '1 day ago', read: true },
+  { id: 3, text: 'Welcome to BookMyVenue! Complete your profile to get started.', time: '3 days ago', read: true },
+];
+
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  
+  const { pathname } = useLocation();
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const notificationRef = useRef<HTMLDivElement>(null);
 
-  const toggleMobile = () => setMobileOpen(!mobileOpen);
+  // Close menus on click outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setProfileOpen(false);
+      }
+      if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
+        setNotificationsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const isActive = (href: string) =>
+    href === '/' ? pathname === '/' : pathname.startsWith(href);
 
   return (
-    <header className="sticky top-0 z-50 bg-surface border-b border-border shadow-sm">
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-        {/* Left: Logo */}
-        <div className="flex items-center space-x-2">
-          <Link to="/" className="flex items-center gap-2">
-            <svg
-              className="w-8 h-8 text-primary"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              aria-hidden="true"
-            >
-              <path d="M12 2L2 7l10 5 10-5-10-5zm0 13L2 9v8l10 5 10-5V9l-10 6z" />
-            </svg>
-            <span className="font-semibold text-lg text-foreground">BookMyVenue</span>
-          </Link>
-        </div>
-
-        {/* Center: Desktop navigation */}
-        <div className="hidden md:flex space-x-4">
-          {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              to={link.href}
-              className="px-3 py-2 rounded-md text-sm font-medium text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-            >
-              {link.name}
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md transition-colors duration-300">
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <nav className="flex items-center justify-between h-16" aria-label="Main navigation">
+          
+          {/* Logo */}
+          <div className="flex items-center gap-2.5">
+            <Link to="/" className="flex items-center gap-2.5 group shrink-0">
+              <div className="grid place-items-center h-9 w-9 rounded-xl bg-gradient-to-tr from-primary to-secondary text-white shadow-md shadow-primary/20 group-hover:scale-105 transition-all duration-300">
+                <Building2 size={18} className="transition-transform duration-300 group-hover:rotate-3" />
+              </div>
+              <span className="text-[17px] font-bold text-foreground tracking-tight group-hover:text-primary transition-colors duration-300">
+                BookMyVenue
+              </span>
             </Link>
-          ))}
-        </div>
+          </div>
 
-        {/* Right: Actions */}
-        <div className="flex items-center space-x-3">
-          {/* Search */}
-          <button
-            type="button"
-            className="p-2 rounded-full text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-            aria-label="Search"
-          >
-            <Search className="w-5 h-5" aria-hidden="true" />
-          </button>
-          {/* Notifications */}
-          <button
-            type="button"
-            className="p-2 rounded-full text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-            aria-label="Notifications"
-          >
-            <Bell className="w-5 h-5" aria-hidden="true" />
-          </button>
-          {/* Favorites */}
-          <button
-            type="button"
-            className="p-2 rounded-full text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-            aria-label="Favorites"
-          >
-            <Heart className="w-5 h-5" aria-hidden="true" />
-          </button>
-          {/* Theme Toggle */}
-          <ThemeToggle />
+          {/* Desktop navigation */}
+          <div className="hidden md:flex items-center gap-1">
+            {navLinks.map((link) => {
+              const active = isActive(link.href);
+              return (
+                <Link
+                  key={link.name}
+                  to={link.href}
+                  className={[
+                    'relative px-4 py-2 rounded-xl text-[13px] font-medium transition-all duration-300',
+                    active
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-foreground/80 hover:bg-muted/30 hover:text-foreground',
+                  ].join(' ')}
+                >
+                  {link.name}
+                </Link>
+              );
+            })}
+          </div>
 
-          {/* Profile dropdown */}
-          <div className="relative">
+          {/* Desktop Right Actions */}
+          <div className="hidden md:flex items-center gap-2.5">
+            
+            {/* Search Toggle */}
             <button
+              onClick={() => setSearchOpen(true)}
               type="button"
-              className="flex items-center space-x-2 p-2 rounded-full text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-              aria-haspopup="true"
-              aria-expanded="false"
+              className="p-2 rounded-xl text-foreground/85 hover:bg-muted/30 hover:text-primary transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer"
+              aria-label="Search"
             >
-              <User className="w-5 h-5" aria-hidden="true" />
-              <span className="hidden md:inline-block text-sm font-medium">John Doe</span>
+              <Search className="w-5 h-5" />
             </button>
-            {/* Dropdown – hidden for now, will be toggled via JS later */}
-            {/* Placeholder for accessibility; actual implementation can use Headless UI or similar */}
+
+            {/* Notifications Bell */}
+            <div className="relative" ref={notificationRef}>
+              <button
+                onClick={() => setNotificationsOpen(!notificationsOpen)}
+                type="button"
+                className="p-2 rounded-xl text-foreground/85 hover:bg-muted/30 hover:text-primary transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer"
+                aria-label="Notifications"
+              >
+                <Bell className="w-5 h-5" />
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary ring-2 ring-background animate-pulse" />
+              </button>
+
+              {notificationsOpen && (
+                <div className="absolute right-0 mt-2 w-80 rounded-xl border border-border bg-surface shadow-lg py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                  <div className="px-4 py-1.5 border-b border-border flex justify-between items-center">
+                    <span className="text-[13px] font-semibold text-foreground">Notifications</span>
+                    <button className="text-[11px] text-primary hover:underline font-medium cursor-pointer">Mark all read</button>
+                  </div>
+                  <div className="max-h-64 overflow-y-auto py-1">
+                    {mockNotifications.map((notif) => (
+                      <div
+                        key={notif.id}
+                        className={[
+                          'px-4 py-2.5 hover:bg-muted/30 transition-colors flex flex-col gap-0.5 border-b border-border/40 last:border-0',
+                          !notif.read ? 'bg-primary/5' : '',
+                        ].join(' ')}
+                      >
+                        <p className="text-[12px] text-foreground font-medium leading-normal">{notif.text}</p>
+                        <span className="text-[10px] text-foreground/50 font-normal">{notif.time}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="px-4 pt-1.5 border-t border-border text-center">
+                    <Link to="/notifications" className="text-[11px] text-primary hover:underline font-semibold" onClick={() => setNotificationsOpen(false)}>
+                      View all notifications
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Favorites Icon */}
+            <Link
+              to="/favorites"
+              className="relative p-2 rounded-xl text-foreground/85 hover:bg-muted/30 hover:text-primary transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary"
+              aria-label="Favorites"
+            >
+              <Heart className="w-5 h-5" />
+              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-white text-[10px] font-bold flex items-center justify-center border border-background">
+                3
+              </span>
+            </Link>
+
+            {/* Theme Toggle */}
+            <ThemeToggle />
+
+            <div className="w-px h-5 bg-border mx-1" aria-hidden="true" />
+
+            {/* Profile Dropdown */}
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setProfileOpen(!profileOpen)}
+                type="button"
+                className="flex items-center gap-2 p-1.5 pr-3 rounded-xl border border-border bg-surface text-foreground hover:bg-muted/30 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer"
+                aria-haspopup="true"
+                aria-expanded={profileOpen}
+              >
+                <div className="h-7.5 w-7.5 rounded-lg bg-gradient-to-tr from-primary to-secondary text-white font-bold flex items-center justify-center text-[12px] shadow-sm">
+                  JD
+                </div>
+                <span className="hidden lg:inline-block text-[13px] font-medium">John Doe</span>
+                <ChevronDown size={14} className={['transition-transform duration-300 text-foreground/50', profileOpen ? 'rotate-180' : ''].join(' ')} />
+              </button>
+
+              {profileOpen && (
+                <div className="absolute right-0 mt-2 w-56 rounded-xl border border-border bg-surface shadow-lg py-1.5 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                  <div className="px-4 py-2 border-b border-border flex flex-col gap-0.5">
+                    <p className="text-[13px] font-semibold text-foreground">John Doe</p>
+                    <p className="text-[11px] text-foreground/60">john.doe@example.com</p>
+                  </div>
+                  <div className="py-1">
+                    <Link
+                      to="/profile"
+                      onClick={() => setProfileOpen(false)}
+                      className="flex items-center gap-2.5 px-4 py-2 text-[12px] text-foreground/80 hover:bg-muted/30 hover:text-primary transition-all duration-150"
+                    >
+                      <User size={14} className="text-foreground/50" />
+                      My Profile
+                    </Link>
+                    <Link
+                      to="/bookings"
+                      onClick={() => setProfileOpen(false)}
+                      className="flex items-center gap-2.5 px-4 py-2 text-[12px] text-foreground/80 hover:bg-muted/30 hover:text-primary transition-all duration-150"
+                    >
+                      <Calendar size={14} className="text-foreground/50" />
+                      My Bookings
+                    </Link>
+                    <Link
+                      to="/favorites"
+                      onClick={() => setProfileOpen(false)}
+                      className="flex items-center gap-2.5 px-4 py-2 text-[12px] text-foreground/80 hover:bg-muted/30 hover:text-primary transition-all duration-150"
+                    >
+                      <Heart size={14} className="text-foreground/50" />
+                      Favorites
+                    </Link>
+                    <Link
+                      to="/settings"
+                      onClick={() => setProfileOpen(false)}
+                      className="flex items-center gap-2.5 px-4 py-2 text-[12px] text-foreground/80 hover:bg-muted/30 hover:text-primary transition-all duration-150"
+                    >
+                      <Settings size={14} className="text-foreground/50" />
+                      Settings
+                    </Link>
+                  </div>
+                  <div className="border-t border-border pt-1 mt-1">
+                    <button
+                      onClick={() => {
+                        setProfileOpen(false);
+                        console.log('Logging out...');
+                      }}
+                      className="flex items-center gap-2.5 w-full text-left px-4 py-2 text-[12px] text-foreground/85 hover:bg-primary/10 hover:text-primary transition-all duration-150 font-medium cursor-pointer"
+                    >
+                      <LogOut size={14} />
+                      Log out
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+          </div>
+
+          {/* Mobile menu button */}
+          <div className="md:hidden flex items-center gap-2">
+            <ThemeToggle />
+
+            <button
+              onClick={() => setMobileOpen(!mobileOpen)}
+              type="button"
+              className="grid place-items-center h-9 w-9 rounded-xl border border-border bg-surface text-foreground hover:bg-muted/40 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary"
+              aria-label="Main menu"
+              aria-controls="mobile-menu"
+              aria-expanded={mobileOpen}
+            >
+              {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
+
+        </nav>
+      </div>
+
+      {/* Header Search Overlay */}
+      {searchOpen && (
+        <div className="absolute inset-0 bg-background z-50 flex items-center px-4 sm:px-6 lg:px-8 border-b border-border animate-in fade-in duration-200">
+          <div className="mx-auto w-full max-w-3xl flex items-center gap-3">
+            <Search className="text-primary w-5 h-5 shrink-0" />
+            <input
+              autoFocus
+              type="text"
+              placeholder="Search for venues, categories, or cities..."
+              className="w-full text-[14px] bg-transparent border-none text-foreground placeholder-foreground/50 focus:outline-none py-2"
+            />
+            <button
+              onClick={() => setSearchOpen(false)}
+              className="p-1.5 rounded-xl hover:bg-muted/50 text-foreground/75 hover:text-foreground transition-all duration-200"
+              aria-label="Close search"
+            >
+              <X size={18} />
+            </button>
           </div>
         </div>
+      )}
 
-        {/* Mobile menu button */}
-        <div className="md:hidden flex items-center">
-          <button
-            type="button"
-            onClick={toggleMobile}
-            className="p-2 rounded-md text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-            aria-label="Main menu"
-            aria-controls="mobile-menu"
-            aria-expanded={mobileOpen}
-          >
-            {mobileOpen ? (
-              <X className="h-6 w-6" aria-hidden="true" />
-            ) : (
-              <Menu className="h-6 w-6" aria-hidden="true" />
-            )}
-          </button>
-        </div>
-      </nav>
-
-      {/* Mobile drawer */}
+      {/* Mobile Drawer Overlay */}
       <div
-        className={`md:hidden fixed inset-y-0 left-0 w-64 bg-surface border-r border-border transform transition-transform duration-300 ease-in-out ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        className={[
+          'fixed inset-0 z-40 bg-black/40 md:hidden backdrop-blur-xs transition-opacity duration-300',
+          mobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none',
+        ].join(' ')}
+        onClick={() => setMobileOpen(false)}
+        aria-hidden="true"
+      />
+
+      {/* Mobile Drawer */}
+      <div
+        className={[
+          'md:hidden fixed inset-y-0 right-0 z-50 w-[290px] bg-surface border-l border-border flex flex-col shadow-2xl transition-transform duration-300 ease-out',
+          mobileOpen ? 'translate-x-0' : 'translate-x-full',
+        ].join(' ')}
         id="mobile-menu"
         role="dialog"
         aria-modal="true"
       >
-        <div className="p-4 flex flex-col h-full">
-          <div className="flex items-center justify-between mb-6">
-            <Link to="/" className="flex items-center gap-2">
-              <svg
-                className="w-8 h-8 text-primary"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path d="M12 2L2 7l10 5 10-5-10-5zm0 13L2 9v8l10 5 10-5V9l-10 6z" />
-              </svg>
-              <span className="font-semibold text-lg text-foreground">BookMyVenue</span>
+        <div className="flex flex-col h-full">
+          
+          {/* Drawer Header */}
+          <div className="flex h-16 items-center justify-between border-b border-border px-5 shrink-0">
+            <Link to="/" className="flex items-center gap-2" onClick={() => setMobileOpen(false)}>
+              <div className="grid place-items-center h-8 w-8 rounded-lg bg-gradient-to-tr from-primary to-secondary text-white shadow-sm">
+                <Building2 size={15} />
+              </div>
+              <span className="text-[15px] font-bold text-foreground tracking-tight">BookMyVenue</span>
             </Link>
             <button
               type="button"
-              onClick={toggleMobile}
-              className="p-2 rounded-md text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              onClick={() => setMobileOpen(false)}
+              className="grid place-items-center h-9 w-9 rounded-xl text-foreground/70 hover:bg-muted/40 hover:text-foreground transition-all duration-300"
               aria-label="Close menu"
             >
-              <X className="h-6 w-6" aria-hidden="true" />
+              <X className="h-5 w-5" />
             </button>
           </div>
-          <nav className="flex-1 space-y-2">
-            {navLinks.map((link) => (
+
+          {/* Drawer Profile Info */}
+          <div className="px-5 py-4 border-b border-border flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-primary to-secondary text-white font-bold flex items-center justify-center text-[14px]">
+              JD
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[13px] font-semibold text-foreground">John Doe</span>
+              <span className="text-[10.5px] text-foreground/60">john.doe@example.com</span>
+            </div>
+          </div>
+
+          {/* Drawer Nav links */}
+          <nav className="flex-1 space-y-1 p-4 overflow-y-auto">
+            {navLinks.map((link) => {
+              const active = isActive(link.href);
+              return (
+                <Link
+                  key={link.name}
+                  to={link.href}
+                  className={[
+                    'flex items-center gap-3 px-4 py-3 rounded-xl text-[14px] font-medium transition-all duration-300',
+                    active
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-foreground/80 hover:bg-muted/30 hover:text-foreground',
+                  ].join(' ')}
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {link.name}
+                </Link>
+              );
+            })}
+          </nav>
+
+          {/* Drawer Quick Actions & Pinned Bottom Section */}
+          <div className="p-4 border-t border-border bg-surface/50 backdrop-blur-sm flex flex-col gap-3 shrink-0">
+            
+            {/* Quick Action Icons Line */}
+            <div className="flex items-center justify-around py-1.5 bg-muted/20 border border-border/50 rounded-xl">
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileOpen(false);
+                  setSearchOpen(true);
+                }}
+                className="p-2 rounded-xl text-foreground/80 hover:text-primary hover:bg-muted/30 transition-all duration-200"
+                aria-label="Search"
+              >
+                <Search className="w-5 h-5" />
+              </button>
               <Link
-                key={link.name}
-                to={link.href}
-                className="block px-3 py-2 rounded-md text-base font-medium text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                to="/notifications"
+                onClick={() => setMobileOpen(false)}
+                className="relative p-2 rounded-xl text-foreground/80 hover:text-primary hover:bg-muted/30 transition-all duration-200"
+                aria-label="Notifications"
+              >
+                <Bell className="w-5 h-5" />
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary ring-2 ring-surface" />
+              </Link>
+              <Link
+                to="/favorites"
+                onClick={() => setMobileOpen(false)}
+                className="relative p-2 rounded-xl text-foreground/80 hover:text-primary hover:bg-muted/30 transition-all duration-200"
+                aria-label="Favorites"
+              >
+                <Heart className="w-5 h-5" />
+                <span className="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-1 rounded-full bg-primary text-white text-[9px] font-bold flex items-center justify-center border border-surface">
+                  3
+                </span>
+              </Link>
+            </div>
+
+            {/* Profile actions shortcut */}
+            <div className="grid grid-cols-2 gap-2 mt-1">
+              <Link
+                to="/profile"
+                className="flex items-center justify-center py-2.5 rounded-xl text-[13px] font-medium border border-border text-foreground/90 hover:bg-muted/30 transition-all duration-300"
                 onClick={() => setMobileOpen(false)}
               >
-                {link.name}
+                Profile
               </Link>
-            ))}
-          </nav>
-          <div className="mt-4 flex items-center space-x-3">
-            {/* Theme Toggle */}
-            <ThemeToggle />
+              <Link
+                to="/bookings"
+                className="flex items-center justify-center py-2.5 rounded-xl text-[13px] font-medium border border-border text-foreground/90 hover:bg-muted/30 transition-all duration-300"
+                onClick={() => setMobileOpen(false)}
+              >
+                Bookings
+              </Link>
+            </div>
 
-            {/* Quick action icons */}
+            {/* Logout CTA */}
             <button
-              type="button"
-              className="p-2 rounded-full text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-              aria-label="Search"
+              onClick={() => {
+                setMobileOpen(false);
+                console.log('Logging out...');
+              }}
+              className="flex items-center justify-center gap-2 w-full py-2.5 mt-1 rounded-xl text-[13px] font-semibold bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all duration-300 cursor-pointer"
             >
-              <Search className="w-5 h-5" aria-hidden="true" />
+              <LogOut size={14} />
+              Log out
             </button>
-            <button
-              type="button"
-              className="p-2 rounded-full text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-              aria-label="Notifications"
-            >
-              <Bell className="w-5 h-5" aria-hidden="true" />
-            </button>
-            <button
-              type="button"
-              className="p-2 rounded-full text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-              aria-label="Favorites"
-            >
-              <Heart className="w-5 h-5" aria-hidden="true" />
-            </button>
+
           </div>
+
         </div>
       </div>
     </header>
