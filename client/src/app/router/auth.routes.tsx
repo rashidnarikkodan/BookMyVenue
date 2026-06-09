@@ -1,9 +1,8 @@
-
 import { Navigate } from 'react-router-dom';
-import AuthLayout from '@/features/auth/AuthLayout';
-import Signin from '@/features/auth/Signin';
-import Signup from '@/features/auth/Signup';
+import Signup from '@/features/auth/pages/Signup';
 import ErrorPage from '@/shared/pages/ErrorPage';
+import Signin from '@/features/auth/pages/Signin';
+import AuthLayout from '../layouts/AuthLayout';
 
 export const authRoutes = {
   path: '/',

@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, RefreshCw, ShieldCheck, Mail } from 'lucide-react';
-import { verifyOtpApi, resendOtpApi } from './services/auth.api';
-import { useAuthStore } from './store/auth.store';
+import { useAuthStore } from '../store/auth.store';
+import { resendOtpApi, verifyOtpApi } from '../services/auth.api';
 
 interface OtpVerificationProps {
   onSuccess: () => void;
@@ -85,7 +85,7 @@ const OtpVerification: React.FC<OtpVerificationProps> = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await verifyOtpApi(registrationToken, otpString);
+      const res = await verifyOtpApi(registrationToken as string, otpString);
       toast.success(res?.data?.message || 'User verified successfully!');
       navigate('/signin');
     } catch (err: any) {
@@ -117,7 +117,7 @@ const OtpVerification: React.FC<OtpVerificationProps> = () => {
     setResending(true);
     setError(null);
     try {
-      await resendOtpApi(registrationToken);
+      await resendOtpApi(registrationToken as string);
       incrementResendCount();
       startResendTimer();
       setOtp(Array(OTP_LENGTH).fill(''));
