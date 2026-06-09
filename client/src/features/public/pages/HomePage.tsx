@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
-import HeroSection from '@/features/home/components/sections/HeroSection';
-import FeaturedSection from '@/features/home/components/sections/FeaturedSection';
-import CategoriesSection from '@/features/home/components/sections/CategoriesSection';
-import EliteVenuesSection from '@/features/home/components/sections/EliteVenueSection';
-import ExploreVenuesSection from '@/features/home/components/sections/ExploreVenuesSection';
-import CTASection from '@/features/home/components/sections/CTASection';
+import HeroSection from '@/features/public/components/sections/HeroSection';
+import FeaturedSection from '@/features/public/components/sections/FeaturedSection';
+import CategoriesSection from '@/features/public/components/sections/CategoriesSection';
+import EliteVenuesSection from '@/features/public/components/sections/EliteVenueSection';
+import ExploreVenuesSection from '@/features/public/components/sections/ExploreVenuesSection';
+import CTASection from '@/features/public/components/sections/CTASection';
 import { useAsyncFetch } from '@/shared/hooks/useAsyncFetch';
 import { getHomeData, type HomeDataResponse } from '../services/home.services';
 

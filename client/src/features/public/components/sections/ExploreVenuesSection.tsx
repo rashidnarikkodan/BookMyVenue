@@ -6,11 +6,11 @@ import 'leaflet/dist/leaflet.css';
 
 import { useUIStore } from '@/store/ui.store';
 import type { Venue } from '@/features/venues/types/venues.types';
-import kochiImg from '@/features/home/assets/hero-venue-3.png';
-import trivandrumImg from '@/features/home/assets/elite-travancore.png';
-import alleppeyImg from '@/features/home/assets/hero-venue-2.png';
-import munnarImg from '@/features/home/assets/hero-venue-4.png';
-import ExploreVenuesSectionSkeleton from './ExploreVenuesSectionSkeleton';
+import kochiImg from '@/features/public/assets/hero-venue-3.png';
+import trivandrumImg from '@/features/public/assets/elite-travancore.png';
+import alleppeyImg from '@/features/public/assets/hero-venue-2.png';
+import munnarImg from '@/features/public/assets/hero-venue-4.png';
+import ExploreVenuesSectionSkeleton from '../loaders/ExploreVenuesSectionSkeleton';
 
 type CityInfo = {
   id: string;
@@ -62,6 +62,7 @@ export default function ExploreVenuesSection({ venues, loading }: ExploreVenuesS
   
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<L.Map | null>(null);
+  const [mapReady, setMapReady] = useState(false);
   const tileLayerRef = useRef<L.TileLayer | null>(null);
   const markersRef = useRef<L.Marker[]>([]);
   const isPanningRef = useRef<boolean>(false);
@@ -141,30 +142,41 @@ export default function ExploreVenuesSection({ venues, loading }: ExploreVenuesS
 
   // 1. Initialize Map
   useEffect(() => {
-    if (!mapRef.current || mapInstance.current) return;
+    if (loading || !mapRef.current || mapInstance.current) return;
 
     // Center on Kochi initially with zoom level 8 (covers Kerala region nicely)
     const initialCoords = districts[0].coords;
-    mapInstance.current = L.map(mapRef.current, {
+    const map = L.map(mapRef.current, {
       zoomControl: true,
       scrollWheelZoom: true,
     }).setView(initialCoords, 8);
 
+    mapInstance.current = map;
+    setMapReady(true);
+
+    // Invalidate size to ensure it renders correctly after mounting
+    setTimeout(() => {
+      map.invalidateSize();
+    }, 100);
+
     // Clean up on unmount
     return () => {
-      if (mapInstance.current) {
-        mapInstance.current.remove();
-        mapInstance.current = null;
-      }
+      map.remove();
+      mapInstance.current = null;
+      setMapReady(false);
     };
-  }, []);
+  }, [loading]);
 
   // 2. Synchronize Tile Layers based on Theme (Light/Dark mode tiles)
   useEffect(() => {
-    if (!mapInstance.current) return;
+    if (!mapInstance.current || !mapReady) return;
+
+    const map = mapInstance.current;
 
     if (tileLayerRef.current) {
-      mapInstance.current.removeLayer(tileLayerRef.current);
+      try {
+        map.removeLayer(tileLayerRef.current);
+      } catch (e) {}
     }
 
     // CartoDB tiles are highly premium and fit light/dark schemes perfectly
@@ -176,18 +188,30 @@ export default function ExploreVenuesSection({ venues, loading }: ExploreVenuesS
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
       subdomains: 'abcd',
       maxZoom: 20
-    }).addTo(mapInstance.current);
-  }, [themeMode]);
+    }).addTo(map);
+
+    return () => {
+      if (map && mapInstance.current === map) {
+        try {
+          if (tileLayerRef.current) {
+            map.removeLayer(tileLayerRef.current);
+          }
+        } catch (e) {}
+      }
+    };
+  }, [themeMode, mapReady]);
 
   // 3. Dynamically Plot/Update Markers
   useEffect(() => {
-    if (!mapInstance.current) return;
+    if (!mapInstance.current || !mapReady) return;
+
+    const map = mapInstance.current;
 
     // Clear old markers
     markersRef.current.forEach((marker) => {
-      if (mapInstance.current) {
-        mapInstance.current.removeLayer(marker);
-      }
+      try {
+        map.removeLayer(marker);
+      } catch (e) {}
     });
     markersRef.current = [];
 
@@ -223,11 +247,11 @@ export default function ExploreVenuesSection({ venues, loading }: ExploreVenuesS
       });
 
       const marker = L.marker(d.coords, { icon: markerIcon })
-        .addTo(mapInstance.current!)
+        .addTo(map)
         .on('click', () => {
           isPanningRef.current = true;
           setActiveId(d.id);
-          mapInstance.current?.flyTo(d.coords, 9, { duration: 1.2 });
+          map.flyTo(d.coords, 9, { duration: 1.2 });
           setTimeout(() => {
             isPanningRef.current = false;
           }, 1300);
@@ -246,14 +270,24 @@ export default function ExploreVenuesSection({ venues, loading }: ExploreVenuesS
 
       markersRef.current.push(marker);
     });
-  }, [displayVenues, activeId]);
+
+    return () => {
+      if (map && mapInstance.current === map) {
+        markersRef.current.forEach((marker) => {
+          try {
+            map.removeLayer(marker);
+          } catch (e) {}
+        });
+      }
+    };
+  }, [displayVenues, activeId, mapReady]);
 
   // 4. Pan map when activeId changes via side panel clicks
   useEffect(() => {
-    if (!mapInstance.current || isPanningRef.current) return;
+    if (!mapInstance.current || !mapReady || isPanningRef.current) return;
     const activeCoords = activeDistrict.coords;
     mapInstance.current.flyTo(activeCoords, 9, { duration: 1.2 });
-  }, [activeId, activeDistrict]);
+  }, [activeId, activeDistrict, mapReady]);
 
   if (loading) {
     return <ExploreVenuesSectionSkeleton />;

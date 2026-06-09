@@ -1,10 +1,10 @@
 import { Star, Users, Shield } from 'lucide-react';
-import travancoreImg from '@/features/home/assets/elite-travancore.png';
-import emeraldImg from '@/features/home/assets/hero-venue-2.png';
-import mistImg from '@/features/home/assets/hero-venue-4.png';
-import gourmetImg from '@/features/home/assets/elite-gourmet.png';
+import travancoreImg from '@/features/public/assets/elite-travancore.png';
+import emeraldImg from '@/features/public/assets/hero-venue-2.png';
+import mistImg from '@/features/public/assets/hero-venue-4.png';
+import gourmetImg from '@/features/public/assets/elite-gourmet.png';
 import type { Venue } from '../../../venues/types/venues.types';
-import EliteVenueSectionSkeleton from './EliteVenueSectionSkeleton';
+import EliteVenueSectionSkeleton from '../loaders/EliteVenueSectionSkeleton';
 
 interface EliteVenuesSectionProps {
   venues: Venue[];

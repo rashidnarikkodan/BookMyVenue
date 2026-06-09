@@ -1,10 +1,10 @@
 import { useState, useRef } from 'react';
 import { ArrowRight } from 'lucide-react';
 import type { Category } from '@/features/categories/types';
-import weddingImg from '@/features/home/assets/category-wedding.png';
-import corporateImg from '@/features/home/assets/category-corporate.png';
-import getawayImg from '@/features/home/assets/category-getaway.png';
-import CategoriesSectionSkeleton from './CategoriesSectionSkeleton';
+import weddingImg from '@/features/public/assets/category-wedding.png';
+import corporateImg from '@/features/public/assets/category-corporate.png';
+import getawayImg from '@/features/public/assets/category-getaway.png';
+import CategoriesSectionSkeleton from '../loaders/CategoriesSectionSkeleton';
 
 const defaultCategories = [
   {
