@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, Eye, EyeOff } from 'lucide-react';
-import { GoogleLogin } from '@react-oauth/google';
 import { signupApi, googleAuthApi } from '../services/auth.api';
 import { useAuthStore } from '../store/auth.store';
 import { useAppStore } from '../../../store/app.store';
 import OtpVerification from './OtpVerification';
+import { GoogleLogin } from "@react-oauth/google";
 
 const getRoleRedirect = (role: string) => {
   if (role === 'owner') return '/owner/dashboard';
