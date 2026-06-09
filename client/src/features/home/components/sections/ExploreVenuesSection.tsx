@@ -10,6 +10,7 @@ import kochiImg from '@/features/home/assets/hero-venue-3.png';
 import trivandrumImg from '@/features/home/assets/elite-travancore.png';
 import alleppeyImg from '@/features/home/assets/hero-venue-2.png';
 import munnarImg from '@/features/home/assets/hero-venue-4.png';
+import ExploreVenuesSectionSkeleton from './ExploreVenuesSectionSkeleton';
 
 type CityInfo = {
   id: string;
@@ -253,6 +254,10 @@ export default function ExploreVenuesSection({ venues, loading }: ExploreVenuesS
     const activeCoords = activeDistrict.coords;
     mapInstance.current.flyTo(activeCoords, 9, { duration: 1.2 });
   }, [activeId, activeDistrict]);
+
+  if (loading) {
+    return <ExploreVenuesSectionSkeleton />;
+  }
 
   return (
     <section className="bg-transparent text-foreground py-12">
