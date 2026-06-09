@@ -26,6 +26,8 @@ export interface Venue {
   verifiedAt: string | null;
   rejectionReason: string | null;
   isActive: boolean;
+  isFeatured?: boolean;
+  isElite?: boolean;
   createdAt: string;
   updatedAt: string;
 }

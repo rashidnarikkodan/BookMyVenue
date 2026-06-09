@@ -11,14 +11,14 @@ export function useAsyncFetch<T>() {
       setError(null);
 
       const result = await apiCall();
-
       setData(result);
+
       return result;
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Something went wrong!';
-      setError(message);
+      const message =
+        err instanceof Error ? err.message : 'Something went wrong!';
 
-      console.error('Async fetch error:', message);
+      setError(message);
       throw err;
     } finally {
       setLoading(false);
