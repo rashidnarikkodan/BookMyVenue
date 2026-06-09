@@ -1,4 +1,4 @@
-import { Bell, Search, Settings, UserCircle, Menu } from 'lucide-react';
+import { Bell, Settings, UserCircle, Menu } from 'lucide-react';
 import { ThemeToggle } from '@/shared/components/ui';
 
 import { useUIStore } from '@/store/ui.store';
