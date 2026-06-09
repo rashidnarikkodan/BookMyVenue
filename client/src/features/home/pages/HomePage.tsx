@@ -4,6 +4,7 @@ import FeaturedSection from '@/features/home/components/sections/FeaturedSection
 import CategoriesSection from '@/features/home/components/sections/CategoriesSection';
 import EliteVenuesSection from '@/features/home/components/sections/EliteVenueSection';
 import ExploreVenuesSection from '@/features/home/components/sections/ExploreVenuesSection';
+import CTASection from '@/features/home/components/sections/CTASection';
 import { useAsyncFetch } from '@/shared/hooks/useAsyncFetch';
 import { getHomeData, type HomeDataResponse } from '../services/home.services';
 
@@ -32,6 +33,7 @@ export default function HomePage() {
       <CategoriesSection categories={categories} loading={loading} />
       <EliteVenuesSection venues={venues} loading={loading} />
       <ExploreVenuesSection venues={venues} loading={loading} />
+      <CTASection />
     </div>
   );
 }
