@@ -6,7 +6,8 @@ import logger from '@/libs/logger';
 import notFound from '@/utils/notFound';
 import errorHandler from './utils/error';
 import routes from '@/routes';
-import env from './configs/env.config';
+import cookieParser from 'cookie-parser';
+import { authMiddleware } from './middlewares/auth.middleware';
 
 const app: Application = express();
 
@@ -16,8 +17,7 @@ app.use(helmet());
 // CORS
 app.use(
   cors({
-    origin: env.CORS_ORIGIN,
-    methods: ['POST', 'GET', 'PATCH', 'DELETE'],
+    origin: 'http://localhost:5173',
     credentials: true,
   })
 );
@@ -45,6 +45,9 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Cookie parser
+app.use(cookieParser());
+
 // Health Check
 app.get('/health', (req: Request, res: Response, next: NextFunction) => {
   res.status(200).json({
@@ -55,6 +58,14 @@ app.get('/health', (req: Request, res: Response, next: NextFunction) => {
 });
 
 app.use('/api', routes);
+
+app.get('/home', authMiddleware, (req, res, next) => {
+    console.log("auth middleware")
+    return res.json({
+        succes: true,
+        message:"Done"
+    })
+})
 
 app.use(notFound);
 app.use(errorHandler);
