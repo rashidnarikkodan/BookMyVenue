@@ -1,5 +1,7 @@
 @import 'tailwindcss';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   /* ── Semantic flat tokens (used as bg-primary, text-muted, border-border, etc.) ── */
   --color-primary:    var(--primary);

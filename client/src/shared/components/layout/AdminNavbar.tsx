@@ -1,13 +1,7 @@
-import {
-  Bell,
-  Search,
-  Settings,
-  UserCircle,
-  Menu,
-} from "lucide-react";
-import { ThemeToggle } from "@/shared/components/ui";
+import { Bell, Settings, UserCircle, Menu } from 'lucide-react';
+import { ThemeToggle } from '@/shared/components/ui';
 
-import { useUIStore } from "@/store/ui.store";
+import { useUIStore } from '@/store/ui.store';
 
 const AdminNavbar = () => {
   const { toggleSidebar } = useUIStore();
@@ -27,22 +21,15 @@ const AdminNavbar = () => {
           </button>
 
           <div>
-            <h1 className="text-lg font-semibold text-foreground">
-              Admin Dashboard
-            </h1>
-            <p className="text-muted text-xs">
-              Manage platform operations
-            </p>
+            <h1 className="text-lg font-semibold text-foreground">Admin Dashboard</h1>
+            <p className="text-muted text-xs">Manage platform operations</p>
           </div>
         </div>
 
         {/* Center */}
-        <div className="hidden w-full max-w-md lg:block">
+        {/* <div className="hidden w-full max-w-md lg:block">
           <div className="relative">
-            <Search
-              size={18}
-              className="text-muted absolute top-1/2 left-3 -translate-y-1/2"
-            />
+            <Search size={18} className="text-muted absolute top-1/2 left-3 -translate-y-1/2" />
 
             <input
               type="text"
@@ -63,7 +50,7 @@ const AdminNavbar = () => {
               "
             />
           </div>
-        </div>
+        </div> */}
 
         {/* Right */}
         <div className="flex items-center gap-3">
@@ -120,18 +107,11 @@ const AdminNavbar = () => {
               py-2
             "
           >
-            <UserCircle
-              size={28}
-              className="text-primary"
-            />
+            <UserCircle size={28} className="text-primary" />
 
             <div className="hidden text-right md:block">
-              <p className="text-sm font-medium text-foreground">
-                Admin
-              </p>
-              <p className="text-muted text-xs">
-                Super Administrator
-              </p>
+              <p className="text-sm font-medium text-foreground">Admin</p>
+              <p className="text-muted text-xs">Super Administrator</p>
             </div>
           </div>
         </div>

@@ -9,13 +9,11 @@ const PageNotFound = () => {
           <span className="text-primary text-8xl font-bold">404</span>
         </div>
 
-        <h1 className="text-foreground mb-4 text-3xl font-bold">
-          Page Not Found
-        </h1>
+        <h1 className="text-foreground mb-4 text-3xl font-bold">Page Not Found</h1>
 
         <p className="text-muted mb-8 text-lg">
-          The page you're looking for doesn't exist, may have been moved,
-          or the link might be incorrect.
+          The page you're looking for doesn't exist, may have been moved, or the link might be
+          incorrect.
         </p>
 
         <div className="flex flex-col justify-center gap-4 sm:flex-row">
@@ -65,19 +63,13 @@ const PageNotFound = () => {
 
         <div className="border-border bg-card mt-12 rounded-2xl border p-6">
           <div className="mb-3 flex justify-center">
-            <Search
-              size={32}
-              className="text-primary"
-            />
+            <Search size={32} className="text-primary" />
           </div>
 
-          <h2 className="text-foreground mb-2 font-semibold">
-            Looking for a venue?
-          </h2>
+          <h2 className="text-foreground mb-2 font-semibold">Looking for a venue?</h2>
 
           <p className="text-muted text-sm">
-            Browse venues, manage bookings, or return to the dashboard
-            using the navigation menu.
+            Browse venues, manage bookings, or return to the dashboard using the navigation menu.
           </p>
         </div>
       </div>

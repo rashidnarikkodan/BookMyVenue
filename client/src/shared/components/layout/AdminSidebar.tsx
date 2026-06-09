@@ -7,12 +7,14 @@ import {
   Settings,
   LogOut,
   X,
+  Boxes,
 } from 'lucide-react';
 import { useUIStore } from '@/store/ui.store';
 
 const adminNavLinks = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
   { name: 'Manage Users', href: '/admin/users', icon: Users },
+  { name: 'Categories', href: '/admin/categories', icon: Boxes },
   { name: 'Manage Venues', href: '/admin/venues', icon: Building2 },
   { name: 'Bookings Overview', href: '/admin/bookings', icon: CalendarDays },
   { name: 'System Settings', href: '/admin/settings', icon: Settings },
@@ -52,9 +54,7 @@ export default function AdminSidebar() {
             >
               <path d="M12 2L2 7l10 5 10-5-10-5zm0 13L2 9v8l10 5 10-5V9l-10 6z" />
             </svg>
-            <span className="text-xl font-bold tracking-tight text-foreground">
-              BookMyVenue
-            </span>
+            <span className="text-xl font-bold tracking-tight text-foreground">BookMyVenue</span>
           </div>
 
           {/* Mobile Close Button */}

@@ -1,11 +1,7 @@
 import { useEffect } from 'react';
 import { useUIStore } from '@/store/ui.store';
 
-export function ThemeProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const { themeMode } = useUIStore();
 
   useEffect(() => {
@@ -13,11 +9,8 @@ export function ThemeProvider({
   }, [themeMode]);
 
   return (
-    <div
-      className="min-h-screen bg-background text-foreground transition-colors duration-300"
-    >
+    <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
       {children}
     </div>
   );
 }
-

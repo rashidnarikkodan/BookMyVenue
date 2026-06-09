@@ -1,13 +1,15 @@
+
 import { Navigate } from 'react-router-dom';
 import AuthLayout from '@/features/auth/AuthLayout';
 import Signin from '@/features/auth/Signin';
 import Signup from '@/features/auth/Signup';
+import ErrorPage from '@/shared/pages/ErrorPage';
 
 export const authRoutes = {
   path: '/',
 
   element: <AuthLayout />,
-
+  errorElement: <ErrorPage />,
   children: [
     // ── Primary auth routes (used by internal Links) ──────────────
     {

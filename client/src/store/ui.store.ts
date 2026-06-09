@@ -17,7 +17,7 @@ export const useUIStore = create<UIState>((set) => {
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem('theme-mode') as ThemeMode;
       if (stored === 'light' || stored === 'dark') return stored;
-      
+
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       return prefersDark ? 'dark' : 'light';
     }
@@ -25,7 +25,7 @@ export const useUIStore = create<UIState>((set) => {
   };
 
   const initialMode = getInitialMode();
-  
+
   if (typeof window !== 'undefined') {
     document.documentElement.classList.toggle('dark', initialMode === 'dark');
   }

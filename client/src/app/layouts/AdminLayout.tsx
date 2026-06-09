@@ -1,6 +1,7 @@
 import { AdminNavbar, AdminSidebar } from '@/shared/components/layout';
 import { ThemeProvider } from '@/shared/providers/ThemeProvider';
 import { Outlet } from 'react-router-dom';
+import { Toaster } from 'sonner';
 
 export default function AdminLayout() {
   return (
@@ -17,6 +18,7 @@ export default function AdminLayout() {
           </main>
         </div>
       </div>
+      <Toaster position="top-right" richColors />
     </ThemeProvider>
   );
 }
