@@ -3,55 +3,89 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-primary: var(--primary);
-  --color-secondary: var(--secondary);
-  --color-accent: var(--accent);
+  /* ── Semantic flat tokens (used as bg-primary, text-muted, border-border, etc.) ── */
+  --color-primary:    var(--primary);
+  --color-secondary:  var(--secondary);
+  --color-accent:     var(--accent);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-surface: var(--surface);
-  --color-card: var(--card);
-  --color-border: var(--border);
-  --color-muted: var(--muted);
-  --color-success: var(--success);
-  --color-warning: var(--warning);
-  --color-error: var(--error);
-  --color-info: var(--info);
+  --color-surface:    var(--surface);
+  --color-card:       var(--card);
+  --color-border:     var(--border);
+  --color-muted:      var(--muted);
+  --color-success:    var(--success);
+  --color-warning:    var(--warning);
+  --color-error:      var(--error);
+  --color-info:       var(--info);
+
+  /* ── bg-base / bg-surface tokens (used as bg-bg-base and bg-bg-surface) ─────── */
+  --color-bg-base:    var(--bg-base);
+  --color-bg-surface: var(--bg-surface);
+
+  /* ── Primary numeric scale (bg-primary-600, text-primary-500, etc.) ──────────── */
+  /* Values are derived from the existing red palette — colors are NOT changed.     */
+  --color-primary-100: #fff5f5;
+  --color-primary-200: #fed7d7;
+  --color-primary-300: #fc8181; /* light red  — used in link hover states  */
+  --color-primary-400: #f56565; /* medium     — matches existing --secondary */
+  --color-primary-500: #e53e3e; /* base       — matches existing --primary   */
+  --color-primary-600: #c53030; /* darker     — matches existing --accent    */
+  --color-primary-700: #9b2c2c; /* darkest used in app                       */
+  --color-primary-800: #742a2a;
+  --color-primary-900: #63171b;
+
+  /* ── Secondary numeric scale (secondary-600 used in AuthLayout ambient glow) ─── */
+  --color-secondary-100: #fff5f5;
+  --color-secondary-200: #fed7d7;
+  --color-secondary-300: #fca5a5;
+  --color-secondary-400: #f87171;
+  --color-secondary-500: #f56565; /* matches existing --secondary             */
+  --color-secondary-600: #e53e3e; /* matches existing --primary               */
+  --color-secondary-700: #c53030;
 }
 
 /* ======================
    LIGHT MODE - RED PALETTE
    ====================== */
 :root {
-  --primary: #e53e3e; /* Red 600 */
-  --secondary: #f56565; /* Red 500 */
-  --accent: #c53030; /* Red 700 */
-  --background: #fff5f5; /* Light red background */
-  --foreground: #7f1d1d; /* Dark red text */
-  --surface: #ffffff;
-  --card: #ffffff;
-  --border: #e5e7eb;
-  --muted: #fca5a5;
-  --success: #22c55e; /* Green for success */
-  --warning: #f59e0b; /* Amber */
-  --error: #dc2626; /* Red 600 */
-  --info: #3b82f6; /* Blue for informational */
+  --primary:    #e53e3e;   /* Red 600 */
+  --secondary:  #f56565;   /* Red 500 */
+  --accent:     #c53030;   /* Red 700 */
+  --background: #fff5f5;   /* Light red background */
+  --foreground: #7f1d1d;   /* Dark red text */
+  --surface:    #ffffff;
+  --card:       #ffffff;
+  --border:     #e5e7eb;
+  --muted:      #fca5a5;
+  --success:    #22c55e;   /* Green for success */
+  --warning:    #f59e0b;   /* Amber */
+  --error:      #dc2626;   /* Red 600 */
+  --info:       #3b82f6;   /* Blue for informational */
+
+  /* Auth pages always use a dark canvas regardless of light/dark mode toggle */
+  --bg-base:    #0d0d0f;   /* Very dark page background for auth */
+  --bg-surface: #131316;   /* Dark glassmorphism card surface    */
 }
 
 /* ======================
    DARK MODE
    ====================== */
 .dark {
-  --primary: #f56565; /* Red 500 */
-  --secondary: #e53e3e; /* Red 600 */
-  --accent: #c53030; /* Red 700 */
-  --background: #0f0f0f; /* Very dark background */
-  --foreground: #f5f5f5; /* Light text */
-  --surface: #1a1a1a;
-  --card: #1a1a1a;
-  --border: #2d3748;
-  --muted: #4a5568;
-  --success: #22c55e;
-  --warning: #f59e0b;
-  --error: #dc2626;
-  --info: #3b82f6;
+  --primary:    #f56565;   /* Red 500 */
+  --secondary:  #e53e3e;   /* Red 600 */
+  --accent:     #c53030;   /* Red 700 */
+  --background: #0f0f0f;   /* Very dark background */
+  --foreground: #f5f5f5;   /* Light text */
+  --surface:    #1a1a1a;
+  --card:       #1a1a1a;
+  --border:     #2d3748;
+  --muted:      #4a5568;
+  --success:    #22c55e;
+  --warning:    #f59e0b;
+  --error:      #dc2626;
+  --info:       #3b82f6;
+
+  /* Auth pages keep the same dark canvas in dark mode */
+  --bg-base:    #0d0d0f;
+  --bg-surface: #131316;
 }
