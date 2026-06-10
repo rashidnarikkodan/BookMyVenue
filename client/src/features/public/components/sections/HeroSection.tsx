@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import heroImage1 from '@/features/home/assets/hero-venue.png';
-import heroImage2 from '@/features/home/assets/hero-venue-2.png';
-import heroImage3 from '@/features/home/assets/hero-venue-3.png';
-import heroImage4 from '@/features/home/assets/hero-venue-4.png';
+import heroImage1 from '@/features/public/assets/hero-venue.png';
+import heroImage2 from '@/features/public/assets/hero-venue-2.png';
+import heroImage3 from '@/features/public/assets/hero-venue-3.png';
+import heroImage4 from '@/features/public/assets/hero-venue-4.png';
 import { MapPin, Calendar, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const images = [heroImage1, heroImage2, heroImage3, heroImage4];

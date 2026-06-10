@@ -3,6 +3,8 @@ import AdminLayout from '../layouts/AdminLayout';
 import ErrorPage from '@/shared/pages/ErrorPage';
 import CategoriesList from '@/features/categories/pages/CategoriesList';
 import CategoryDetails from '@/features/categories/pages/CategoryDetails';
+import UsersList from '@/features/users/pages/UsersList';
+import UserDetails from '@/features/users/pages/UserDetails';
 
 export const adminRoutes = {
   path: '/admin',
@@ -25,6 +27,14 @@ export const adminRoutes = {
     {
       path: 'categories/:id',
       element: <CategoryDetails />,
+    },
+    {
+      path: 'users',
+      element: <UsersList />,
+    },
+    {
+      path: 'users/:id',
+      element: <UserDetails />,
     },
   ],
 };

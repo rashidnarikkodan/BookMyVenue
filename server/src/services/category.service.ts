@@ -11,6 +11,8 @@ import {
 import { AppError } from '@/utils/AppError';
 import { CategoryDocument } from '@/types/category.types';
 import { HTTP_STATUS } from '@/constants/http';
+import { deleteFromCloudinary, uploadToCloudinary } from '@/libs/cloudinary';
+import logger from '@/libs/logger';
 
 type Return = Promise<CategoryDocument | null>;
 
@@ -75,4 +77,22 @@ export const getCategory = async (id: string): Return => {
 
 export const getCategories = async (query: GetCategoriesQueryDto): Promise<CategoryDocument[]> => {
   return await repo.getCategories(query);
+};
+
+export const uploadCategoryImage = async (file: string,id?:string) => {
+  let imageUrl: string | undefined;
+  let image_public_id: string | undefined;
+
+  if(id){
+    const result = await repo.getCategoryImageId(id);
+    await deleteFromCloudinary(result?.image_public_id)
+  } 
+    const uploadResult = await uploadToCloudinary(file);
+    imageUrl = uploadResult.url;
+    image_public_id = uploadResult.public_id;
+  
+  return {
+    imageUrl,
+    image_public_id,
+  };
 };

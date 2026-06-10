@@ -1,6 +1,6 @@
 import ErrorPage from '@/shared/pages/ErrorPage';
 import MainLayout from '../layouts/MainLayout';
-import HomePage from '@/features/home/pages/HomePage';
+import HomePage from '@/features/public/pages/HomePage';
 
 export const mainRoutes = {
   path: '/',
