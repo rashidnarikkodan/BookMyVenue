@@ -41,40 +41,40 @@ export default function EliteVenuesSection({ venues, loading }: EliteVenuesSecti
   const largeVenue =
     data && data[0]
       ? {
-        name: data[0].name,
-        image: data[0].images?.[0] || travancoreImg,
-        rating: '4.9 (120 reviews)', // Default rating since rating is not in DB schema
-        capacity: data[0].capacity,
-        tag: 'Most Booked',
-      }
+          name: data[0].name,
+          image: data[0].images?.[0] || travancoreImg,
+          rating: '4.9 (120 reviews)', // Default rating since rating is not in DB schema
+          capacity: data[0].capacity,
+          tag: 'Most Booked',
+        }
       : defaultLargeVenue;
 
   const topVenue =
     data && data[1]
       ? {
-        name: data[1].name,
-        image: data[1].images?.[0] || emeraldImg,
-        location: data[1].address
-          ? `${data[1].address.city}, ${data[1].address.state}`
-          : 'Kumarakom, Kerala',
-        price: data[1].pricing
-          ? `₹${data[1].pricing.amount.toLocaleString('en-IN')} / ${data[1].pricing.unit === 'day' ? 'Day' : 'Hour'}`
-          : '₹1,20,000 / Day',
-      }
+          name: data[1].name,
+          image: data[1].images?.[0] || emeraldImg,
+          location: data[1].address
+            ? `${data[1].address.city}, ${data[1].address.state}`
+            : 'Kumarakom, Kerala',
+          price: data[1].pricing
+            ? `₹${data[1].pricing.amount.toLocaleString('en-IN')} / ${data[1].pricing.unit === 'day' ? 'Day' : 'Hour'}`
+            : '₹1,20,000 / Day',
+        }
       : defaultTopVenue;
 
   const bottomVenue =
     data && data[2]
       ? {
-        name: data[2].name,
-        image: data[2].images?.[0] || mistImg,
-        location: data[2].address
-          ? `${data[2].address.city}, ${data[2].address.state}`
-          : 'Munnar, Kerala',
-        price: data[2].pricing
-          ? `₹${data[2].pricing.amount.toLocaleString('en-IN')} / ${data[2].pricing.unit === 'day' ? 'Day' : 'Hour'}`
-          : '₹85,000 / Day',
-      }
+          name: data[2].name,
+          image: data[2].images?.[0] || mistImg,
+          location: data[2].address
+            ? `${data[2].address.city}, ${data[2].address.state}`
+            : 'Munnar, Kerala',
+          price: data[2].pricing
+            ? `₹${data[2].pricing.amount.toLocaleString('en-IN')} / ${data[2].pricing.unit === 'day' ? 'Day' : 'Hour'}`
+            : '₹85,000 / Day',
+        }
       : defaultBottomVenue;
 
   if (loading) {
@@ -94,9 +94,7 @@ export default function EliteVenuesSection({ venues, loading }: EliteVenuesSecti
           </div>
           <h2 className="text-4xl md:text-5xl font-black tracking-tight mt-2 text-black dark:text-white leading-none">
             Elite Venues <br className="sm:hidden" />
-            <span className="text-[#e21a47] ml-1">
-              in Kerala
-            </span>
+            <span className="text-[#e21a47] ml-1">in Kerala</span>
           </h2>
         </div>
 
@@ -157,9 +155,7 @@ export default function EliteVenuesSection({ venues, loading }: EliteVenuesSecti
                 <h4 className="text-lg font-bold text-foreground group-hover:text-[#e21a47] transition-colors leading-tight">
                   {topVenue.name}
                 </h4>
-                <p className="text-xs text-black dark:text-zinc-400 mt-1">
-                  {topVenue.location}
-                </p>
+                <p className="text-xs text-black dark:text-zinc-400 mt-1">{topVenue.location}</p>
                 <p className="text-sm font-bold text-[#e21a47] mt-3">{topVenue.price}</p>
               </div>
             </div>
@@ -180,9 +176,7 @@ export default function EliteVenuesSection({ venues, loading }: EliteVenuesSecti
                 <h4 className="text-lg font-bold text-foreground group-hover:text-[#e21a47] transition-colors leading-tight">
                   {bottomVenue.name}
                 </h4>
-                <p className="text-xs text-black dark:text-zinc-400 mt-1">
-                  {bottomVenue.location}
-                </p>
+                <p className="text-xs text-black dark:text-zinc-400 mt-1">{bottomVenue.location}</p>
                 <p className="text-sm font-bold text-[#e21a47] mt-3">{bottomVenue.price}</p>
               </div>
             </div>

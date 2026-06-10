@@ -69,7 +69,9 @@ const OtpVerification: React.FC<OtpVerificationProps> = () => {
     const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, OTP_LENGTH);
     if (!pasted) return;
     const updated = Array(OTP_LENGTH).fill('');
-    pasted.split('').forEach((ch, i) => { updated[i] = ch; });
+    pasted.split('').forEach((ch, i) => {
+      updated[i] = ch;
+    });
     setOtp(updated);
 
     const focusIdx = Math.min(pasted.length, OTP_LENGTH - 1);
@@ -137,8 +139,10 @@ const OtpVerification: React.FC<OtpVerificationProps> = () => {
   };
 
   const maskedEmail = pendingEmail
-    ? pendingEmail.replace(/^(.{2})(.*)(@.*)$/, (_: string, a: string, b: string, c: string) =>
-      a + '*'.repeat(b.length) + c)
+    ? pendingEmail.replace(
+        /^(.{2})(.*)(@.*)$/,
+        (_: string, a: string, b: string, c: string) => a + '*'.repeat(b.length) + c
+      )
     : '';
 
   const allFilled = otp.every((d) => d !== '');
@@ -166,13 +170,14 @@ const OtpVerification: React.FC<OtpVerificationProps> = () => {
         </div>
       )}
 
-
       {/* OTP Input Grid */}
       <div className="flex gap-2 justify-center mb-5" onPaste={handlePaste}>
         {otp.map((digit, i) => (
           <input
             key={i}
-            ref={(el) => { inputsRef.current[i] = el; }}
+            ref={(el) => {
+              inputsRef.current[i] = el;
+            }}
             type="text"
             inputMode="numeric"
             maxLength={1}
@@ -183,9 +188,11 @@ const OtpVerification: React.FC<OtpVerificationProps> = () => {
             className={`
               w-10 h-12 text-center text-lg font-bold rounded-xl border transition-all duration-150 outline-none
               bg-bg-base/70 text-white caret-primary-500
-              ${digit
-                ? 'border-primary-500 shadow-[0_0_0_1px_rgba(239,68,68,0.3)]'
-                : 'border-slate-700/60 focus:border-primary-500 focus:shadow-[0_0_0_1px_rgba(239,68,68,0.3)]'}
+              ${
+                digit
+                  ? 'border-primary-500 shadow-[0_0_0_1px_rgba(239,68,68,0.3)]'
+                  : 'border-slate-700/60 focus:border-primary-500 focus:shadow-[0_0_0_1px_rgba(239,68,68,0.3)]'
+              }
               disabled:opacity-50
             `}
           />
@@ -201,7 +208,14 @@ const OtpVerification: React.FC<OtpVerificationProps> = () => {
         {loading ? (
           <>
             <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
             </svg>
             Verifying…

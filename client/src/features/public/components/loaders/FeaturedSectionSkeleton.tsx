@@ -3,7 +3,6 @@ export default function FeaturedSectionSkeleton() {
     <section className="py-16 bg-transparent overflow-hidden relative w-full transition-colors duration-300 animate-pulse">
       <div className="max-w-6xl mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          
           {/* Left Side Skeleton */}
           <div className="lg:col-span-5 flex flex-col justify-between h-full relative z-10 space-y-8">
             <div>
@@ -48,7 +47,6 @@ export default function FeaturedSectionSkeleton() {
               <div className="h-1.5 rounded-full bg-zinc-200 dark:bg-zinc-800 flex-1" />
             </div>
           </div>
-
         </div>
       </div>
     </section>

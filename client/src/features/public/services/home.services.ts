@@ -1,6 +1,6 @@
-import { apiClient } from "@/services/apiClient";
-import type { Venue } from "@/features/venues/types/venues.types";
-import type { Category } from "@/features/categories/types";
+import { apiClient } from '@/services/apiClient';
+import type { Venue } from '@/features/venues/types/venues.types';
+import type { Category } from '@/features/categories/types';
 
 export interface HomeDataResponse {
   venues: Venue[];

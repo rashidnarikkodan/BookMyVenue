@@ -15,8 +15,7 @@ export function useAsyncFetch<T>() {
 
       return result;
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : 'Something went wrong!';
+      const message = err instanceof Error ? err.message : 'Something went wrong!';
 
       setError(message);
       throw err;

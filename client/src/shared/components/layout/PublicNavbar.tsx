@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Menu, X, Building2 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { ThemeToggle } from '@/shared/components/ui';
+import logoImg from '@/assets/logo.png';
 
 const navLinks = [
   { name: 'Home', href: '/' },
@@ -31,8 +32,6 @@ const PublicNavbar = () => {
 
   useScrollLock(drawerOpen);
 
-
-
   // Close drawer on Escape key
   useEffect(() => {
     if (!drawerOpen) return;
@@ -43,8 +42,7 @@ const PublicNavbar = () => {
     return () => document.removeEventListener('keydown', onKey);
   }, [drawerOpen]);
 
-  const isActive = (href: string) =>
-    href === '/' ? pathname === '/' : pathname.startsWith(href);
+  const isActive = (href: string) => (href === '/' ? pathname === '/' : pathname.startsWith(href));
 
   return (
     <>
@@ -55,9 +53,11 @@ const PublicNavbar = () => {
         >
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5 group shrink-0">
-            <div className="grid place-items-center h-9 w-9 rounded-xl bg-gradient-to-tr from-primary to-secondary text-white shadow-md shadow-primary/20 group-hover:scale-105 transition-all duration-300">
-              <Building2 size={18} className="transition-transform duration-300 group-hover:rotate-3" />
-            </div>
+            <img
+              src={logoImg}
+              alt="BookMyVenue Logo"
+              className="h-9 w-9 object-contain group-hover:scale-105 transition-all duration-300"
+            />
             <span className="text-[17px] font-bold text-foreground tracking-tight group-hover:text-primary transition-colors duration-300">
               BookMyVenue
             </span>
@@ -163,9 +163,11 @@ const PublicNavbar = () => {
             className="flex items-center gap-2"
             onClick={() => setDrawerOpen(false)}
           >
-            <div className="grid place-items-center h-8 w-8 rounded-lg bg-gradient-to-tr from-primary to-secondary text-white shadow-sm">
-              <Building2 size={15} />
-            </div>
+            <img
+              src={logoImg}
+              alt="BookMyVenue Logo"
+              className="h-8 w-8 object-contain"
+            />
             <span className="text-[15px] font-bold text-foreground tracking-tight">
               BookMyVenue
             </span>
