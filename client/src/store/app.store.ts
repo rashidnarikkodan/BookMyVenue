@@ -1,17 +1,37 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
-type AppStore = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  user: any;
+interface User {
+  _id: string;
+  email: string;
+  fullName: string;
+  role: string;
+  avatar?: string;
+  // add other necessary fields
+}
+
+interface AppState {
   token: string | null;
   refreshToken: string | null;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  setAuth: (token: string, refreshToken: string, user: any) => void;
-};
+  user: User | null;
+  isAuthenticated: boolean;
+  setAuth: (token: string, refreshToken: string | undefined, user: User) => void;
+  logout: () => void;
+}
 
-export const useAppStore = create<AppStore>((set) => ({
-  user: null,
-  token: null,
-  refreshToken: null,
-  setAuth: (token, refreshToken, user) => set({ token, refreshToken, user }),
-}));
+export const useAppStore = create<AppState>()(
+  persist(
+    (set) => ({
+      token: null,
+      refreshToken: null,
+      user: null,
+      isAuthenticated: false,
+
+      setAuth: (token, refreshToken, user) => set({ token, refreshToken: refreshToken || null, user, isAuthenticated: true }),
+      logout: () => set({ token: null, refreshToken: null, user: null, isAuthenticated: false }),
+    }),
+    {
+      name: 'app-storage', // key in local storage
+    }
+  )
+);

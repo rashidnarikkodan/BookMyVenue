@@ -1,22 +1,23 @@
-export const resendOtpApi = async (_token: string): Promise<any> => {
-  return { success: true, message: 'OTP resent successfully' };
+import { AUTH_ROUTES } from '@/constants/apiRoutes';
+import apiClient from '@/services/apiClient';
+import type { ISigninData, ISignupData } from '../types/auth.types';
+
+export const signupApi = async (data: ISignupData) => {
+    return await apiClient.post(AUTH_ROUTES.SIGNUP, data);
 };
 
-export const verifyOtpApi = async (_token: string, _otp: string): Promise<any> => {
-  return { success: true, data: { message: 'Verification successful' } };
+export const signinApi = async (data: ISigninData) => {
+    return await apiClient.post(AUTH_ROUTES.SIGNIN, data);
 };
 
-export const googleAuthApi = async (_token: string): Promise<any> => {
-  return { success: true, data: { user: { name: 'Google User' }, token: 'mock-google-token' } };
+export const googleAuthApi = async (credential: string) => {
+    return await apiClient.post(AUTH_ROUTES.GOOGLE_AUTH, { credential });
 };
 
-export const signinApi = async (credentials: any): Promise<any> => {
-  return {
-    success: true,
-    data: { user: { name: 'John Doe', email: credentials.email }, token: 'mock-session-token' },
-  };
+export const verifyOtpApi = async (registrationToken: string, otp: string) => {
+    return await apiClient.post(AUTH_ROUTES.VERIFY_OTP, { registrationToken, otp });
 };
 
-export const signupApi = async (details: any): Promise<any> => {
-  return { success: true, data: { email: details.email, token: 'mock-registration-token' } };
+export const resendOtpApi = async (registrationToken: string) => {
+    return await apiClient.post(AUTH_ROUTES.RESEND_OTP, { registrationToken });
 };

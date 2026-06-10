@@ -1,27 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
-import {
-  Menu,
-  X,
-  Search,
-  Bell,
-  Heart,
-  User,
-  ChevronDown,
-  LogOut,
-  Calendar,
-  Settings,
-  Building2,
-} from 'lucide-react';
+import { Menu, X, Search, Bell, Heart, User, ChevronDown, LogOut, Calendar, Settings } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { ThemeToggle } from '@/shared/components/ui';
+import { useAppStore } from '@/store/app.store';
+import logoImg from '@/assets/logo.png';
 
 // Helper for navigation links
 const navLinks = [
   { name: 'Home', href: '/' },
   { name: 'Browse Venues', href: '/venues' },
-  { name: 'Categories', href: '/categories' },
-  { name: 'How It Works', href: '/how-it-works' },
-  { name: 'About', href: '/about' },
 ];
 
 const mockNotifications = [
@@ -55,6 +42,20 @@ const Navbar = () => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const notificationRef = useRef<HTMLDivElement>(null);
 
+  const user = useAppStore((state) => state.user);
+  const logout = useAppStore((state) => state.logout);
+
+  const getInitials = (name?: string) => {
+    if (!name) return 'U';
+    return name
+      .split(' ')
+      .filter(Boolean)
+      .map((n) => n[0])
+      .join('')
+      .slice(0, 2)
+      .toUpperCase();
+  };
+
   // Close menus on click outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -78,12 +79,11 @@ const Navbar = () => {
           {/* Logo */}
           <div className="flex items-center gap-2.5">
             <Link to="/" className="flex items-center gap-2.5 group shrink-0">
-              <div className="grid place-items-center h-9 w-9 rounded-xl bg-gradient-to-tr from-primary to-secondary text-white shadow-md shadow-primary/20 group-hover:scale-105 transition-all duration-300">
-                <Building2
-                  size={18}
-                  className="transition-transform duration-300 group-hover:rotate-3"
-                />
-              </div>
+              <img
+                src={logoImg}
+                alt="BookMyVenue Logo"
+                className="h-9 w-9 object-contain group-hover:scale-105 transition-all duration-300"
+              />
               <span className="text-[17px] font-bold text-foreground tracking-tight group-hover:text-primary transition-colors duration-300">
                 BookMyVenue
               </span>
@@ -201,23 +201,17 @@ const Navbar = () => {
                 aria-expanded={profileOpen}
               >
                 <div className="h-7.5 w-7.5 rounded-lg bg-gradient-to-tr from-primary to-secondary text-white font-bold flex items-center justify-center text-[12px] shadow-sm">
-                  JD
+                  {getInitials(user?.fullName)}
                 </div>
-                <span className="hidden lg:inline-block text-[13px] font-medium">John Doe</span>
-                <ChevronDown
-                  size={14}
-                  className={[
-                    'transition-transform duration-300 text-foreground/50',
-                    profileOpen ? 'rotate-180' : '',
-                  ].join(' ')}
-                />
+                <span className="hidden lg:inline-block text-[13px] font-medium">{user?.fullName || 'User'}</span>
+                <ChevronDown size={14} className={['transition-transform duration-300 text-foreground/50', profileOpen ? 'rotate-180' : ''].join(' ')} />
               </button>
 
               {profileOpen && (
                 <div className="absolute right-0 mt-2 w-56 rounded-xl border border-border bg-surface shadow-lg py-1.5 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
                   <div className="px-4 py-2 border-b border-border flex flex-col gap-0.5">
-                    <p className="text-[13px] font-semibold text-foreground">John Doe</p>
-                    <p className="text-[11px] text-foreground/60">john.doe@example.com</p>
+                    <p className="text-[13px] font-semibold text-foreground">{user?.fullName || 'User'}</p>
+                    {user?.email && <p className="text-[11px] text-foreground/60">{user.email}</p>}
                   </div>
                   <div className="py-1">
                     <Link
@@ -257,7 +251,7 @@ const Navbar = () => {
                     <button
                       onClick={() => {
                         setProfileOpen(false);
-                        console.log('Logging out...');
+                        logout();
                       }}
                       className="flex items-center gap-2.5 w-full text-left px-4 py-2 text-[12px] text-foreground/85 hover:bg-primary/10 hover:text-primary transition-all duration-150 font-medium cursor-pointer"
                     >
@@ -334,12 +328,12 @@ const Navbar = () => {
           {/* Drawer Header */}
           <div className="flex h-16 items-center justify-between border-b border-border px-5 shrink-0">
             <Link to="/" className="flex items-center gap-2" onClick={() => setMobileOpen(false)}>
-              <div className="grid place-items-center h-8 w-8 rounded-lg bg-gradient-to-tr from-primary to-secondary text-white shadow-sm">
-                <Building2 size={15} />
-              </div>
-              <span className="text-[15px] font-bold text-foreground tracking-tight">
-                BookMyVenue
-              </span>
+              <img
+                src={logoImg}
+                alt="BookMyVenue Logo"
+                className="h-8 w-8 object-contain"
+              />
+              <span className="text-[15px] font-bold text-foreground tracking-tight">BookMyVenue</span>
             </Link>
             <button
               type="button"
@@ -354,11 +348,11 @@ const Navbar = () => {
           {/* Drawer Profile Info */}
           <div className="px-5 py-4 border-b border-border flex items-center gap-3">
             <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-primary to-secondary text-white font-bold flex items-center justify-center text-[14px]">
-              JD
+              {getInitials(user?.fullName)}
             </div>
             <div className="flex flex-col">
-              <span className="text-[13px] font-semibold text-foreground">John Doe</span>
-              <span className="text-[10.5px] text-foreground/60">john.doe@example.com</span>
+              <span className="text-[13px] font-semibold text-foreground">{user?.fullName || 'User'}</span>
+              {user?.email && <span className="text-[10.5px] text-foreground/60">{user.email}</span>}
             </div>
           </div>
 
@@ -443,7 +437,7 @@ const Navbar = () => {
             <button
               onClick={() => {
                 setMobileOpen(false);
-                console.log('Logging out...');
+                logout();
               }}
               className="flex items-center justify-center gap-2 w-full py-2.5 mt-1 rounded-xl text-[13px] font-semibold bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all duration-300 cursor-pointer"
             >
