@@ -10,7 +10,7 @@ export const signup = async (req: Request, res: Response, next: NextFunction): P
   try {
     const validatedData = req.body;
     const result = await authService.signup(validatedData);
-    success(res, HTTP_STATUS.CREATED, MESSAGES.USER_CREATED, result);
+    success(res, HTTP_STATUS.CREATED, result, MESSAGES.USER_CREATED);
   } catch (error: unknown) {
     next(error);
   }
@@ -20,7 +20,7 @@ export const verifyOtp = async (req: Request, res: Response, next: NextFunction)
   try {
     const { registrationToken, otp } = req.body;
     const result = await authService.verifyOtp(registrationToken, otp);
-    success(res, HTTP_STATUS.OK, MESSAGES.USER_VERIFIED, result);
+    success(res, HTTP_STATUS.OK, result, MESSAGES.USER_VERIFIED);
   } catch (error: unknown) {
     next(error);
   }
@@ -30,7 +30,7 @@ export const resendOtp = async (req: Request, res: Response, next: NextFunction)
   try {
     const { registrationToken } = req.body;
     await authService.resendOtp(registrationToken);
-    success(res, HTTP_STATUS.OK, MESSAGES.OTP_RESENT, null);
+    success(res, HTTP_STATUS.OK, null, MESSAGES.OTP_RESENT);
   } catch (error: unknown) {
     next(error);
   }
@@ -44,7 +44,22 @@ export const googleAuth = async (req: Request, res: Response, next: NextFunction
       return;
     }
     const result = await authService.googleAuth(credential);
-    success(res, HTTP_STATUS.OK, 'Google Login Successful', result);
+
+    res.cookie("refreshToken", result.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    res.cookie("accessToken", result.accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 15 * 60 * 1000, // 15 minutes
+    });
+
+    success(res, HTTP_STATUS.OK, result, 'Google Login Successful');
   } catch (error: unknown) {
     next(error);
   }
@@ -58,19 +73,19 @@ export const signin = async (req: Request, res: Response, next: NextFunction): P
 
     res.cookie("refreshToken", result.refreshToken, {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
     res.cookie("accessToken", result.accessToken, {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       maxAge: 15 * 60 * 1000, // 15 minutes
     });
 
-    success(res, HTTP_STATUS.OK, 'Sign In Successful', result);
+    success(res, HTTP_STATUS.OK, result, 'Sign In Successful');
   } catch (error: unknown) {
     next(error);
   }
@@ -79,19 +94,19 @@ export const signin = async (req: Request, res: Response, next: NextFunction): P
 
 export const refreshToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const refreshToken = req.cookies.refreshToken;
+    const refreshToken = req.cookies?.refreshToken;
     if (!refreshToken) throw new AppError("Unauthorized access", HTTP_STATUS.UNAUTHORIZED);
 
     const result = await refreshTokenService(refreshToken);
 
     res.cookie("accessToken", result.accessToken, {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       maxAge: 15 * 60 * 1000, // 15 minutes
     });
 
-    success(res, HTTP_STATUS.OK, 'Token Refreshed Successfully', result);
+    success(res, HTTP_STATUS.OK, result, 'Token Refreshed Successfully');
   } catch (error: unknown) {
     next(error);
   }
