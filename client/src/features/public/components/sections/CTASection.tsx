@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, Sparkles, Building } from 'lucide-react';
-import bgImage from '@/features/home/assets/hero-venue.png';
+import bgImage from '@/features/public/assets/hero-venue.png';
 
 export default function CTASection() {
   return (

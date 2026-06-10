@@ -5,9 +5,6 @@ export const MESSAGES = {
   UNAUTHORIZED: 'Unauthorized access',
   INVALID_CREDENTIALS: 'Invalid credentials',
   TOKEN_EXPIRED: 'Token expired',
-  USER_ALREADY_EXISTS: 'User already exists',
-  INVALID_TOKEN: 'Invalid or expired token',
-  USER_VERIFIED: 'User verified successfully',
 
   // user
   USER_NOT_FOUND: 'User not found',
@@ -16,13 +13,4 @@ export const MESSAGES = {
   // general
   NOT_FOUND: 'Resource not found',
   INTERNAL_ERROR: 'Internal server error',
-
-  // OTP
-  OTP_EMAIL_FAIL: 'Failed to send OTP email',
-  OTP_NOT_FOUND: 'OTP not found or expired',
-  OTP_MAX_ATTEMPTS: 'Maximum verification attempts reached. Please request a new OTP',
-  OTP_INVALID: 'Invalid OTP',
-  OTP_RESEND_LIMIT: 'Maximum resend limit reached',
-  OTP_RESEND_COOLDOWN: 'OTP resend cooldown period active',
-  OTP_RESENT: 'OTP resent successfully',
 };

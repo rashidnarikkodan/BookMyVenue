@@ -1,9 +1,10 @@
 import { useState, useRef } from 'react';
 import { ArrowRight } from 'lucide-react';
 import type { Category } from '@/features/categories/types';
-import weddingImg from '@/features/home/assets/category-wedding.png';
-import corporateImg from '@/features/home/assets/category-corporate.png';
-import getawayImg from '@/features/home/assets/category-getaway.png';
+import weddingImg from '@/features/public/assets/category-wedding.png';
+import corporateImg from '@/features/public/assets/category-corporate.png';
+import getawayImg from '@/features/public/assets/category-getaway.png';
+import CategoriesSectionSkeleton from '../loaders/CategoriesSectionSkeleton';
 
 const defaultCategories = [
   {
@@ -146,26 +147,7 @@ export default function CategorySection({ categories, loading }: CategorySection
       : defaultCategories;
 
   if (loading) {
-    return (
-      <section className="bg-transparent text-foreground py-16">
-        <div className="max-w-6xl mx-auto px-6">
-          <h2 className="text-3xl font-bold tracking-tight">Curated Categories</h2>
-          <div className="h-4 bg-zinc-300 dark:bg-zinc-800 rounded w-1/3 mt-3 animate-pulse" />
-
-          {/* Grid Skeleton */}
-          <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className="relative overflow-hidden aspect-[4/5] rounded-[32px] border border-zinc-200 dark:border-zinc-800/40 bg-zinc-100 dark:bg-zinc-900/60 animate-pulse flex flex-col justify-end p-8"
-              >
-                <div className="h-6 bg-zinc-300 dark:bg-zinc-800/50 rounded w-2/3" />
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-    );
+    return <CategoriesSectionSkeleton />;
   }
 
   return (

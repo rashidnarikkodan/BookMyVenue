@@ -1,9 +1,10 @@
 import { Star, Users, Shield } from 'lucide-react';
-import travancoreImg from '@/features/home/assets/elite-travancore.png';
-import emeraldImg from '@/features/home/assets/hero-venue-2.png';
-import mistImg from '@/features/home/assets/hero-venue-4.png';
-import gourmetImg from '@/features/home/assets/elite-gourmet.png';
+import travancoreImg from '@/features/public/assets/elite-travancore.png';
+import emeraldImg from '@/features/public/assets/hero-venue-2.png';
+import mistImg from '@/features/public/assets/hero-venue-4.png';
+import gourmetImg from '@/features/public/assets/elite-gourmet.png';
 import type { Venue } from '../../../venues/types/venues.types';
+import EliteVenueSectionSkeleton from '../loaders/EliteVenueSectionSkeleton';
 
 interface EliteVenuesSectionProps {
   venues: Venue[];
@@ -77,50 +78,7 @@ export default function EliteVenuesSection({ venues, loading }: EliteVenuesSecti
       : defaultBottomVenue;
 
   if (loading) {
-    return (
-      <section className="bg-transparent text-foreground py-12">
-        <div className="max-w-6xl mx-auto px-6">
-          {/* Centered Header */}
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold tracking-tight">Elite Venues in Kerala</h2>
-            <div className="w-12 h-1 bg-[#e21a47] mx-auto mt-3 rounded-full" />
-          </div>
-
-          {/* Asymmetric Grid Skeleton */}
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-            {/* Left Large Card Skeleton */}
-            <div className="lg:col-span-3 rounded-[28px] overflow-hidden aspect-[4/3] lg:h-[500px] bg-zinc-100 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800/40 animate-pulse flex flex-col justify-end p-8">
-              <div className="h-4 bg-zinc-300 dark:bg-zinc-700/60 rounded w-20 mb-3" />
-              <div className="h-8 bg-zinc-300 dark:bg-zinc-700/60 rounded w-3/4 mb-4" />
-              <div className="flex gap-4">
-                <div className="h-4 bg-zinc-300 dark:bg-zinc-700/60 rounded w-28" />
-                <div className="h-4 bg-zinc-300 dark:bg-zinc-700/60 rounded w-28" />
-              </div>
-            </div>
-
-            {/* Right Column Stack Skeleton */}
-            <div className="lg:col-span-2 flex flex-col gap-6 lg:h-[500px]">
-              <div className="flex-1 flex gap-4 p-4 rounded-[24px] bg-zinc-100 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800/40 items-center animate-pulse min-h-[180px]">
-                <div className="w-1/3 aspect-[3/4] h-full rounded-2xl bg-zinc-300 dark:bg-zinc-700/60" />
-                <div className="flex-1 space-y-3">
-                  <div className="h-5 bg-zinc-300 dark:bg-zinc-700/60 rounded w-3/4" />
-                  <div className="h-4 bg-zinc-300 dark:bg-zinc-700/60 rounded w-1/2" />
-                  <div className="h-5 bg-zinc-300 dark:bg-zinc-700/60 rounded w-1/3 pt-2" />
-                </div>
-              </div>
-              <div className="flex-1 flex gap-4 p-4 rounded-[24px] bg-zinc-100 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800/40 items-center animate-pulse min-h-[180px]">
-                <div className="w-1/3 aspect-[3/4] h-full rounded-2xl bg-zinc-300 dark:bg-zinc-700/60" />
-                <div className="flex-1 space-y-3">
-                  <div className="h-5 bg-zinc-300 dark:bg-zinc-700/60 rounded w-3/4" />
-                  <div className="h-4 bg-zinc-300 dark:bg-zinc-700/60 rounded w-1/2" />
-                  <div className="h-5 bg-zinc-300 dark:bg-zinc-700/60 rounded w-1/3 pt-2" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    );
+    return <EliteVenueSectionSkeleton />;
   }
 
   return (

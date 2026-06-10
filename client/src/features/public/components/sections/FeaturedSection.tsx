@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { MapPin, Users, Star, ArrowLeft, ArrowRight, ShieldCheck } from 'lucide-react';
 import type { Venue } from '@/features/venues/types/venues.types';
-import travancoreImg from '@/features/home/assets/elite-travancore.png';
-import emeraldImg from '@/features/home/assets/hero-venue-2.png';
-import mistImg from '@/features/home/assets/hero-venue-4.png';
+import travancoreImg from '@/features/public/assets/elite-travancore.png';
+import emeraldImg from '@/features/public/assets/hero-venue-2.png';
+import mistImg from '@/features/public/assets/hero-venue-4.png';
+import FeaturedSectionSkeleton from '../loaders/FeaturedSectionSkeleton';
 
 interface FeaturedSectionProps {
   venues: Venue[];
@@ -80,18 +81,7 @@ export default function FeaturedSection({ venues, loading }: FeaturedSectionProp
   }, [loading, featuredList.length]);
 
   if (loading) {
-    return (
-      <section className="py-16 bg-transparent animate-pulse">
-        <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12">
-          <div className="lg:col-span-5 space-y-4">
-            <div className="h-4 bg-zinc-300 dark:bg-zinc-800 rounded w-1/4" />
-            <div className="h-10 bg-zinc-300 dark:bg-zinc-800 rounded w-3/4" />
-            <div className="h-24 bg-zinc-300 dark:bg-zinc-800 rounded" />
-          </div>
-          <div className="lg:col-span-7 h-[400px] bg-zinc-300 dark:bg-zinc-800 rounded-[32px]" />
-        </div>
-      </section>
-    );
+    return <FeaturedSectionSkeleton />;
   }
 
   const activeVenue = featuredList[activeIdx];
