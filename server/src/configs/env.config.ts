@@ -17,6 +17,8 @@ const envSchema = z.object({
 
   JWT_REFRESH_SECRET: z.string().min(10),
 
+  JWT_REGISTRATION_SECRET: z.string().min(10),
+
   CORS_ORIGIN: z.string().default('*'),
 
   GOOGLE_CLIENT_ID: z.string().min(1),
@@ -25,7 +27,24 @@ const envSchema = z.object({
 
   GOOGLE_CALLBACK_URL: z.string(),
 
-  CLOUDINARY_URL: z.string(), 
+  CLOUDINARY_URL: z.string(),
+
+  // Upstash Redis
+  UPSTASH_REDIS_REST_URL: z.string().url(),
+  UPSTASH_REDIS_REST_TOKEN: z.string().min(1),
+
+  // SMTP / Email
+  SMTP_HOST: z.string().min(1),
+  SMTP_PORT: z.coerce.number().default(587),
+  SMTP_USER: z.string().min(1),
+  SMTP_PASS: z.string().min(1),
+  SMTP_FROM: z.string().min(1),
+
+  // OTP settings
+  OTP_EXPIRY_SECONDS: z.coerce.number().default(300),
+  RESEND_COOLDOWN_SECONDS: z.coerce.number().default(60),
+  MAX_VERIFY_ATTEMPTS: z.coerce.number().default(5),
+  MAX_RESEND_COUNT: z.coerce.number().default(3),
 });
 
 const env = envSchema.parse(process.env);
