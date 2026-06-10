@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { Menu, X, Search, Bell, Heart, User, ChevronDown, LogOut, Calendar, Settings } from 'lucide-react';
+import { Menu, X, Search, Bell, ChevronDown, LogOut } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
-import { ThemeToggle } from '@/shared/components/ui';
+import { ThemeToggle, ProfileList, Notification } from '@/shared/components/ui';
 import { useAppStore } from '@/store/app.store';
 import logoImg from '@/assets/logo.png';
 
@@ -11,26 +11,6 @@ const navLinks = [
   { name: 'Browse Venues', href: '/venues' },
 ];
 
-const mockNotifications = [
-  {
-    id: 1,
-    text: 'Your booking at Grand Palace has been confirmed!',
-    time: '2 hours ago',
-    read: false,
-  },
-  {
-    id: 2,
-    text: 'New venue "Orchid Garden" is now available in your area.',
-    time: '1 day ago',
-    read: true,
-  },
-  {
-    id: 3,
-    text: 'Welcome to BookMyVenue! Complete your profile to get started.',
-    time: '3 days ago',
-    read: true,
-  },
-];
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -136,55 +116,9 @@ const Navbar = () => {
               </button>
 
               {notificationsOpen && (
-                <div className="absolute right-0 mt-2 w-80 rounded-xl border border-border bg-surface shadow-lg py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
-                  <div className="px-4 py-1.5 border-b border-border flex justify-between items-center">
-                    <span className="text-[13px] font-semibold text-foreground">Notifications</span>
-                    <button className="text-[11px] text-primary hover:underline font-medium cursor-pointer">
-                      Mark all read
-                    </button>
-                  </div>
-                  <div className="max-h-64 overflow-y-auto py-1">
-                    {mockNotifications.map((notif) => (
-                      <div
-                        key={notif.id}
-                        className={[
-                          'px-4 py-2.5 hover:bg-muted/30 transition-colors flex flex-col gap-0.5 border-b border-border/40 last:border-0',
-                          !notif.read ? 'bg-primary/5' : '',
-                        ].join(' ')}
-                      >
-                        <p className="text-[12px] text-foreground font-medium leading-normal">
-                          {notif.text}
-                        </p>
-                        <span className="text-[10px] text-foreground/50 font-normal">
-                          {notif.time}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="px-4 pt-1.5 border-t border-border text-center">
-                    <Link
-                      to="/notifications"
-                      className="text-[11px] text-primary hover:underline font-semibold"
-                      onClick={() => setNotificationsOpen(false)}
-                    >
-                      View all notifications
-                    </Link>
-                  </div>
-                </div>
+                <Notification onClose={() => setNotificationsOpen(false)} />
               )}
             </div>
-
-            {/* Favorites Icon */}
-            <Link
-              to="/favorites"
-              className="relative p-2 rounded-xl text-foreground/85 hover:bg-muted/30 hover:text-primary transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary"
-              aria-label="Favorites"
-            >
-              <Heart className="w-5 h-5" />
-              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-white text-[10px] font-bold flex items-center justify-center border border-background">
-                3
-              </span>
-            </Link>
 
             {/* Theme Toggle */}
             <ThemeToggle />
@@ -208,58 +142,7 @@ const Navbar = () => {
               </button>
 
               {profileOpen && (
-                <div className="absolute right-0 mt-2 w-56 rounded-xl border border-border bg-surface shadow-lg py-1.5 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
-                  <div className="px-4 py-2 border-b border-border flex flex-col gap-0.5">
-                    <p className="text-[13px] font-semibold text-foreground">{user?.fullName || 'User'}</p>
-                    {user?.email && <p className="text-[11px] text-foreground/60">{user.email}</p>}
-                  </div>
-                  <div className="py-1">
-                    <Link
-                      to="/profile"
-                      onClick={() => setProfileOpen(false)}
-                      className="flex items-center gap-2.5 px-4 py-2 text-[12px] text-foreground/80 hover:bg-muted/30 hover:text-primary transition-all duration-150"
-                    >
-                      <User size={14} className="text-foreground/50" />
-                      My Profile
-                    </Link>
-                    <Link
-                      to="/bookings"
-                      onClick={() => setProfileOpen(false)}
-                      className="flex items-center gap-2.5 px-4 py-2 text-[12px] text-foreground/80 hover:bg-muted/30 hover:text-primary transition-all duration-150"
-                    >
-                      <Calendar size={14} className="text-foreground/50" />
-                      My Bookings
-                    </Link>
-                    <Link
-                      to="/favorites"
-                      onClick={() => setProfileOpen(false)}
-                      className="flex items-center gap-2.5 px-4 py-2 text-[12px] text-foreground/80 hover:bg-muted/30 hover:text-primary transition-all duration-150"
-                    >
-                      <Heart size={14} className="text-foreground/50" />
-                      Favorites
-                    </Link>
-                    <Link
-                      to="/settings"
-                      onClick={() => setProfileOpen(false)}
-                      className="flex items-center gap-2.5 px-4 py-2 text-[12px] text-foreground/80 hover:bg-muted/30 hover:text-primary transition-all duration-150"
-                    >
-                      <Settings size={14} className="text-foreground/50" />
-                      Settings
-                    </Link>
-                  </div>
-                  <div className="border-t border-border pt-1 mt-1">
-                    <button
-                      onClick={() => {
-                        setProfileOpen(false);
-                        logout();
-                      }}
-                      className="flex items-center gap-2.5 w-full text-left px-4 py-2 text-[12px] text-foreground/85 hover:bg-primary/10 hover:text-primary transition-all duration-150 font-medium cursor-pointer"
-                    >
-                      <LogOut size={14} />
-                      Log out
-                    </button>
-                  </div>
-                </div>
+                <ProfileList onClose={() => setProfileOpen(false)} />
               )}
             </div>
           </div>
@@ -401,17 +284,6 @@ const Navbar = () => {
               >
                 <Bell className="w-5 h-5" />
                 <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary ring-2 ring-surface" />
-              </Link>
-              <Link
-                to="/favorites"
-                onClick={() => setMobileOpen(false)}
-                className="relative p-2 rounded-xl text-foreground/80 hover:text-primary hover:bg-muted/30 transition-all duration-200"
-                aria-label="Favorites"
-              >
-                <Heart className="w-5 h-5" />
-                <span className="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-1 rounded-full bg-primary text-white text-[9px] font-bold flex items-center justify-center border border-surface">
-                  3
-                </span>
               </Link>
             </div>
 
