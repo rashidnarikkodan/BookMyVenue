@@ -108,7 +108,7 @@ const verifyOtp = async (
   if (!updatedUser) {
     throw new AppError(
       MESSAGES.INTERNAL_ERROR,
-      HTTP_STATUS.INTERNAL_SERVER_ERROR,
+      HTTP_STATUS.SERVER_ERROR,
     );
   }
 
@@ -265,7 +265,7 @@ const googleAuth = async (idToken: string,): Promise<{
   if (!user) {
     throw new AppError(
       'Failed to process Google login',
-      HTTP_STATUS.INTERNAL_SERVER_ERROR,
+      HTTP_STATUS.SERVER_ERROR,
     );
   }
 

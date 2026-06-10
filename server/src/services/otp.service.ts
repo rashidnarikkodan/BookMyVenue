@@ -39,7 +39,7 @@ export const otpService = {
       await emailService.sendOtpEmail(emailAddr, otp);
     } catch {
       await redisService.del(keys.otp(emailAddr));
-      throw new AppError(MESSAGES.OTP_EMAIL_FAIL, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+      throw new AppError(MESSAGES.OTP_EMAIL_FAIL, HTTP_STATUS.SERVER_ERROR);
     }
   },
 
