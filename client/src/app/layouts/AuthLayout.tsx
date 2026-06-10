@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import { ThemeProvider } from '@/shared/providers/ThemeProvider';
+import { Toaster } from 'sonner';
 
 export default function AuthLayout() {
   return (
@@ -36,9 +37,15 @@ export default function AuthLayout() {
             &copy; {new Date().getFullYear()} BookMyVenue. All rights reserved.
           </div>
           <div className="flex space-x-6">
-            <a href="#" className="hover:text-slate-300 transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-slate-300 transition-colors">Terms of Service</a>
-            <a href="#" className="hover:text-slate-300 transition-colors">Contact Support</a>
+            <a href="#" className="hover:text-slate-300 transition-colors">
+              Privacy Policy
+            </a>
+            <a href="#" className="hover:text-slate-300 transition-colors">
+              Terms of Service
+            </a>
+            <a href="#" className="hover:text-slate-300 transition-colors">
+              Contact Support
+            </a>
           </div>
         </footer>
       </div>

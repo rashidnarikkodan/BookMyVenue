@@ -8,7 +8,6 @@ import CTASection from '@/features/public/components/sections/CTASection';
 import { useAsyncFetch } from '@/shared/hooks/useAsyncFetch';
 import { getHomeData, type HomeDataResponse } from '../services/home.services';
 
-
 export default function HomePage() {
   const { data, loading, error, execute } = useAsyncFetch<HomeDataResponse>();
 

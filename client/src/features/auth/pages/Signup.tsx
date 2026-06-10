@@ -5,7 +5,7 @@ import { signupApi, googleAuthApi } from '../services/auth.api';
 import { useAuthStore } from '../store/auth.store';
 import { useAppStore } from '../../../store/app.store';
 import OtpVerification from './OtpVerification';
-import { GoogleLogin } from "@react-oauth/google";
+import { GoogleLogin } from '@react-oauth/google';
 
 const getRoleRedirect = (role: string) => {
   if (role === 'owner') return '/owner/dashboard';
@@ -87,7 +87,7 @@ const Signup = () => {
       setAuth(data.data.token, data.data.refreshToken, data.data.user);
       navigate(getRoleRedirect(data.data.user.role));
     } catch (error) {
-      console.log("Google auth Error: ", error);
+      console.log('Google auth Error: ', error);
       setError('Google Auth Failed');
     } finally {
       setLoading(false);
@@ -136,7 +136,9 @@ const Signup = () => {
 
         {/* Email */}
         <div className="flex flex-col gap-1">
-          <label className="text-[10px] font-medium text-slate-400 tracking-wide">EMAIL ADDRESS</label>
+          <label className="text-[10px] font-medium text-slate-400 tracking-wide">
+            EMAIL ADDRESS
+          </label>
           <input
             type="email"
             name="email"
@@ -150,7 +152,9 @@ const Signup = () => {
 
         {/* Phone Number */}
         <div className="flex flex-col gap-1">
-          <label className="text-[10px] font-medium text-slate-400 tracking-wide">PHONE NUMBER</label>
+          <label className="text-[10px] font-medium text-slate-400 tracking-wide">
+            PHONE NUMBER
+          </label>
           <input
             type="tel"
             name="phoneNumber"
@@ -193,7 +197,9 @@ const Signup = () => {
 
         {/* Confirm Password */}
         <div className="flex flex-col gap-1">
-          <label className="text-[10px] font-medium text-slate-400 tracking-wide">CONFIRM PASSWORD</label>
+          <label className="text-[10px] font-medium text-slate-400 tracking-wide">
+            CONFIRM PASSWORD
+          </label>
           <div className="relative">
             <input
               type={showConfirmPassword ? 'text' : 'password'}
@@ -224,7 +230,14 @@ const Signup = () => {
           {loading ? (
             <>
               <svg className="w-4 h-4 animate-spin mr-2" viewBox="0 0 24 24" fill="none">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
               </svg>
               SENDING OTP…
@@ -240,7 +253,9 @@ const Signup = () => {
         {/* Divider */}
         <div className="flex items-center my-1">
           <div className="flex-grow border-t border-slate-700/60"></div>
-          <span className="px-3 text-[10px] text-slate-500 uppercase tracking-wider">Or continue with</span>
+          <span className="px-3 text-[10px] text-slate-500 uppercase tracking-wider">
+            Or continue with
+          </span>
           <div className="flex-grow border-t border-slate-700/60"></div>
         </div>
 
@@ -258,7 +273,10 @@ const Signup = () => {
 
       <div className="mt-4 text-center text-xs text-slate-400">
         Already have an account?{' '}
-        <Link to="/signin" className="text-primary-500 hover:text-primary-400 font-semibold transition-colors">
+        <Link
+          to="/signin"
+          className="text-primary-500 hover:text-primary-400 font-semibold transition-colors"
+        >
           Sign In
         </Link>
       </div>

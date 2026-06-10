@@ -1,5 +1,17 @@
 import { useState, useEffect, useRef } from 'react';
-import { Menu, X, Search, Bell, Heart, User, ChevronDown, LogOut, Calendar, Settings, Building2 } from 'lucide-react';
+import {
+  Menu,
+  X,
+  Search,
+  Bell,
+  Heart,
+  User,
+  ChevronDown,
+  LogOut,
+  Calendar,
+  Settings,
+  Building2,
+} from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { ThemeToggle } from '@/shared/components/ui';
 
@@ -13,9 +25,24 @@ const navLinks = [
 ];
 
 const mockNotifications = [
-  { id: 1, text: 'Your booking at Grand Palace has been confirmed!', time: '2 hours ago', read: false },
-  { id: 2, text: 'New venue "Orchid Garden" is now available in your area.', time: '1 day ago', read: true },
-  { id: 3, text: 'Welcome to BookMyVenue! Complete your profile to get started.', time: '3 days ago', read: true },
+  {
+    id: 1,
+    text: 'Your booking at Grand Palace has been confirmed!',
+    time: '2 hours ago',
+    read: false,
+  },
+  {
+    id: 2,
+    text: 'New venue "Orchid Garden" is now available in your area.',
+    time: '1 day ago',
+    read: true,
+  },
+  {
+    id: 3,
+    text: 'Welcome to BookMyVenue! Complete your profile to get started.',
+    time: '3 days ago',
+    read: true,
+  },
 ];
 
 const Navbar = () => {
@@ -23,7 +50,7 @@ const Navbar = () => {
   const [profileOpen, setProfileOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  
+
   const { pathname } = useLocation();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const notificationRef = useRef<HTMLDivElement>(null);
@@ -42,19 +69,20 @@ const Navbar = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const isActive = (href: string) =>
-    href === '/' ? pathname === '/' : pathname.startsWith(href);
+  const isActive = (href: string) => (href === '/' ? pathname === '/' : pathname.startsWith(href));
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md transition-colors duration-300">
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <nav className="flex items-center justify-between h-16" aria-label="Main navigation">
-          
           {/* Logo */}
           <div className="flex items-center gap-2.5">
             <Link to="/" className="flex items-center gap-2.5 group shrink-0">
               <div className="grid place-items-center h-9 w-9 rounded-xl bg-gradient-to-tr from-primary to-secondary text-white shadow-md shadow-primary/20 group-hover:scale-105 transition-all duration-300">
-                <Building2 size={18} className="transition-transform duration-300 group-hover:rotate-3" />
+                <Building2
+                  size={18}
+                  className="transition-transform duration-300 group-hover:rotate-3"
+                />
               </div>
               <span className="text-[17px] font-bold text-foreground tracking-tight group-hover:text-primary transition-colors duration-300">
                 BookMyVenue
@@ -85,7 +113,6 @@ const Navbar = () => {
 
           {/* Desktop Right Actions */}
           <div className="hidden md:flex items-center gap-2.5">
-            
             {/* Search Toggle */}
             <button
               onClick={() => setSearchOpen(true)}
@@ -112,7 +139,9 @@ const Navbar = () => {
                 <div className="absolute right-0 mt-2 w-80 rounded-xl border border-border bg-surface shadow-lg py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
                   <div className="px-4 py-1.5 border-b border-border flex justify-between items-center">
                     <span className="text-[13px] font-semibold text-foreground">Notifications</span>
-                    <button className="text-[11px] text-primary hover:underline font-medium cursor-pointer">Mark all read</button>
+                    <button className="text-[11px] text-primary hover:underline font-medium cursor-pointer">
+                      Mark all read
+                    </button>
                   </div>
                   <div className="max-h-64 overflow-y-auto py-1">
                     {mockNotifications.map((notif) => (
@@ -123,13 +152,21 @@ const Navbar = () => {
                           !notif.read ? 'bg-primary/5' : '',
                         ].join(' ')}
                       >
-                        <p className="text-[12px] text-foreground font-medium leading-normal">{notif.text}</p>
-                        <span className="text-[10px] text-foreground/50 font-normal">{notif.time}</span>
+                        <p className="text-[12px] text-foreground font-medium leading-normal">
+                          {notif.text}
+                        </p>
+                        <span className="text-[10px] text-foreground/50 font-normal">
+                          {notif.time}
+                        </span>
                       </div>
                     ))}
                   </div>
                   <div className="px-4 pt-1.5 border-t border-border text-center">
-                    <Link to="/notifications" className="text-[11px] text-primary hover:underline font-semibold" onClick={() => setNotificationsOpen(false)}>
+                    <Link
+                      to="/notifications"
+                      className="text-[11px] text-primary hover:underline font-semibold"
+                      onClick={() => setNotificationsOpen(false)}
+                    >
                       View all notifications
                     </Link>
                   </div>
@@ -167,7 +204,13 @@ const Navbar = () => {
                   JD
                 </div>
                 <span className="hidden lg:inline-block text-[13px] font-medium">John Doe</span>
-                <ChevronDown size={14} className={['transition-transform duration-300 text-foreground/50', profileOpen ? 'rotate-180' : ''].join(' ')} />
+                <ChevronDown
+                  size={14}
+                  className={[
+                    'transition-transform duration-300 text-foreground/50',
+                    profileOpen ? 'rotate-180' : '',
+                  ].join(' ')}
+                />
               </button>
 
               {profileOpen && (
@@ -225,7 +268,6 @@ const Navbar = () => {
                 </div>
               )}
             </div>
-
           </div>
 
           {/* Mobile menu button */}
@@ -243,7 +285,6 @@ const Navbar = () => {
               {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
-
         </nav>
       </div>
 
@@ -290,14 +331,15 @@ const Navbar = () => {
         aria-modal="true"
       >
         <div className="flex flex-col h-full">
-          
           {/* Drawer Header */}
           <div className="flex h-16 items-center justify-between border-b border-border px-5 shrink-0">
             <Link to="/" className="flex items-center gap-2" onClick={() => setMobileOpen(false)}>
               <div className="grid place-items-center h-8 w-8 rounded-lg bg-gradient-to-tr from-primary to-secondary text-white shadow-sm">
                 <Building2 size={15} />
               </div>
-              <span className="text-[15px] font-bold text-foreground tracking-tight">BookMyVenue</span>
+              <span className="text-[15px] font-bold text-foreground tracking-tight">
+                BookMyVenue
+              </span>
             </Link>
             <button
               type="button"
@@ -344,7 +386,6 @@ const Navbar = () => {
 
           {/* Drawer Quick Actions & Pinned Bottom Section */}
           <div className="p-4 border-t border-border bg-surface/50 backdrop-blur-sm flex flex-col gap-3 shrink-0">
-            
             {/* Quick Action Icons Line */}
             <div className="flex items-center justify-around py-1.5 bg-muted/20 border border-border/50 rounded-xl">
               <button
@@ -409,9 +450,7 @@ const Navbar = () => {
               <LogOut size={14} />
               Log out
             </button>
-
           </div>
-
         </div>
       </div>
     </header>

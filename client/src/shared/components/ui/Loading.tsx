@@ -47,11 +47,7 @@ const Loading: React.FC<LoadingProps> = ({
     );
   }
 
-  return (
-    <div className="flex items-center justify-center p-8 w-full min-h-[120px]">
-      {spinner}
-    </div>
-  );
+  return <div className="flex items-center justify-center p-8 w-full min-h-[120px]">{spinner}</div>;
 };
 
 export default Loading;
