@@ -3,7 +3,6 @@ import * as authController from '../controllers/auth.controller';
 import { validateInputs } from '@/middlewares/validate.middleware';
 import { resendOtpSchema, signinSchema, signupSchema, verifyOtpSchema } from '@/utils/validations';
 import { authRoutes } from '@/constants/routes';
-import { authMiddleware } from '@/middlewares/auth.middleware';
 
 const router = Router();
 
