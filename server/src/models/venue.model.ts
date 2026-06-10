@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-
+import { IVenue } from '@/types/venue.types';
 const venueSchema = new mongoose.Schema(
   {
     ownerId: {
@@ -130,6 +130,6 @@ const venueSchema = new mongoose.Schema(
 // Nearby venue search
 venueSchema.index({ location: '2dsphere' });
 
-const Venue = mongoose.model('Venue', venueSchema);
+const Venue = mongoose.model<IVenue>('Venue', venueSchema);
 
 export default Venue;
