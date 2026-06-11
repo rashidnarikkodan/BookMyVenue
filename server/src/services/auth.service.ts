@@ -1,4 +1,7 @@
 import argon2 from 'argon2';
+import { RegisterDto } from '@/dto/auth/register.dto';
+import { LoginDto } from '@/dto/auth/login.dto';
+import { VerifyOtpDto } from '@/dto/auth/verify-otp.dto';
 import { OAuth2Client } from 'google-auth-library';
 import { MESSAGES } from '@/constants/messages';
 import { HTTP_STATUS } from '@/constants/http';
@@ -17,7 +20,7 @@ type RegistrationTokenPayload = {
 };
 
 const signup = async (
-  userData: Partial<IUser>
+  userData: RegisterDto
 ): Promise<{ email: string; registrationToken: string }> => {
   const email = userData.email!.toLowerCase().trim();
 
@@ -75,12 +78,11 @@ const verifyRegistrationToken = (registrationToken: string): RegistrationTokenPa
 };
 
 const verifyOtp = async (
-  registrationToken: string,
-  otp: string
+  data: VerifyOtpDto
 ): Promise<{ user: Partial<IUser> }> => {
-  const payload = verifyRegistrationToken(registrationToken);
+  const payload = verifyRegistrationToken(data.registrationToken);
 
-  await otpService.verifyOtp(payload.email, otp);
+  await otpService.verifyOtp(payload.email, data.otp);
 
   const user = await userRepository.findByEmail(payload.email);
 
@@ -113,8 +115,7 @@ const resendOtp = async (registrationToken: string): Promise<void> => {
 
   if (!allowed) {
     throw new AppError(
-      `${MESSAGES.OTP_RESEND_COOLDOWN}. Try again in ${secondsLeft} second${
-        secondsLeft === 1 ? '' : 's'
+      `${MESSAGES.OTP_RESEND_COOLDOWN}. Try again in ${secondsLeft} second${secondsLeft === 1 ? '' : 's'
       }.`,
       HTTP_STATUS.TOO_MANY_REQUESTS
     );
@@ -123,10 +124,7 @@ const resendOtp = async (registrationToken: string): Promise<void> => {
   await otpService.generateAndSendOtp(payload.email);
 };
 
-const signin = async (data: {
-  email: string;
-  password: string;
-}): Promise<{
+const signin = async (data: LoginDto): Promise<{
   user: Partial<IUser>;
   accessToken: string;
   refreshToken: string;
@@ -146,7 +144,7 @@ const signin = async (data: {
     throw new AppError('Please sign in with Google', HTTP_STATUS.UNAUTHORIZED);
   }
 
-  const isMatch = await argon2.verify(user.password, data.password);
+  const isMatch = await argon2.verify(user.password, data.password as string);
 
   if (!isMatch) {
     throw new AppError(MESSAGES.INVALID_CREDENTIALS, HTTP_STATUS.UNAUTHORIZED);

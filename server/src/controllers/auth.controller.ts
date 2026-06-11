@@ -17,8 +17,8 @@ export const signup = async (req: Request, res: Response, next: NextFunction): P
 
 export const verifyOtp = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { registrationToken, otp } = req.body;
-    const result = await authService.verifyOtp(registrationToken, otp);
+    const data = req.body;
+    const result = await authService.verifyOtp(data);
     success(res, HTTP_STATUS.OK, result, MESSAGES.USER_VERIFIED);
   } catch (error: unknown) {
     next(error);

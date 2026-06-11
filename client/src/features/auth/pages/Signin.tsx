@@ -135,7 +135,7 @@ const Signin = () => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full mt-2 bg-primary-600 hover:bg-primary-500 text-white font-semibold text-sm py-2.5 rounded-xl shadow-lg shadow-primary-600/20 flex items-center justify-center transition-all group disabled:opacity-50"
+          className="w-full mt-2 bg-primary hover:bg-primary-500 text-white font-semibold text-sm py-2.5 rounded-xl shadow-lg shadow-primary-600/20 flex items-center justify-center transition-all group disabled:opacity-50"
         >
           {loading ? (
             <>
