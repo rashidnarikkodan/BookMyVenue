@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import CategoryHeader from '../components/layout/CategoryHeader';
 import CategoryTable from '../components/layout/CategoryTable';
@@ -33,12 +33,24 @@ const CategoriesList = () => {
     data: listResponse,
     loading,
     execute: fetchCategories,
-  } = useAsyncFetch<{ success: boolean; message: string; data: Category[] }>();
+  } = useAsyncFetch<{
+    success: boolean;
+    message: string;
+    data: {
+      categories: Category[];
+      totalCategories: number;
+      totalActive: number;
+      totalInactive: number;
+    };
+  }>();
 
   const { loading: actionLoading, execute: executeAction } = useAsyncFetch<any>();
 
-  // Extract categories array
-  const categories = listResponse?.data || [];
+  // Extract categories and pagination/stats metadata
+  const categories = useMemo(() => listResponse?.data?.categories || [], [listResponse]);
+  const totalCategories = listResponse?.data?.totalCategories || 0;
+  const totalActive = listResponse?.data?.totalActive || 0;
+  const totalInactive = listResponse?.data?.totalInactive || 0;
 
   // Helper function to update search parameters in the URL
   const updateParams = (updates: Record<string, string | number | undefined>) => {
@@ -72,27 +84,25 @@ const CategoriesList = () => {
   }, [searchParam]);
 
   // Fetch Categories function (depends on values from URL query parameters)
-  const loadCategories = () => {
+  const loadCategories = useCallback(() => {
     fetchCategories(() =>
       categoriesApi.getAll({
         search: searchParam,
         sort: sortBy,
         status: filter,
+        page: currentPage,
+        limit: itemsPerPage,
       })
     );
-  };
+  }, [fetchCategories, searchParam, sortBy, filter, currentPage, itemsPerPage]);
 
   // Whenever URL parameters change, fetch the data
   useEffect(() => {
     loadCategories();
-  }, [searchParam, sortBy, filter]);
+  }, [loadCategories]);
 
   // Paginated Categories
-  const totalPages = Math.ceil(categories.length / itemsPerPage);
-  const paginatedCategories = useMemo(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    return categories.slice(startIndex, startIndex + itemsPerPage);
-  }, [categories, currentPage, itemsPerPage]);
+  const totalPages = Math.ceil(totalCategories / itemsPerPage);
 
   // Delete Category (Soft Delete)
   const handleDelete = async (id: string) => {
@@ -135,11 +145,11 @@ const CategoriesList = () => {
   // Statistics Calculation
   const stats = useMemo(() => {
     return {
-      total: categories.length,
-      active: categories.filter((c) => c.isActive).length,
-      inactive: categories.filter((c) => !c.isActive).length,
+      total: totalCategories,
+      active: totalActive,
+      inactive: totalInactive,
     };
-  }, [categories]);
+  }, [totalCategories, totalActive, totalInactive]);
 
   return (
     <div className="space-y-6">
@@ -209,7 +219,7 @@ const CategoriesList = () => {
         <Loading />
       ) : (
         <CategoryTable
-          categories={paginatedCategories}
+          categories={categories}
           onEdit={handleEditClick}
           onDelete={handleDelete}
           onRestore={handleRestore}

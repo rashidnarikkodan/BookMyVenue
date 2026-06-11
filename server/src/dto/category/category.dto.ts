@@ -23,4 +23,6 @@ export interface GetCategoriesQueryDto {
   status?: 'active' | 'inactive' | 'all';
   search?: string;
   sort?: 'asc' | 'desc';
+  page?: string | number;
+  limit?: string | number;
 }
