@@ -2,15 +2,27 @@ import React from 'react';
 import type { User } from '../../types';
 import { Users } from 'lucide-react';
 import UserRow from './UserRow';
+import { Pagination } from '@/shared/components/ui';
 
 type Props = {
   users: User[];
   onDelete?: (id: string) => void;
   onRestore?: (id: string) => void;
   isActionLoading?: boolean;
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
 };
 
-const UserTable: React.FC<Props> = ({ users, onDelete, onRestore, isActionLoading }) => {
+const UserTable: React.FC<Props> = ({
+  users,
+  onDelete,
+  onRestore,
+  isActionLoading,
+  currentPage,
+  totalPages,
+  onPageChange,
+}) => {
   return (
     <div className="overflow-hidden bg-card shadow-sm rounded-2xl border border-border transition-colors duration-250">
       <div className="overflow-x-auto">
@@ -59,6 +71,7 @@ const UserTable: React.FC<Props> = ({ users, onDelete, onRestore, isActionLoadin
           </tbody>
         </table>
       </div>
+      <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={onPageChange} />
     </div>
   );
 };

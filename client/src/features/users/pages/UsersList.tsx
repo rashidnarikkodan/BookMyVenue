@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import UserHeader from '../components/layout/UserHeader';
 import UserTable from '../components/layout/UserTable';
 import UserToolbar from '../components/layout/UserToolbar';
@@ -11,17 +12,32 @@ import { Users, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { useDebounce } from '@/shared/hooks/useDebounce';
 
 const UsersList = () => {
-  const [search, setSearch] = useState('');
-  const [sortBy, setSortBy] = useState<'asc' | 'desc'>('desc');
-  const [filter, setFilter] = useState<'all' | 'active' | 'inactive'>('all');
-  const [roleFilter, setRoleFilter] = useState<'all' | 'admin' | 'owner' | 'user'>('all');
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Read state parameters from URL search params
+  const searchParam = searchParams.get('search') || '';
+  const sortBy = (searchParams.get('sort') || 'desc') as 'asc' | 'desc';
+  const filter = (searchParams.get('status') || 'all') as 'all' | 'active' | 'inactive';
+  const roleFilter = (searchParams.get('role') || 'all') as 'all' | 'admin' | 'owner' | 'user';
+  const currentPage = Number(searchParams.get('page')) || 1;
+  const itemsPerPage = Number(searchParams.get('limit')) || 5;
+
+  // Local state for the input field to keep typing responsive
+  const [search, setSearch] = useState(searchParam);
 
   // useAsyncFetch hooks
   const {
     data: listResponse,
     loading,
     execute: fetchUsers,
-  } = useAsyncFetch<{ success: boolean; message: string; data: User[] }>();
+  } = useAsyncFetch<{
+    success: boolean;
+    message: string;
+    data: {
+      users: User[];
+      totalUsers: number;
+    };
+  }>();
 
   const { loading: actionLoading, execute: executeAction } = useAsyncFetch<{
     success: boolean;
@@ -29,23 +45,55 @@ const UsersList = () => {
     data: User;
   }>();
 
-  // Extract users list safely
-  const users = useMemo(() => listResponse?.data || [], [listResponse]);
+  // Extract users and pagination metadata
+  const users = useMemo(() => listResponse?.data?.users || [], [listResponse]);
+  const totalUsers = listResponse?.data?.totalUsers || 0;
+  const totalPages = Math.ceil(totalUsers / itemsPerPage);
 
-  // Debounce Search Input
+  // Helper function to update search parameters in the URL
+  const updateParams = (updates: Record<string, string | number | undefined>) => {
+    setSearchParams(
+      (prev) => {
+        const newParams = new URLSearchParams(prev);
+        Object.entries(updates).forEach(([key, value]) => {
+          if (value === undefined || value === '') {
+            newParams.delete(key);
+          } else {
+            newParams.set(key, String(value));
+          }
+        });
+        return newParams;
+      },
+      { replace: true }
+    );
+  };
+
+  // Debounce search input changes before writing to URL
   const debouncedSearch = useDebounce(search, 400);
 
-  // Fetch Users function using useCallback to avoid missing dependency lint errors
+  // Sync debounced search to URL (and reset page to 1)
+  useEffect(() => {
+    updateParams({ search: debouncedSearch || undefined, page: 1 });
+  }, [debouncedSearch]);
+
+  // Sync local input with searchParam (e.g. if the user navigates back/forward)
+  useEffect(() => {
+    setSearch(searchParam);
+  }, [searchParam]);
+
+  // Fetch Users function using current query parameters
   const loadUsers = useCallback(() => {
     fetchUsers(() =>
       usersApi.getAll({
-        search: debouncedSearch,
+        search: searchParam,
         sort: sortBy,
         status: filter,
         role: roleFilter,
+        page: currentPage,
+        limit: itemsPerPage,
       })
     );
-  }, [fetchUsers, debouncedSearch, sortBy, filter, roleFilter]);
+  }, [fetchUsers, searchParam, sortBy, filter, roleFilter, currentPage, itemsPerPage]);
 
   useEffect(() => {
     loadUsers();
@@ -80,11 +128,11 @@ const UsersList = () => {
   // Statistics Calculation
   const stats = useMemo(() => {
     return {
-      total: users.length,
+      total: totalUsers,
       active: users.filter((u) => u.isActive).length,
       inactive: users.filter((u) => !u.isActive).length,
     };
-  }, [users]);
+  }, [users, totalUsers]);
 
   return (
     <div className="space-y-6">
@@ -142,11 +190,11 @@ const UsersList = () => {
         search={search}
         onSearchChange={setSearch}
         sortBy={sortBy}
-        onSortChange={setSortBy}
+        onSortChange={(value) => updateParams({ sort: value, page: 1 })}
         filter={filter}
-        onFilterChange={setFilter}
+        onFilterChange={(value) => updateParams({ status: value, page: 1 })}
         roleFilter={roleFilter}
-        onRoleFilterChange={setRoleFilter}
+        onRoleFilterChange={(value) => updateParams({ role: value, page: 1 })}
       />
 
       {/* Content Area */}
@@ -158,6 +206,9 @@ const UsersList = () => {
           onDelete={handleDelete}
           onRestore={handleRestore}
           isActionLoading={actionLoading}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={(page) => updateParams({ page })}
         />
       )}
     </div>

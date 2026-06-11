@@ -5,9 +5,24 @@ interface NotificationProps {
 }
 
 const mockNotifications = [
-  { id: 1, text: 'Your booking at Grand Palace has been confirmed!', time: '2 hours ago', read: false },
-  { id: 2, text: 'New venue "Orchid Garden" is now available in your area.', time: '1 day ago', read: true },
-  { id: 3, text: 'Welcome to BookMyVenue! Complete your profile to get started.', time: '3 days ago', read: true },
+  {
+    id: 1,
+    text: 'Your booking at Grand Palace has been confirmed!',
+    time: '2 hours ago',
+    read: false,
+  },
+  {
+    id: 2,
+    text: 'New venue "Orchid Garden" is now available in your area.',
+    time: '1 day ago',
+    read: true,
+  },
+  {
+    id: 3,
+    text: 'Welcome to BookMyVenue! Complete your profile to get started.',
+    time: '3 days ago',
+    read: true,
+  },
 ];
 
 const Notification = ({ onClose }: NotificationProps) => {
@@ -15,7 +30,9 @@ const Notification = ({ onClose }: NotificationProps) => {
     <div className="absolute right-0 mt-2 w-80 rounded-xl border border-border bg-surface shadow-lg py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
       <div className="px-4 py-1.5 border-b border-border flex justify-between items-center">
         <span className="text-[13px] font-semibold text-foreground">Notifications</span>
-        <button className="text-[11px] text-primary hover:underline font-medium cursor-pointer">Mark all read</button>
+        <button className="text-[11px] text-primary hover:underline font-medium cursor-pointer">
+          Mark all read
+        </button>
       </div>
       <div className="max-h-64 overflow-y-auto py-1">
         {mockNotifications.map((notif) => (
@@ -32,7 +49,11 @@ const Notification = ({ onClose }: NotificationProps) => {
         ))}
       </div>
       <div className="px-4 pt-1.5 border-t border-border text-center">
-        <Link to="/notifications" className="text-[11px] text-primary hover:underline font-semibold" onClick={onClose}>
+        <Link
+          to="/notifications"
+          className="text-[11px] text-primary hover:underline font-semibold"
+          onClick={onClose}
+        >
           View all notifications
         </Link>
       </div>

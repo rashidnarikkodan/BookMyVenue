@@ -5,7 +5,6 @@ import { MESSAGES } from '@/constants/messages';
 import { HTTP_STATUS } from '@/constants/http';
 import { authService, refreshTokenService } from '../services/auth.service';
 
-
 export const signup = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const validatedData = req.body;
@@ -36,7 +35,11 @@ export const resendOtp = async (req: Request, res: Response, next: NextFunction)
   }
 };
 
-export const googleAuth = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const googleAuth = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   try {
     const { credential } = req.body;
     if (!credential) {
@@ -45,17 +48,17 @@ export const googleAuth = async (req: Request, res: Response, next: NextFunction
     }
     const result = await authService.googleAuth(credential);
 
-    res.cookie("refreshToken", result.refreshToken, {
+    res.cookie('refreshToken', result.refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    res.cookie("accessToken", result.accessToken, {
+    res.cookie('accessToken', result.accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
       maxAge: 15 * 60 * 1000, // 15 minutes
     });
 
@@ -71,17 +74,17 @@ export const signin = async (req: Request, res: Response, next: NextFunction): P
 
     const result = await authService.signin(validatedData);
 
-    res.cookie("refreshToken", result.refreshToken, {
+    res.cookie('refreshToken', result.refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    res.cookie("accessToken", result.accessToken, {
+    res.cookie('accessToken', result.accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
       maxAge: 15 * 60 * 1000, // 15 minutes
     });
 
@@ -91,18 +94,21 @@ export const signin = async (req: Request, res: Response, next: NextFunction): P
   }
 };
 
-
-export const refreshToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const refreshToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   try {
     const refreshToken = req.cookies?.refreshToken;
-    if (!refreshToken) throw new AppError("Unauthorized access", HTTP_STATUS.UNAUTHORIZED);
+    if (!refreshToken) throw new AppError('Unauthorized access', HTTP_STATUS.UNAUTHORIZED);
 
     const result = await refreshTokenService(refreshToken);
 
-    res.cookie("accessToken", result.accessToken, {
+    res.cookie('accessToken', result.accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
       maxAge: 15 * 60 * 1000, // 15 minutes
     });
 

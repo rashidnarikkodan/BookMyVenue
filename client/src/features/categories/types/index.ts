@@ -27,4 +27,6 @@ export interface CategoryQuery {
   search?: string;
   sort?: 'asc' | 'desc';
   status?: 'active' | 'inactive' | 'all';
+  page?: number;
+  limit?: number;
 }
