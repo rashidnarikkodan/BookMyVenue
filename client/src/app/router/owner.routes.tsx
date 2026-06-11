@@ -1,6 +1,7 @@
 import { Navigate } from 'react-router-dom';
 import OwnerLayout from '../layouts/OwnerLayout';
 import ErrorPage from '@/shared/pages/ErrorPage';
+import OwnerDashboard from '@/features/dashboard/pages/OwnerDashboard';
 
 export const ownerRoutes = {
   path: '/owner',
@@ -15,7 +16,7 @@ export const ownerRoutes = {
     },
     {
       path: 'dashboard',
-      element: <div>owner Dashboard</div>,
+      element: <OwnerDashboard />,
     },
   ],
 };
