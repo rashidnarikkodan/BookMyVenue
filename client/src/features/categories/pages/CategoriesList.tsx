@@ -1,4 +1,5 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import CategoryHeader from '../components/layout/CategoryHeader';
 import CategoryTable from '../components/layout/CategoryTable';
 import CategoryToolbar from '../components/layout/CategoryToolbar';
@@ -12,9 +13,17 @@ import { Layers, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { useDebounce } from '@/shared/hooks/useDebounce';
 
 const CategoriesList = () => {
-  const [search, setSearch] = useState('');
-  const [sortBy, setSortBy] = useState<'asc' | 'desc'>('desc');
-  const [filter, setFilter] = useState<'all' | 'active' | 'inactive'>('all');
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Read states directly from URL search params
+  const searchParam = searchParams.get('search') || '';
+  const sortBy = (searchParams.get('sort') as 'asc' | 'desc') || 'desc';
+  const filter = (searchParams.get('status') as 'all' | 'active' | 'inactive') || 'all';
+  const currentPage = Number(searchParams.get('page')) || 1;
+  const itemsPerPage = Number(searchParams.get('limit')) || 5;
+
+  // Local state for the input field to keep typing responsive
+  const [search, setSearch] = useState(searchParam);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
@@ -24,30 +33,76 @@ const CategoriesList = () => {
     data: listResponse,
     loading,
     execute: fetchCategories,
-  } = useAsyncFetch<{ success: boolean; message: string; data: Category[] }>();
+  } = useAsyncFetch<{
+    success: boolean;
+    message: string;
+    data: {
+      categories: Category[];
+      totalCategories: number;
+      totalActive: number;
+      totalInactive: number;
+    };
+  }>();
 
   const { loading: actionLoading, execute: executeAction } = useAsyncFetch<any>();
 
-  // Extract categories array
-  const categories = listResponse?.data || [];
+  // Extract categories and pagination/stats metadata
+  const categories = useMemo(() => listResponse?.data?.categories || [], [listResponse]);
+  const totalCategories = listResponse?.data?.totalCategories || 0;
+  const totalActive = listResponse?.data?.totalActive || 0;
+  const totalInactive = listResponse?.data?.totalInactive || 0;
 
-  // Debounce Search Input
-  const debouncedSearch = useDebounce(search, 400);
-
-  // Fetch Categories function
-  const loadCategories = () => {
-    fetchCategories(() =>
-      categoriesApi.getAll({
-        search: debouncedSearch,
-        sort: sortBy,
-        status: filter,
-      })
+  // Helper function to update search parameters in the URL
+  const updateParams = (updates: Record<string, string | number | undefined>) => {
+    setSearchParams(
+      (prev) => {
+        const newParams = new URLSearchParams(prev);
+        Object.entries(updates).forEach(([key, value]) => {
+          if (value === undefined || value === '') {
+            newParams.delete(key);
+          } else {
+            newParams.set(key, String(value));
+          }
+        });
+        return newParams;
+      },
+      { replace: true }
     );
   };
 
+  // Debounce search input changes before writing to URL
+  const debouncedSearch = useDebounce(search, 400);
+
+  // Sync debounced search to URL
+  useEffect(() => {
+    updateParams({ search: debouncedSearch || undefined, page: 1 });
+  }, [debouncedSearch]);
+
+  // Sync local input with searchParam (e.g. if the user navigates back/forward)
+  useEffect(() => {
+    setSearch(searchParam);
+  }, [searchParam]);
+
+  // Fetch Categories function (depends on values from URL query parameters)
+  const loadCategories = useCallback(() => {
+    fetchCategories(() =>
+      categoriesApi.getAll({
+        search: searchParam,
+        sort: sortBy,
+        status: filter,
+        page: currentPage,
+        limit: itemsPerPage,
+      })
+    );
+  }, [fetchCategories, searchParam, sortBy, filter, currentPage, itemsPerPage]);
+
+  // Whenever URL parameters change, fetch the data
   useEffect(() => {
     loadCategories();
-  }, [debouncedSearch, sortBy, filter]);
+  }, [loadCategories]);
+
+  // Paginated Categories
+  const totalPages = Math.ceil(totalCategories / itemsPerPage);
 
   // Delete Category (Soft Delete)
   const handleDelete = async (id: string) => {
@@ -90,11 +145,11 @@ const CategoriesList = () => {
   // Statistics Calculation
   const stats = useMemo(() => {
     return {
-      total: categories.length,
-      active: categories.filter((c) => c.isActive).length,
-      inactive: categories.filter((c) => !c.isActive).length,
+      total: totalCategories,
+      active: totalActive,
+      inactive: totalInactive,
     };
-  }, [categories]);
+  }, [totalCategories, totalActive, totalInactive]);
 
   return (
     <div className="space-y-6">
@@ -154,9 +209,9 @@ const CategoriesList = () => {
         search={search}
         onSearchChange={setSearch}
         sortBy={sortBy}
-        onSortChange={setSortBy}
+        onSortChange={(value) => updateParams({ sort: value, page: 1 })}
         filter={filter}
-        onFilterChange={setFilter}
+        onFilterChange={(value) => updateParams({ status: value, page: 1 })}
       />
 
       {/* Content Area */}
@@ -169,6 +224,9 @@ const CategoriesList = () => {
           onDelete={handleDelete}
           onRestore={handleRestore}
           isActionLoading={actionLoading}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={(page) => updateParams({ page })}
         />
       )}
 

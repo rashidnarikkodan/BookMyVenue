@@ -53,8 +53,9 @@ export default function HeroSection() {
             key={idx}
             src={imgSrc}
             alt={`Hero Banner ${idx + 1}`}
-            className={`absolute inset-0 w-full h-full object-cover mix-blend-luminosity transition-opacity duration-1000 ease-in-out ${idx === currentIdx ? 'opacity-100' : 'opacity-0'
-              }`}
+            className={`absolute inset-0 w-full h-full object-cover mix-blend-luminosity transition-opacity duration-1000 ease-in-out ${
+              idx === currentIdx ? 'opacity-100' : 'opacity-0'
+            }`}
           />
         ))}
         {/* Dark gradient overlays */}
@@ -99,10 +100,10 @@ export default function HeroSection() {
               <span className={`text-sm ${selectedDate ? 'text-white' : 'text-zinc-500'}`}>
                 {selectedDate
                   ? selectedDate.toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric',
-                  })
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })
                   : 'Select Date'}
               </span>
             </button>
@@ -174,12 +175,13 @@ export default function HeroSection() {
                           key={day}
                           type="button"
                           onClick={() => handleSelectDate(date)}
-                          className={`aspect-square rounded-lg flex items-center justify-center text-xs font-medium transition-all cursor-pointer ${isSelected
+                          className={`aspect-square rounded-lg flex items-center justify-center text-xs font-medium transition-all cursor-pointer ${
+                            isSelected
                               ? 'bg-[#e21a47] text-white font-bold'
                               : isToday
                                 ? 'bg-zinc-800/80 text-[#e21a47] font-semibold border border-[#e21a47]/30'
                                 : 'text-zinc-300 hover:bg-zinc-800 hover:text-white'
-                            }`}
+                          }`}
                         >
                           {day}
                         </button>

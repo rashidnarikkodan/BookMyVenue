@@ -1,6 +1,10 @@
 import nodemailer, { Transporter } from 'nodemailer';
+import dns from 'node:dns';
 import env from '../configs/env.config';
-import { IEmailService } from './interfaces/email.service.interface';
+
+export interface IEmailService {
+  sendOtpEmail(to: string, otp: string): Promise<void>;
+}
 
 const transporter: Transporter = nodemailer.createTransport({
   host: env.SMTP_HOST,
@@ -10,7 +14,10 @@ const transporter: Transporter = nodemailer.createTransport({
     user: env.SMTP_USER,
     pass: env.SMTP_PASS,
   },
-});
+  lookup: (hostname: string, options: any, callback: any) => {
+    dns.lookup(hostname, { ...options, family: 4 }, callback);
+  },
+} as any);
 
 export const emailService: IEmailService = {
   async sendOtpEmail(to: string, otp: string): Promise<void> {

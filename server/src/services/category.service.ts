@@ -75,22 +75,29 @@ export const getCategory = async (id: string): Return => {
   return category;
 };
 
-export const getCategories = async (query: GetCategoriesQueryDto): Promise<CategoryDocument[]> => {
+export const getCategories = async (
+  query: GetCategoriesQueryDto
+): Promise<{
+  categories: CategoryDocument[];
+  totalCategories: number;
+  totalActive: number;
+  totalInactive: number;
+}> => {
   return await repo.getCategories(query);
 };
 
-export const uploadCategoryImage = async (file: string,id?:string) => {
+export const uploadCategoryImage = async (file: string, id?: string) => {
   let imageUrl: string | undefined;
   let image_public_id: string | undefined;
 
-  if(id){
+  if (id) {
     const result = await repo.getCategoryImageId(id);
-    await deleteFromCloudinary(result?.image_public_id)
-  } 
-    const uploadResult = await uploadToCloudinary(file);
-    imageUrl = uploadResult.url;
-    image_public_id = uploadResult.public_id;
-  
+    await deleteFromCloudinary(result?.image_public_id);
+  }
+  const uploadResult = await uploadToCloudinary(file);
+  imageUrl = uploadResult.url;
+  image_public_id = uploadResult.public_id;
+
   return {
     imageUrl,
     image_public_id,

@@ -9,19 +9,22 @@ import CategoriesSectionSkeleton from '../loaders/CategoriesSectionSkeleton';
 const defaultCategories = [
   {
     name: 'Weddings & Receptions',
-    description: 'Unforgettable backdrops for your special day. Discover majestic lawns, heritage halls, and sunset views.',
+    description:
+      'Unforgettable backdrops for your special day. Discover majestic lawns, heritage halls, and sunset views.',
     image: weddingImg,
     countText: 'Curated Collection',
   },
   {
     name: 'Corporate Events',
-    description: 'State-of-the-art boardrooms and conference centers designed for peak collaboration and executive presentation.',
+    description:
+      'State-of-the-art boardrooms and conference centers designed for peak collaboration and executive presentation.',
     image: corporateImg,
     countText: 'Executive Spaces',
   },
   {
     name: 'Private Getaways',
-    description: "Escape to private retreats, premium houseboats, and wellness villas nestled in Kerala's scenic landscapes.",
+    description:
+      "Escape to private retreats, premium houseboats, and wellness villas nestled in Kerala's scenic landscapes.",
     image: getawayImg,
     countText: 'Premium Stays',
   },
@@ -120,8 +123,15 @@ export default function CategorySection({ categories, loading }: CategorySection
   const getCategoryImage = (cat: Category) => {
     if (cat.imageUrl) return cat.imageUrl;
     const name = cat.name.toLowerCase();
-    if (name.includes('wed') || name.includes('marry') || name.includes('recept')) return weddingImg;
-    if (name.includes('corp') || name.includes('meet') || name.includes('office') || name.includes('business')) return corporateImg;
+    if (name.includes('wed') || name.includes('marry') || name.includes('recept'))
+      return weddingImg;
+    if (
+      name.includes('corp') ||
+      name.includes('meet') ||
+      name.includes('office') ||
+      name.includes('business')
+    )
+      return corporateImg;
     return getawayImg;
   };
 
@@ -130,7 +140,12 @@ export default function CategorySection({ categories, loading }: CategorySection
     if (name.includes('wed') || name.includes('marry') || name.includes('recept')) {
       return 'Unforgettable backdrops for your special day. Discover majestic lawns, heritage halls, and sunset views.';
     }
-    if (name.includes('corp') || name.includes('meet') || name.includes('office') || name.includes('business')) {
+    if (
+      name.includes('corp') ||
+      name.includes('meet') ||
+      name.includes('office') ||
+      name.includes('business')
+    ) {
       return 'State-of-the-art boardrooms and conference centers designed for peak collaboration and executive presentation.';
     }
     return "Escape to private retreats, premium houseboats, and wellness villas nestled in Kerala's scenic landscapes.";
@@ -166,12 +181,11 @@ export default function CategorySection({ categories, loading }: CategorySection
           </div>
           <h2 className="text-4xl md:text-5xl font-black tracking-tight mt-2 text-black dark:text-white leading-none">
             Curated <br />
-            <span className="text-[#e21a47]">
-              Categories
-            </span>
+            <span className="text-[#e21a47]">Categories</span>
           </h2>
           <p className="text-black dark:text-zinc-400 mt-4 text-sm md:text-base leading-relaxed">
-            Find the perfect environment tailored to your exact event specifications. From intimate social gatherings to grand corporate assemblies.
+            Find the perfect environment tailored to your exact event specifications. From intimate
+            social gatherings to grand corporate assemblies.
           </p>
         </div>
 

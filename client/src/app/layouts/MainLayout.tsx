@@ -1,12 +1,15 @@
-import { Footer, ProtectedNavbar } from '@/shared/components/layout';
+import { Footer, ProtectedNavbar, PublicNavbar } from '@/shared/components/layout';
 import { Outlet } from 'react-router-dom';
 import { ThemeProvider } from '@/shared/providers/ThemeProvider';
+import { useAppStore } from '@/store/app.store';
 
 export default function MainLayout() {
+  const isAuthenticated = useAppStore((state) => state.isAuthenticated);
+
   return (
     <>
       <ThemeProvider>
-        <ProtectedNavbar />
+        {isAuthenticated ? <ProtectedNavbar /> : <PublicNavbar />}
 
         <main>
           <Outlet />

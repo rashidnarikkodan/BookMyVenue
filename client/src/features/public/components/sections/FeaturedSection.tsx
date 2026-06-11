@@ -19,7 +19,8 @@ export default function FeaturedSection({ venues, loading }: FeaturedSectionProp
   const fallbackFeatured = [
     {
       name: 'The Travancore Heritage Palace',
-      description: 'Experience royal luxury in an authentic heritage palace. Perfect for majestic weddings, receptions, and grand banquets with traditional Kerala architecture.',
+      description:
+        'Experience royal luxury in an authentic heritage palace. Perfect for majestic weddings, receptions, and grand banquets with traditional Kerala architecture.',
       image: travancoreImg,
       location: 'Trivandrum, Kerala',
       capacity: '800 Guests',
@@ -29,7 +30,8 @@ export default function FeaturedSection({ venues, loading }: FeaturedSectionProp
     },
     {
       name: 'Emerald Water-Resort',
-      description: 'Lakeside tranquility meets modern hosting facilities. Perfect for scenic corporate getaways, private pool parties, and premium waterfront celebrations.',
+      description:
+        'Lakeside tranquility meets modern hosting facilities. Perfect for scenic corporate getaways, private pool parties, and premium waterfront celebrations.',
       image: emeraldImg,
       location: 'Kumarakom, Kerala',
       capacity: '300 Guests',
@@ -39,7 +41,8 @@ export default function FeaturedSection({ venues, loading }: FeaturedSectionProp
     },
     {
       name: 'Mist-Valley Highlands',
-      description: 'Breathtaking mountain views surrounded by tea gardens. Ideal for quiet corporate retreats, wellness camps, and intimate boutique weddings in the hills.',
+      description:
+        'Breathtaking mountain views surrounded by tea gardens. Ideal for quiet corporate retreats, wellness camps, and intimate boutique weddings in the hills.',
       image: mistImg,
       location: 'Munnar, Kerala',
       capacity: '150 Guests',
@@ -55,9 +58,13 @@ export default function FeaturedSection({ venues, loading }: FeaturedSectionProp
           name: v.name,
           description: v.description || fallbackFeatured[idx % 3].description,
           image: v.images?.[0] || fallbackFeatured[idx % 3].image,
-          location: v.address ? `${v.address.city}, ${v.address.state}` : fallbackFeatured[idx % 3].location,
+          location: v.address
+            ? `${v.address.city}, ${v.address.state}`
+            : fallbackFeatured[idx % 3].location,
           capacity: `${v.capacity} Guests`,
-          price: v.pricing ? `₹${v.pricing.amount.toLocaleString('en-IN')} / ${v.pricing.unit === 'day' ? 'Day' : 'Hour'}` : fallbackFeatured[idx % 3].price,
+          price: v.pricing
+            ? `₹${v.pricing.amount.toLocaleString('en-IN')} / ${v.pricing.unit === 'day' ? 'Day' : 'Hour'}`
+            : fallbackFeatured[idx % 3].price,
           rating: '4.9',
           tag: v.isElite ? 'Elite Choice' : 'Featured Space',
         }))
@@ -90,7 +97,6 @@ export default function FeaturedSection({ venues, loading }: FeaturedSectionProp
     <section className="py-16 bg-transparent overflow-hidden relative w-full transition-colors duration-300">
       <div className="max-w-6xl mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          
           {/* Left Side: Editorial Typography (Kept as requested) */}
           <div className="lg:col-span-5 flex flex-col justify-between h-full relative z-10">
             <div>
@@ -102,9 +108,7 @@ export default function FeaturedSection({ venues, loading }: FeaturedSectionProp
               </div>
               <h2 className="text-4xl md:text-5xl font-black tracking-tight mt-2 text-black dark:text-white leading-none">
                 Featured <br />
-                <span className="text-[#e21a47]">
-                  Collections
-                </span>
+                <span className="text-[#e21a47]">Collections</span>
               </h2>
             </div>
 
@@ -112,11 +116,11 @@ export default function FeaturedSection({ venues, loading }: FeaturedSectionProp
               <span className="font-mono text-xs font-bold text-black dark:text-zinc-400 tracking-wider">
                 ACTIVE SPACE &nbsp;//&nbsp; {String(activeIdx + 1).padStart(2, '0')}
               </span>
-              
+
               <h3 className="text-2xl font-bold text-black dark:text-white mt-2 transition-colors">
                 {activeVenue.name}
               </h3>
-              
+
               <p className="text-sm text-black dark:text-zinc-300 mt-3 leading-relaxed min-h-[90px] transition-all duration-300">
                 {activeVenue.description}
               </p>
@@ -159,10 +163,8 @@ export default function FeaturedSection({ venues, loading }: FeaturedSectionProp
 
           {/* Right Side: Cinematic Parallax Viewport Slider */}
           <div className="lg:col-span-7 flex flex-col gap-4 w-full">
-            
             {/* Viewport Frame */}
             <div className="relative w-full aspect-[16/10] md:aspect-[16/9] lg:h-[380px] rounded-[32px] overflow-hidden border border-[#e21a47]/10 dark:border-[#e21a47]/20 hover:border-[#e21a47] dark:hover:border-[#e21a47] transition-colors duration-500 bg-zinc-950 shadow-2xl group">
-              
               {/* Sliding Track */}
               <div
                 style={{
@@ -173,12 +175,9 @@ export default function FeaturedSection({ venues, loading }: FeaturedSectionProp
                 {featuredList.map((item, idx) => {
                   // Parallax horizontal shift inside the slide frame
                   const offset = (activeIdx - idx) * 40;
-                  
+
                   return (
-                    <div
-                      key={idx}
-                      className="w-full h-full flex-shrink-0 relative overflow-hidden"
-                    >
+                    <div key={idx} className="w-full h-full flex-shrink-0 relative overflow-hidden">
                       {/* Image container with parallax translate */}
                       <div
                         style={{
@@ -225,7 +224,6 @@ export default function FeaturedSection({ venues, loading }: FeaturedSectionProp
                   );
                 })}
               </div>
-
             </div>
 
             {/* Segmented Progress Timeline Indicator */}
@@ -233,7 +231,7 @@ export default function FeaturedSection({ venues, loading }: FeaturedSectionProp
               <div className="flex gap-2 w-full px-2 mt-1">
                 {featuredList.map((_, idx) => {
                   const isActive = idx === activeIdx;
-                  
+
                   return (
                     <button
                       key={idx}
@@ -252,9 +250,7 @@ export default function FeaturedSection({ venues, loading }: FeaturedSectionProp
                 })}
               </div>
             )}
-
           </div>
-
         </div>
       </div>
     </section>

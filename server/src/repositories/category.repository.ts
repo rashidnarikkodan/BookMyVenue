@@ -23,7 +23,7 @@ const getCategory = async (id: string): Return => {
   return await Category.findById(id);
 };
 export const getCategories = async (query: GetCategoriesQueryDto) => {
-  const { status = 'active', search, sort = 'desc' } = query;
+  const { status = 'active', search, sort = 'desc', page = 1, limit = 5 } = query;
 
   const filter: any = {};
 
@@ -44,7 +44,23 @@ export const getCategories = async (query: GetCategoriesQueryDto) => {
     createdAt: sort === 'asc' ? 1 : -1,
   };
 
-  return await Category.find(filter).sort(sortOption);
+  const pageNum = Math.max(1, Number(page));
+  const limitNum = Math.max(1, Number(limit));
+  const skip = (pageNum - 1) * limitNum;
+
+  const [categories, totalCategories, totalActive, totalInactive] = await Promise.all([
+    Category.find(filter).sort(sortOption).skip(skip).limit(limitNum),
+    Category.countDocuments(filter),
+    Category.countDocuments({ ...filter, isActive: true }),
+    Category.countDocuments({ ...filter, isActive: false }),
+  ]);
+
+  return {
+    categories,
+    totalCategories,
+    totalActive,
+    totalInactive,
+  };
 };
 const getCategoryByName = async (name: string): Return => {
   return await Category.findOne({ name });
@@ -53,8 +69,8 @@ const getCategoryByName = async (name: string): Return => {
 const restoreCategory = async (id: string): Return => {
   return await Category.findByIdAndUpdate(id, { isActive: true }, { new: true });
 };
-const getCategoryImageId = async (id:string): Return => {
-  return await Category.findOne({_id:id},{image_public_id:1});
+const getCategoryImageId = async (id: string): Return => {
+  return await Category.findOne({ _id: id }, { image_public_id: 1 });
 };
 
 export default {

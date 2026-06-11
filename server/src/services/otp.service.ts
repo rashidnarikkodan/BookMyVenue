@@ -21,7 +21,7 @@ export const otpService = {
     logger.info(`OTP: ${otp}`);
 
     const hashed = await argon2.hash(otp);
-    
+
     // Store hashed OTP with expiry
     await redisService.set(keys.otp(emailAddr), hashed, env.OTP_EXPIRY_SECONDS);
 
@@ -32,14 +32,14 @@ export const otpService = {
     await redisService.set(
       keys.resendAt(emailAddr),
       Date.now().toString(),
-      env.OTP_EXPIRY_SECONDS + env.RESEND_COOLDOWN_SECONDS,
+      env.OTP_EXPIRY_SECONDS + env.RESEND_COOLDOWN_SECONDS
     );
 
     try {
       await emailService.sendOtpEmail(emailAddr, otp);
     } catch {
       await redisService.del(keys.otp(emailAddr));
-      throw new AppError(MESSAGES.OTP_EMAIL_FAIL, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+      throw new AppError(MESSAGES.OTP_EMAIL_FAIL, HTTP_STATUS.SERVER_ERROR);
     }
   },
 
@@ -65,7 +65,7 @@ export const otpService = {
       const remaining = env.MAX_VERIFY_ATTEMPTS - newCount;
       throw new AppError(
         `${MESSAGES.OTP_INVALID}. ${remaining} attempt${remaining === 1 ? '' : 's'} remaining.`,
-        HTTP_STATUS.BAD_REQUEST,
+        HTTP_STATUS.BAD_REQUEST
       );
     }
 

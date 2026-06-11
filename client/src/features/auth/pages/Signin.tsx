@@ -39,7 +39,7 @@ const Signin = () => {
         email: formData.email,
         password: formData.password,
       });
-      
+
       setAuth(data.data.accessToken, data.data.refreshToken, data.data.user);
       navigate(getRoleRedirect(data.data.user.role));
     } catch (err: any) {
@@ -93,7 +93,9 @@ const Signin = () => {
       <form onSubmit={handleSubmit} className="flex flex-col gap-2.5">
         {/* Email */}
         <div className="flex flex-col gap-1">
-          <label className="text-[10px] font-medium text-slate-400 tracking-wide">EMAIL ADDRESS</label>
+          <label className="text-[10px] font-medium text-slate-400 tracking-wide">
+            EMAIL ADDRESS
+          </label>
           <input
             type="email"
             name="email"
@@ -138,7 +140,14 @@ const Signin = () => {
           {loading ? (
             <>
               <svg className="w-4 h-4 animate-spin mr-2" viewBox="0 0 24 24" fill="none">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
               </svg>
               SIGNING IN…
@@ -154,7 +163,9 @@ const Signin = () => {
         {/* Divider */}
         <div className="flex items-center my-1">
           <div className="flex-grow border-t border-slate-700/60"></div>
-          <span className="px-3 text-[10px] text-slate-500 uppercase tracking-wider">Or continue with</span>
+          <span className="px-3 text-[10px] text-slate-500 uppercase tracking-wider">
+            Or continue with
+          </span>
           <div className="flex-grow border-t border-slate-700/60"></div>
         </div>
 
@@ -172,7 +183,10 @@ const Signin = () => {
 
       <div className="mt-4 text-center text-xs text-slate-400">
         Don't have an account?{' '}
-        <Link to="/signup" className="text-primary-500 hover:text-primary-400 font-semibold transition-colors">
+        <Link
+          to="/signup"
+          className="text-primary-500 hover:text-primary-400 font-semibold transition-colors"
+        >
           Sign Up
         </Link>
       </div>

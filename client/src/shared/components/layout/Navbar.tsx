@@ -1,21 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
-import { Menu, X, Search, Bell, Heart, User, ChevronDown, LogOut, Calendar, Settings, Building2 } from 'lucide-react';
+import { Menu, X, Search, Bell, ChevronDown, LogOut } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
-import { ThemeToggle } from '@/shared/components/ui';
+import { ThemeToggle, ProfileList, Notification } from '@/shared/components/ui';
+import { useAppStore } from '@/store/app.store';
+import logoImg from '@/assets/logo.png';
 
 // Helper for navigation links
 const navLinks = [
   { name: 'Home', href: '/' },
   { name: 'Browse Venues', href: '/venues' },
-  { name: 'Categories', href: '/categories' },
-  { name: 'How It Works', href: '/how-it-works' },
-  { name: 'About', href: '/about' },
-];
-
-const mockNotifications = [
-  { id: 1, text: 'Your booking at Grand Palace has been confirmed!', time: '2 hours ago', read: false },
-  { id: 2, text: 'New venue "Orchid Garden" is now available in your area.', time: '1 day ago', read: true },
-  { id: 3, text: 'Welcome to BookMyVenue! Complete your profile to get started.', time: '3 days ago', read: true },
 ];
 
 const Navbar = () => {
@@ -23,10 +16,24 @@ const Navbar = () => {
   const [profileOpen, setProfileOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  
+
   const { pathname } = useLocation();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const notificationRef = useRef<HTMLDivElement>(null);
+
+  const user = useAppStore((state) => state.user);
+  const logout = useAppStore((state) => state.logout);
+
+  const getInitials = (name?: string) => {
+    if (!name) return 'U';
+    return name
+      .split(' ')
+      .filter(Boolean)
+      .map((n) => n[0])
+      .join('')
+      .slice(0, 2)
+      .toUpperCase();
+  };
 
   // Close menus on click outside
   useEffect(() => {
@@ -42,20 +49,20 @@ const Navbar = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const isActive = (href: string) =>
-    href === '/' ? pathname === '/' : pathname.startsWith(href);
+  const isActive = (href: string) => (href === '/' ? pathname === '/' : pathname.startsWith(href));
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md transition-colors duration-300">
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <nav className="flex items-center justify-between h-16" aria-label="Main navigation">
-          
           {/* Logo */}
           <div className="flex items-center gap-2.5">
             <Link to="/" className="flex items-center gap-2.5 group shrink-0">
-              <div className="grid place-items-center h-9 w-9 rounded-xl bg-gradient-to-tr from-primary to-secondary text-white shadow-md shadow-primary/20 group-hover:scale-105 transition-all duration-300">
-                <Building2 size={18} className="transition-transform duration-300 group-hover:rotate-3" />
-              </div>
+              <img
+                src={logoImg}
+                alt="BookMyVenue Logo"
+                className="h-9 w-9 object-contain group-hover:scale-105 transition-all duration-300"
+              />
               <span className="text-[17px] font-bold text-foreground tracking-tight group-hover:text-primary transition-colors duration-300">
                 BookMyVenue
               </span>
@@ -85,7 +92,6 @@ const Navbar = () => {
 
           {/* Desktop Right Actions */}
           <div className="hidden md:flex items-center gap-2.5">
-            
             {/* Search Toggle */}
             <button
               onClick={() => setSearchOpen(true)}
@@ -108,46 +114,8 @@ const Navbar = () => {
                 <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary ring-2 ring-background animate-pulse" />
               </button>
 
-              {notificationsOpen && (
-                <div className="absolute right-0 mt-2 w-80 rounded-xl border border-border bg-surface shadow-lg py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
-                  <div className="px-4 py-1.5 border-b border-border flex justify-between items-center">
-                    <span className="text-[13px] font-semibold text-foreground">Notifications</span>
-                    <button className="text-[11px] text-primary hover:underline font-medium cursor-pointer">Mark all read</button>
-                  </div>
-                  <div className="max-h-64 overflow-y-auto py-1">
-                    {mockNotifications.map((notif) => (
-                      <div
-                        key={notif.id}
-                        className={[
-                          'px-4 py-2.5 hover:bg-muted/30 transition-colors flex flex-col gap-0.5 border-b border-border/40 last:border-0',
-                          !notif.read ? 'bg-primary/5' : '',
-                        ].join(' ')}
-                      >
-                        <p className="text-[12px] text-foreground font-medium leading-normal">{notif.text}</p>
-                        <span className="text-[10px] text-foreground/50 font-normal">{notif.time}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="px-4 pt-1.5 border-t border-border text-center">
-                    <Link to="/notifications" className="text-[11px] text-primary hover:underline font-semibold" onClick={() => setNotificationsOpen(false)}>
-                      View all notifications
-                    </Link>
-                  </div>
-                </div>
-              )}
+              {notificationsOpen && <Notification onClose={() => setNotificationsOpen(false)} />}
             </div>
-
-            {/* Favorites Icon */}
-            <Link
-              to="/favorites"
-              className="relative p-2 rounded-xl text-foreground/85 hover:bg-muted/30 hover:text-primary transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary"
-              aria-label="Favorites"
-            >
-              <Heart className="w-5 h-5" />
-              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-white text-[10px] font-bold flex items-center justify-center border border-background">
-                3
-              </span>
-            </Link>
 
             {/* Theme Toggle */}
             <ThemeToggle />
@@ -164,68 +132,22 @@ const Navbar = () => {
                 aria-expanded={profileOpen}
               >
                 <div className="h-7.5 w-7.5 rounded-lg bg-gradient-to-tr from-primary to-secondary text-white font-bold flex items-center justify-center text-[12px] shadow-sm">
-                  JD
+                  {getInitials(user?.fullName)}
                 </div>
-                <span className="hidden lg:inline-block text-[13px] font-medium">John Doe</span>
-                <ChevronDown size={14} className={['transition-transform duration-300 text-foreground/50', profileOpen ? 'rotate-180' : ''].join(' ')} />
+                <span className="hidden lg:inline-block text-[13px] font-medium">
+                  {user?.fullName || 'User'}
+                </span>
+                <ChevronDown
+                  size={14}
+                  className={[
+                    'transition-transform duration-300 text-foreground/50',
+                    profileOpen ? 'rotate-180' : '',
+                  ].join(' ')}
+                />
               </button>
 
-              {profileOpen && (
-                <div className="absolute right-0 mt-2 w-56 rounded-xl border border-border bg-surface shadow-lg py-1.5 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
-                  <div className="px-4 py-2 border-b border-border flex flex-col gap-0.5">
-                    <p className="text-[13px] font-semibold text-foreground">John Doe</p>
-                    <p className="text-[11px] text-foreground/60">john.doe@example.com</p>
-                  </div>
-                  <div className="py-1">
-                    <Link
-                      to="/profile"
-                      onClick={() => setProfileOpen(false)}
-                      className="flex items-center gap-2.5 px-4 py-2 text-[12px] text-foreground/80 hover:bg-muted/30 hover:text-primary transition-all duration-150"
-                    >
-                      <User size={14} className="text-foreground/50" />
-                      My Profile
-                    </Link>
-                    <Link
-                      to="/bookings"
-                      onClick={() => setProfileOpen(false)}
-                      className="flex items-center gap-2.5 px-4 py-2 text-[12px] text-foreground/80 hover:bg-muted/30 hover:text-primary transition-all duration-150"
-                    >
-                      <Calendar size={14} className="text-foreground/50" />
-                      My Bookings
-                    </Link>
-                    <Link
-                      to="/favorites"
-                      onClick={() => setProfileOpen(false)}
-                      className="flex items-center gap-2.5 px-4 py-2 text-[12px] text-foreground/80 hover:bg-muted/30 hover:text-primary transition-all duration-150"
-                    >
-                      <Heart size={14} className="text-foreground/50" />
-                      Favorites
-                    </Link>
-                    <Link
-                      to="/settings"
-                      onClick={() => setProfileOpen(false)}
-                      className="flex items-center gap-2.5 px-4 py-2 text-[12px] text-foreground/80 hover:bg-muted/30 hover:text-primary transition-all duration-150"
-                    >
-                      <Settings size={14} className="text-foreground/50" />
-                      Settings
-                    </Link>
-                  </div>
-                  <div className="border-t border-border pt-1 mt-1">
-                    <button
-                      onClick={() => {
-                        setProfileOpen(false);
-                        console.log('Logging out...');
-                      }}
-                      className="flex items-center gap-2.5 w-full text-left px-4 py-2 text-[12px] text-foreground/85 hover:bg-primary/10 hover:text-primary transition-all duration-150 font-medium cursor-pointer"
-                    >
-                      <LogOut size={14} />
-                      Log out
-                    </button>
-                  </div>
-                </div>
-              )}
+              {profileOpen && <ProfileList onClose={() => setProfileOpen(false)} />}
             </div>
-
           </div>
 
           {/* Mobile menu button */}
@@ -243,7 +165,6 @@ const Navbar = () => {
               {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
-
         </nav>
       </div>
 
@@ -290,14 +211,13 @@ const Navbar = () => {
         aria-modal="true"
       >
         <div className="flex flex-col h-full">
-          
           {/* Drawer Header */}
           <div className="flex h-16 items-center justify-between border-b border-border px-5 shrink-0">
             <Link to="/" className="flex items-center gap-2" onClick={() => setMobileOpen(false)}>
-              <div className="grid place-items-center h-8 w-8 rounded-lg bg-gradient-to-tr from-primary to-secondary text-white shadow-sm">
-                <Building2 size={15} />
-              </div>
-              <span className="text-[15px] font-bold text-foreground tracking-tight">BookMyVenue</span>
+              <img src={logoImg} alt="BookMyVenue Logo" className="h-8 w-8 object-contain" />
+              <span className="text-[15px] font-bold text-foreground tracking-tight">
+                BookMyVenue
+              </span>
             </Link>
             <button
               type="button"
@@ -312,11 +232,15 @@ const Navbar = () => {
           {/* Drawer Profile Info */}
           <div className="px-5 py-4 border-b border-border flex items-center gap-3">
             <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-primary to-secondary text-white font-bold flex items-center justify-center text-[14px]">
-              JD
+              {getInitials(user?.fullName)}
             </div>
             <div className="flex flex-col">
-              <span className="text-[13px] font-semibold text-foreground">John Doe</span>
-              <span className="text-[10.5px] text-foreground/60">john.doe@example.com</span>
+              <span className="text-[13px] font-semibold text-foreground">
+                {user?.fullName || 'User'}
+              </span>
+              {user?.email && (
+                <span className="text-[10.5px] text-foreground/60">{user.email}</span>
+              )}
             </div>
           </div>
 
@@ -344,7 +268,6 @@ const Navbar = () => {
 
           {/* Drawer Quick Actions & Pinned Bottom Section */}
           <div className="p-4 border-t border-border bg-surface/50 backdrop-blur-sm flex flex-col gap-3 shrink-0">
-            
             {/* Quick Action Icons Line */}
             <div className="flex items-center justify-around py-1.5 bg-muted/20 border border-border/50 rounded-xl">
               <button
@@ -366,17 +289,6 @@ const Navbar = () => {
               >
                 <Bell className="w-5 h-5" />
                 <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary ring-2 ring-surface" />
-              </Link>
-              <Link
-                to="/favorites"
-                onClick={() => setMobileOpen(false)}
-                className="relative p-2 rounded-xl text-foreground/80 hover:text-primary hover:bg-muted/30 transition-all duration-200"
-                aria-label="Favorites"
-              >
-                <Heart className="w-5 h-5" />
-                <span className="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-1 rounded-full bg-primary text-white text-[9px] font-bold flex items-center justify-center border border-surface">
-                  3
-                </span>
               </Link>
             </div>
 
@@ -402,16 +314,14 @@ const Navbar = () => {
             <button
               onClick={() => {
                 setMobileOpen(false);
-                console.log('Logging out...');
+                logout();
               }}
               className="flex items-center justify-center gap-2 w-full py-2.5 mt-1 rounded-xl text-[13px] font-semibold bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all duration-300 cursor-pointer"
             >
               <LogOut size={14} />
               Log out
             </button>
-
           </div>
-
         </div>
       </div>
     </header>
