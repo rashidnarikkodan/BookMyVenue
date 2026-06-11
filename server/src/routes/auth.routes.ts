@@ -13,5 +13,4 @@ router.post(authRoutes.verifyOtp, validateInputs(verifyOtpSchema), authControlle
 router.post(authRoutes.resendOtp, validateInputs(resendOtpSchema), authController.resendOtp);
 router.post(authRoutes.refreshToken, authController.refreshToken);
 
-
 export default router;

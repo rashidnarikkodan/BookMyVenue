@@ -33,5 +33,4 @@ export interface IVenue {
   updatedAt: Date;
 }
 
-
 export type VenueDocument = HydratedDocument<IVenue>;

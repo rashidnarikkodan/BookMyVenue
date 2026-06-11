@@ -27,7 +27,8 @@ export const useAppStore = create<AppState>()(
       user: null,
       isAuthenticated: false,
 
-      setAuth: (token, refreshToken, user) => set({ token, refreshToken: refreshToken || null, user, isAuthenticated: true }),
+      setAuth: (token, refreshToken, user) =>
+        set({ token, refreshToken: refreshToken || null, user, isAuthenticated: true }),
       logout: () => set({ token: null, refreshToken: null, user: null, isAuthenticated: false }),
     }),
     {

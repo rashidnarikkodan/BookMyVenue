@@ -1,7 +1,7 @@
 export interface Venue {
   _id: string;
   ownerId: string;
-  categoryId: string;
+  categoryId: string | { _id: string; name: string };
   name: string;
   description: string;
   images: string[];
@@ -30,4 +30,31 @@ export interface Venue {
   isElite?: boolean;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface VenueQuery {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: 'pending' | 'approved' | 'rejected' | 'all';
+  category?: string;
+  sort?: 'asc' | 'desc';
+}
+
+export interface PaginationInfo {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface VenueListResponse {
+  venues: Venue[];
+  pagination: PaginationInfo;
+}
+
+export interface ApiResponse<T> {
+  success: boolean;
+  message: string;
+  data: T;
 }

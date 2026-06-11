@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const updateVenueSchema = z.object({
   name: z.string().min(2).optional(),
@@ -31,7 +31,7 @@ export const updateVenueSchema = z.object({
   pricing: z
     .object({
       amount: z.number().positive(),
-      unit: z.enum(["hour", "day"]).default("day"),
+      unit: z.enum(['hour', 'day']).default('day'),
     })
     .optional(),
 

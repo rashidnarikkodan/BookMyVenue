@@ -15,25 +15,25 @@ export const createCategory = async (req: Request, res: Response, next: NextFunc
       throw new Error('Name is required');
     }
 
-    let image_public_id,imageUrl;
+    let image_public_id, imageUrl;
 
-    if(tempFilePath){
-      const image = await categoryService.uploadCategoryImage(tempFilePath)
+    if (tempFilePath) {
+      const image = await categoryService.uploadCategoryImage(tempFilePath);
       imageUrl = image.imageUrl;
-      image_public_id = image.image_public_id
+      image_public_id = image.image_public_id;
     }
-    
+
     const category = await categoryService.createCategory({
       name,
       description,
       imageUrl,
       image_public_id,
     });
-    
+
     return success(res, HTTP_STATUS.CREATED, category, 'New Category created');
   } catch (error) {
     next(error);
-  } finally {    
+  } finally {
     if (tempFilePath) {
       await fs.unlink(tempFilePath).catch(() => {});
     }
@@ -47,12 +47,15 @@ export const updateCategory = async (req: Request, res: Response, next: NextFunc
   try {
     const { name, description } = req.body;
 
-      let image_public_id,imageUrl;
+    let image_public_id, imageUrl;
 
-    if(tempFilePath){
-      const image = await categoryService.uploadCategoryImage(tempFilePath,req.params.id as string)
+    if (tempFilePath) {
+      const image = await categoryService.uploadCategoryImage(
+        tempFilePath,
+        req.params.id as string
+      );
       imageUrl = image.imageUrl;
-      image_public_id = image.image_public_id
+      image_public_id = image.image_public_id;
     }
 
     const category = await categoryService.updateCategory({
@@ -66,8 +69,8 @@ export const updateCategory = async (req: Request, res: Response, next: NextFunc
     return success(res, HTTP_STATUS.OK, category, 'Category updated');
   } catch (error) {
     next(error);
-  }finally{
-     if (tempFilePath) {
+  } finally {
+    if (tempFilePath) {
       await fs.unlink(tempFilePath).catch(() => {});
     }
     tempFilePath = undefined;

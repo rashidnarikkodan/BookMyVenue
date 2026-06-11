@@ -1,4 +1,4 @@
-import repo, { HomeDataDto } from "@/repositories/home.repository";
+import repo, { HomeDataDto } from '@/repositories/home.repository';
 
 const getHomeData = async (): Promise<HomeDataDto> => {
   return await repo.getHomeData();

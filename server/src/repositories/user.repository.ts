@@ -3,7 +3,6 @@ import { IUser } from '../models/interfaces/user-scheme.interface';
 import { IUserRepository } from './interfaces/user.repository.interface';
 
 export const userRepository: IUserRepository = {
-
   async findById(id: string): Promise<IUser | null> {
     return await User.findById(id);
   },

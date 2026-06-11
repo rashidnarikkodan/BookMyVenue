@@ -11,7 +11,6 @@ const navLinks = [
   { name: 'Browse Venues', href: '/venues' },
 ];
 
-
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -115,9 +114,7 @@ const Navbar = () => {
                 <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary ring-2 ring-background animate-pulse" />
               </button>
 
-              {notificationsOpen && (
-                <Notification onClose={() => setNotificationsOpen(false)} />
-              )}
+              {notificationsOpen && <Notification onClose={() => setNotificationsOpen(false)} />}
             </div>
 
             {/* Theme Toggle */}
@@ -137,13 +134,19 @@ const Navbar = () => {
                 <div className="h-7.5 w-7.5 rounded-lg bg-gradient-to-tr from-primary to-secondary text-white font-bold flex items-center justify-center text-[12px] shadow-sm">
                   {getInitials(user?.fullName)}
                 </div>
-                <span className="hidden lg:inline-block text-[13px] font-medium">{user?.fullName || 'User'}</span>
-                <ChevronDown size={14} className={['transition-transform duration-300 text-foreground/50', profileOpen ? 'rotate-180' : ''].join(' ')} />
+                <span className="hidden lg:inline-block text-[13px] font-medium">
+                  {user?.fullName || 'User'}
+                </span>
+                <ChevronDown
+                  size={14}
+                  className={[
+                    'transition-transform duration-300 text-foreground/50',
+                    profileOpen ? 'rotate-180' : '',
+                  ].join(' ')}
+                />
               </button>
 
-              {profileOpen && (
-                <ProfileList onClose={() => setProfileOpen(false)} />
-              )}
+              {profileOpen && <ProfileList onClose={() => setProfileOpen(false)} />}
             </div>
           </div>
 
@@ -211,12 +214,10 @@ const Navbar = () => {
           {/* Drawer Header */}
           <div className="flex h-16 items-center justify-between border-b border-border px-5 shrink-0">
             <Link to="/" className="flex items-center gap-2" onClick={() => setMobileOpen(false)}>
-              <img
-                src={logoImg}
-                alt="BookMyVenue Logo"
-                className="h-8 w-8 object-contain"
-              />
-              <span className="text-[15px] font-bold text-foreground tracking-tight">BookMyVenue</span>
+              <img src={logoImg} alt="BookMyVenue Logo" className="h-8 w-8 object-contain" />
+              <span className="text-[15px] font-bold text-foreground tracking-tight">
+                BookMyVenue
+              </span>
             </Link>
             <button
               type="button"
@@ -234,8 +235,12 @@ const Navbar = () => {
               {getInitials(user?.fullName)}
             </div>
             <div className="flex flex-col">
-              <span className="text-[13px] font-semibold text-foreground">{user?.fullName || 'User'}</span>
-              {user?.email && <span className="text-[10.5px] text-foreground/60">{user.email}</span>}
+              <span className="text-[13px] font-semibold text-foreground">
+                {user?.fullName || 'User'}
+              </span>
+              {user?.email && (
+                <span className="text-[10.5px] text-foreground/60">{user.email}</span>
+              )}
             </div>
           </div>
 
