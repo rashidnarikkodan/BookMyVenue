@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import CategoryHeader from '../components/layout/CategoryHeader';
 import CategoryTable from '../components/layout/CategoryTable';
 import CategoryToolbar from '../components/layout/CategoryToolbar';
@@ -12,9 +13,17 @@ import { Layers, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { useDebounce } from '@/shared/hooks/useDebounce';
 
 const CategoriesList = () => {
-  const [search, setSearch] = useState('');
-  const [sortBy, setSortBy] = useState<'asc' | 'desc'>('desc');
-  const [filter, setFilter] = useState<'all' | 'active' | 'inactive'>('all');
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Read states directly from URL search params
+  const searchParam = searchParams.get('search') || '';
+  const sortBy = (searchParams.get('sort') as 'asc' | 'desc') || 'desc';
+  const filter = (searchParams.get('status') as 'all' | 'active' | 'inactive') || 'all';
+  const currentPage = Number(searchParams.get('page')) || 1;
+  const itemsPerPage = Number(searchParams.get('limit')) || 5;
+
+  // Local state for the input field to keep typing responsive
+  const [search, setSearch] = useState(searchParam);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
@@ -31,32 +40,52 @@ const CategoriesList = () => {
   // Extract categories array
   const categories = listResponse?.data || [];
 
-  // Pagination State
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  // Helper function to update search parameters in the URL
+  const updateParams = (updates: Record<string, string | number | undefined>) => {
+    setSearchParams(
+      (prev) => {
+        const newParams = new URLSearchParams(prev);
+        Object.entries(updates).forEach(([key, value]) => {
+          if (value === undefined || value === '') {
+            newParams.delete(key);
+          } else {
+            newParams.set(key, String(value));
+          }
+        });
+        return newParams;
+      },
+      { replace: true }
+    );
+  };
 
-  // Debounce Search Input
+  // Debounce search input changes before writing to URL
   const debouncedSearch = useDebounce(search, 400);
 
-  // Fetch Categories function
+  // Sync debounced search to URL
+  useEffect(() => {
+    updateParams({ search: debouncedSearch || undefined, page: 1 });
+  }, [debouncedSearch]);
+
+  // Sync local input with searchParam (e.g. if the user navigates back/forward)
+  useEffect(() => {
+    setSearch(searchParam);
+  }, [searchParam]);
+
+  // Fetch Categories function (depends on values from URL query parameters)
   const loadCategories = () => {
     fetchCategories(() =>
       categoriesApi.getAll({
-        search: debouncedSearch,
+        search: searchParam,
         sort: sortBy,
         status: filter,
       })
     );
   };
 
-  // Reset page to 1 when filters or search change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [debouncedSearch, sortBy, filter]);
-
+  // Whenever URL parameters change, fetch the data
   useEffect(() => {
     loadCategories();
-  }, [debouncedSearch, sortBy, filter]);
+  }, [searchParam, sortBy, filter]);
 
   // Paginated Categories
   const totalPages = Math.ceil(categories.length / itemsPerPage);
@@ -170,9 +199,9 @@ const CategoriesList = () => {
         search={search}
         onSearchChange={setSearch}
         sortBy={sortBy}
-        onSortChange={setSortBy}
+        onSortChange={(value) => updateParams({ sort: value, page: 1 })}
         filter={filter}
-        onFilterChange={setFilter}
+        onFilterChange={(value) => updateParams({ status: value, page: 1 })}
       />
 
       {/* Content Area */}
@@ -187,7 +216,7 @@ const CategoriesList = () => {
           isActionLoading={actionLoading}
           currentPage={currentPage}
           totalPages={totalPages}
-          onPageChange={setCurrentPage}
+          onPageChange={(page) => updateParams({ page })}
         />
       )}
 
