@@ -31,6 +31,10 @@ const CategoriesList = () => {
   // Extract categories array
   const categories = listResponse?.data || [];
 
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
   // Debounce Search Input
   const debouncedSearch = useDebounce(search, 400);
 
@@ -45,9 +49,21 @@ const CategoriesList = () => {
     );
   };
 
+  // Reset page to 1 when filters or search change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearch, sortBy, filter]);
+
   useEffect(() => {
     loadCategories();
   }, [debouncedSearch, sortBy, filter]);
+
+  // Paginated Categories
+  const totalPages = Math.ceil(categories.length / itemsPerPage);
+  const paginatedCategories = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return categories.slice(startIndex, startIndex + itemsPerPage);
+  }, [categories, currentPage, itemsPerPage]);
 
   // Delete Category (Soft Delete)
   const handleDelete = async (id: string) => {
@@ -164,11 +180,14 @@ const CategoriesList = () => {
         <Loading />
       ) : (
         <CategoryTable
-          categories={categories}
+          categories={paginatedCategories}
           onEdit={handleEditClick}
           onDelete={handleDelete}
           onRestore={handleRestore}
           isActionLoading={actionLoading}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
         />
       )}
 

@@ -2,6 +2,7 @@ import React from 'react';
 import CategoryRow from './CategoryRow';
 import type { Category } from '../../types';
 import { FolderOpen } from 'lucide-react';
+import { Pagination } from '@/shared/components/ui';
 
 type Props = {
   categories: Category[];
@@ -9,6 +10,9 @@ type Props = {
   onDelete?: (id: string) => void;
   onRestore?: (id: string) => void;
   isActionLoading?: boolean;
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
 };
 
 const CategoryTable: React.FC<Props> = ({
@@ -17,6 +21,9 @@ const CategoryTable: React.FC<Props> = ({
   onDelete,
   onRestore,
   isActionLoading,
+  currentPage,
+  totalPages,
+  onPageChange,
 }) => {
   return (
     <div className="overflow-hidden bg-card shadow-sm rounded-2xl border border-border transition-colors duration-250">
@@ -66,6 +73,7 @@ const CategoryTable: React.FC<Props> = ({
           </tbody>
         </table>
       </div>
+      <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={onPageChange} />
     </div>
   );
 };
