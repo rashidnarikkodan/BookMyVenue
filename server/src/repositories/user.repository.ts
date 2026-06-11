@@ -25,8 +25,8 @@ export const userRepository: IUserRepository = {
     await User.findByIdAndDelete(userId);
   },
 
-  async getAllUsers(query: getAllUsersDto): Promise<IUser[]> {
-    const { status, role, search, sort } = query;
+  async getAllUsers(query: getAllUsersDto): Promise<{ users: IUser[]; totalUsers: number }> {
+    const { status, role, search, sort, page = 1, limit = 10 } = query;
     const filter: any = {};
 
     if (search) {
@@ -59,6 +59,13 @@ export const userRepository: IUserRepository = {
       sortOption.createdAt = -1;
     }
 
-    return await User.find(filter).sort(sortOption);
+    const skip = (page - 1) * limit;
+
+    const [users, totalUsers] = await Promise.all([
+      User.find(filter).sort(sortOption).skip(skip).limit(limit),
+      User.countDocuments(filter),
+    ]);
+
+    return { users, totalUsers };
   },
 };

@@ -7,5 +7,5 @@ export interface IUserRepository {
   create(userData: Partial<IUser>): Promise<IUser>;
   update(userId: string, updateData: Partial<IUser>): Promise<IUser | null>;
   deleteById(userId: string): Promise<void>;
-  getAllUsers(query: getAllUsersDto): Promise<IUser[]>;
+  getAllUsers(query: getAllUsersDto): Promise<{ users: IUser[]; totalUsers: number }>;
 }

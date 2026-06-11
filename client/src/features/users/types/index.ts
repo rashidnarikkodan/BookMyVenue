@@ -32,4 +32,6 @@ export interface UserQuery {
   sort?: 'asc' | 'desc';
   status?: 'active' | 'inactive' | 'all';
   role?: 'all' | 'admin' | 'owner' | 'user';
+  page?: number;
+  limit?: number;
 }
