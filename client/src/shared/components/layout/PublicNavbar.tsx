@@ -158,16 +158,8 @@ const PublicNavbar = () => {
       >
         {/* Drawer header */}
         <div className="flex h-16 items-center justify-between border-b border-border px-5 shrink-0">
-          <Link
-            to="/"
-            className="flex items-center gap-2"
-            onClick={() => setDrawerOpen(false)}
-          >
-            <img
-              src={logoImg}
-              alt="BookMyVenue Logo"
-              className="h-8 w-8 object-contain"
-            />
+          <Link to="/" className="flex items-center gap-2" onClick={() => setDrawerOpen(false)}>
+            <img src={logoImg} alt="BookMyVenue Logo" className="h-8 w-8 object-contain" />
             <span className="text-[15px] font-bold text-foreground tracking-tight">
               BookMyVenue
             </span>

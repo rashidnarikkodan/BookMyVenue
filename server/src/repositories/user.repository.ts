@@ -1,9 +1,9 @@
 import User from '../models/user.model';
 import { IUser } from '../models/interfaces/user-scheme.interface';
 import { IUserRepository } from './interfaces/user.repository.interface';
+import { getAllUsersDto } from '../dto/user/getAllUsers.dto';
 
 export const userRepository: IUserRepository = {
-
   async findById(id: string): Promise<IUser | null> {
     return await User.findById(id);
   },
@@ -23,5 +23,42 @@ export const userRepository: IUserRepository = {
 
   async deleteById(userId: string): Promise<void> {
     await User.findByIdAndDelete(userId);
+  },
+
+  async getAllUsers(query: getAllUsersDto): Promise<IUser[]> {
+    const { status, role, search, sort } = query;
+    const filter: any = {};
+
+    if (search) {
+      filter.$or = [
+        { fullName: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } },
+      ];
+    }
+
+    if (status) {
+      if (status === 'active') {
+        filter.isBlocked = false;
+      } else if (status === 'blocked') {
+        filter.isBlocked = true;
+      }
+    }
+
+    if (role && role !== 'all') {
+      filter.role = role;
+    }
+
+    const sortOption: any = {};
+    if (sort === 'a-z') {
+      sortOption.fullName = 1;
+    } else if (sort === 'z-a') {
+      sortOption.fullName = -1;
+    } else if (sort === 'asc') {
+      sortOption.createdAt = 1;
+    } else {
+      sortOption.createdAt = -1;
+    }
+
+    return await User.find(filter).sort(sortOption);
   },
 };

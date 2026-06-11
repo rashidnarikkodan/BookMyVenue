@@ -53,8 +53,8 @@ const getCategoryByName = async (name: string): Return => {
 const restoreCategory = async (id: string): Return => {
   return await Category.findByIdAndUpdate(id, { isActive: true }, { new: true });
 };
-const getCategoryImageId = async (id:string): Return => {
-  return await Category.findOne({_id:id},{image_public_id:1});
+const getCategoryImageId = async (id: string): Return => {
+  return await Category.findOne({ _id: id }, { image_public_id: 1 });
 };
 
 export default {

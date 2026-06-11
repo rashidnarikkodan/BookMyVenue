@@ -1,9 +1,9 @@
-import { JwtPayload } from "@/constants/types";
+import { JwtPayload } from '@/constants/types';
 
 declare global {
-    namespace Express {
-        interface Request {
-            user?: JwtPayload
-        }
+  namespace Express {
+    interface Request {
+      user?: JwtPayload;
     }
+  }
 }
