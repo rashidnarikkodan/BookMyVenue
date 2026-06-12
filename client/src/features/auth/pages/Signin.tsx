@@ -4,6 +4,7 @@ import { ArrowRight, Eye, EyeOff } from 'lucide-react';
 import { GoogleLogin } from '@react-oauth/google';
 import { useAppStore } from '@/store/app.store';
 import { googleAuthApi, signinApi } from '../services/auth.api';
+import { toast } from 'sonner';
 
 const getRoleRedirect = (role: string) => {
   if (role === 'owner') return '/owner/dashboard';
@@ -31,8 +32,11 @@ const Signin = () => {
 
   const handleSuccessfulAuth = (data: any) => {
     setAuth(data.user);
-    const from = location.state?.from?.pathname || getRoleRedirect(data.user.role);
-    
+
+    let from = location.state?.from?.pathname;
+
+    from = getRoleRedirect(data.user.role);
+
     navigate(from, { replace: true });
   };
 
@@ -57,6 +61,9 @@ const Signin = () => {
         msg = err.message;
       }
       setError(msg);
+      if (err.response?.status === 403) {
+        toast.error(msg);
+      }
     } finally {
       setLoading(false);
     }
@@ -77,6 +84,9 @@ const Signin = () => {
         msg = err.message;
       }
       setError(msg);
+      if (err.response?.status === 403) {
+        toast.error(msg, { duration: 6000 });
+      }
     } finally {
       setLoading(false);
     }

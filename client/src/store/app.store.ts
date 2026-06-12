@@ -26,8 +26,7 @@ export const useAppStore = create<AppState>()(
       isAuthenticated: false,
       _hasHydrated: false,
 
-      setAuth: (user) =>
-        set({ user, isAuthenticated: true }),
+      setAuth: (user) => set({ user, isAuthenticated: true }),
       logout: () => set({ user: null, isAuthenticated: false }),
       setHasHydrated: (state) => set({ _hasHydrated: state }),
     }),

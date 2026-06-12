@@ -48,6 +48,14 @@ apiClient.interceptors.response.use(
       window.location.href = '/signin';
     }
 
+    if (
+      error.response?.status === 403 &&
+      error.response?.data?.message?.toLowerCase().includes('blocked')
+    ) {
+      useAppStore.getState().logout();
+      window.location.href = '/signin';
+    }
+
     return Promise.reject(error);
   }
 );

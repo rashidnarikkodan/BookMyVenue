@@ -40,6 +40,7 @@ const signup = async (
     ...userData,
     email,
     password: hashedPassword,
+    role: 'user',
     isVerified: false,
   });
 
@@ -77,9 +78,7 @@ const verifyRegistrationToken = (registrationToken: string): RegistrationTokenPa
   }
 };
 
-const verifyOtp = async (
-  data: VerifyOtpDto
-): Promise<{ user: Partial<IUser> }> => {
+const verifyOtp = async (data: VerifyOtpDto): Promise<{ user: Partial<IUser> }> => {
   const payload = verifyRegistrationToken(data.registrationToken);
 
   await otpService.verifyOtp(payload.email, data.otp);
@@ -115,7 +114,8 @@ const resendOtp = async (registrationToken: string): Promise<void> => {
 
   if (!allowed) {
     throw new AppError(
-      `${MESSAGES.OTP_RESEND_COOLDOWN}. Try again in ${secondsLeft} second${secondsLeft === 1 ? '' : 's'
+      `${MESSAGES.OTP_RESEND_COOLDOWN}. Try again in ${secondsLeft} second${
+        secondsLeft === 1 ? '' : 's'
       }.`,
       HTTP_STATUS.TOO_MANY_REQUESTS
     );
@@ -124,7 +124,9 @@ const resendOtp = async (registrationToken: string): Promise<void> => {
   await otpService.generateAndSendOtp(payload.email);
 };
 
-const signin = async (data: LoginDto): Promise<{
+const signin = async (
+  data: LoginDto
+): Promise<{
   user: Partial<IUser>;
   accessToken: string;
   refreshToken: string;
@@ -150,15 +152,23 @@ const signin = async (data: LoginDto): Promise<{
     throw new AppError(MESSAGES.INVALID_CREDENTIALS, HTTP_STATUS.UNAUTHORIZED);
   }
 
-  const accessToken = generateAccessToken(user);
-  const refreshToken = generateRefreshToken(user);
+  if (user.isBlocked) {
+    throw new AppError(
+      'Your account has been blocked by the administrator. Please contact support.',
+      HTTP_STATUS.FORBIDDEN
+    );
+  }
+
+  const userObj = user.toObject();
+
+  const accessToken = generateAccessToken(userObj);
+  const refreshToken = generateRefreshToken(userObj);
 
   const REFRESH_TOKEN_TTL = 7 * 24 * 60 * 60;
 
-  const key = `refresh_token:${user._id}`;
+  const key = `refresh_token:${userObj._id}`;
   await redisService.set(key, refreshToken, REFRESH_TOKEN_TTL);
 
-  const userObj = user.toObject();
   delete userObj.password;
 
   return {
@@ -193,6 +203,13 @@ const googleAuth = async (
   let user = await userRepository.findByEmail(email);
 
   if (user) {
+    if (user.isBlocked) {
+      throw new AppError(
+        'Your account has been blocked by the administrator. Please contact support.',
+        HTTP_STATUS.FORBIDDEN
+      );
+    }
+
     if (!user.googleId) {
       user = await userRepository.update(user._id!.toString(), {
         googleId,
@@ -209,6 +226,7 @@ const googleAuth = async (
       avatar: picture,
       authProvider: 'google',
       isVerified: true,
+      role: 'user',
     });
   }
 

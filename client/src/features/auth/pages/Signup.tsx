@@ -15,6 +15,7 @@ const getRoleRedirect = (role: string) => {
 
 const Signup = () => {
   const navigate = useNavigate();
+
   const { signupStep, setRegistrationData, resetSignupFlow } = useAuthStore();
   const setAuth = useAppStore((state) => state.setAuth);
 
@@ -84,8 +85,12 @@ const Signup = () => {
       const { data } = await googleAuthApi(credentialResponse.credential);
 
       console.log('Google auth success', data);
-      setAuth(data.data.user);
-      navigate(getRoleRedirect(data.data.user.role));
+      const userObj = data.data.user;
+      setAuth(userObj);
+
+      let from = getRoleRedirect(userObj.role);
+
+      navigate(from);
     } catch (error) {
       console.log('Google auth Error: ', error);
       setError('Google Auth Failed');

@@ -62,8 +62,7 @@ export const googleAuth = async (
       maxAge: 15 * 60 * 1000, // 15 minutes
     });
 
-    const { user: responseData } = result;
-    success(res, HTTP_STATUS.OK, responseData, 'Google Login Successful');
+    success(res, HTTP_STATUS.OK, result, 'Google Login Successful');
   } catch (error: unknown) {
     next(error);
   }
@@ -86,11 +85,10 @@ export const signin = async (req: Request, res: Response, next: NextFunction): P
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 15 * 60 * 1000, // 15 minutes
+      maxAge: 1 * 60 * 1000, // 15 minutes
     });
 
-    const { user: responseData } = result;
-    success(res, HTTP_STATUS.OK, responseData, 'Sign In Successful');
+    success(res, HTTP_STATUS.OK, result, 'Sign In Successful');
   } catch (error: unknown) {
     next(error);
   }

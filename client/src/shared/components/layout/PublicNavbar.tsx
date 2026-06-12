@@ -91,14 +91,14 @@ const PublicNavbar = () => {
             <div className="w-px h-5 bg-border mx-1" aria-hidden="true" />
 
             <Link
-              to="/login"
+              to="/signin"
               className="px-4 py-2 rounded-xl text-[13px] font-medium text-foreground/80 hover:bg-muted/30 hover:text-foreground transition-all duration-300"
             >
               Login
             </Link>
 
             <Link
-              to="/register"
+              to="/signup"
               className="px-4 py-2 rounded-xl text-[13px] font-medium border border-border text-foreground hover:bg-muted/30 hover:border-muted transition-all duration-300 shadow-sm"
             >
               Sign up
@@ -108,7 +108,8 @@ const PublicNavbar = () => {
 
             {/* Primary CTA — styled visually distinct with primary theme colors */}
             <Link
-              to="/list-venue"
+              to="/signin"
+              state={{ from: { pathname: '/venu-owner' } }}
               className="flex items-center gap-1.5 px-4.5 py-2 rounded-xl text-[13px] font-semibold bg-primary text-white hover:bg-accent transition-all duration-300 shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 active:scale-95"
             >
               <Building2 size={14} />
@@ -199,7 +200,8 @@ const PublicNavbar = () => {
         {/* CTA section — pinned to bottom */}
         <div className="p-5 border-t border-border bg-surface/50 backdrop-blur-sm flex flex-col gap-2.5 shrink-0">
           <Link
-            to="/list-venue"
+            to="/signin"
+            state={{ from: { pathname: '/venu-owner' } }}
             className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-[14px] font-semibold bg-primary text-white hover:bg-accent transition-all duration-300 shadow-md shadow-primary/15"
             onClick={() => setDrawerOpen(false)}
           >
@@ -209,7 +211,7 @@ const PublicNavbar = () => {
 
           <div className="grid grid-cols-2 gap-2 mt-1">
             <Link
-              to="/login"
+              to="/signin"
               className="flex items-center justify-center py-2.5 rounded-xl text-[13px] font-medium border border-border text-foreground/90 hover:bg-muted/30 transition-all duration-300"
               onClick={() => setDrawerOpen(false)}
             >
@@ -217,7 +219,7 @@ const PublicNavbar = () => {
             </Link>
 
             <Link
-              to="/register"
+              to="/signup"
               className="flex items-center justify-center py-2.5 rounded-xl text-[13px] font-medium bg-secondary text-white hover:opacity-95 transition-all duration-300"
               onClick={() => setDrawerOpen(false)}
             >

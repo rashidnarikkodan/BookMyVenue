@@ -9,7 +9,12 @@ export const authorizeRoles = (...allowedRoles: string[]) => {
     }
 
     if (!allowedRoles.includes(req.user.role)) {
-      return next(new AppError('Access denied. You do not have the required permissions.', HTTP_STATUS.FORBIDDEN));
+      return next(
+        new AppError(
+          'Access denied. You do not have the required permissions.',
+          HTTP_STATUS.FORBIDDEN
+        )
+      );
     }
 
     next();
