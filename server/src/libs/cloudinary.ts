@@ -20,6 +20,6 @@ export const deleteFromCloudinary = async (publicId: string | undefined | null) 
     if (!publicId) return;
     return await cloudinary.uploader.destroy(publicId);
   } catch (err) {
-    throw new Error('Cloudinary upload failed');
+    throw new Error('Cloudinary deletion failed');
   }
 };

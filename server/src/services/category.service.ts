@@ -75,7 +75,14 @@ export const getCategory = async (id: string): Return => {
   return category;
 };
 
-export const getCategories = async (query: GetCategoriesQueryDto): Promise<CategoryDocument[]> => {
+export const getCategories = async (
+  query: GetCategoriesQueryDto
+): Promise<{
+  categories: CategoryDocument[];
+  totalCategories: number;
+  totalActive: number;
+  totalInactive: number;
+}> => {
   return await repo.getCategories(query);
 };
 

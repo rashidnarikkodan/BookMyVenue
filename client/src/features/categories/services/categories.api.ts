@@ -4,10 +4,17 @@ import type { Category, CategoryQuery } from '../types';
 export const categoriesApi = {
   getAll: async (
     query: CategoryQuery
-  ): Promise<{ success: boolean; message: string; data: Category[] }> => {
-    const res = await apiClient.get(
-      `/admin/categories?search=${query.search || ''}&sort=${query.sort || 'desc'}&status=${query.status || 'all'}`
-    );
+  ): Promise<{
+    success: boolean;
+    message: string;
+    data: {
+      categories: Category[];
+      totalCategories: number;
+      totalActive: number;
+      totalInactive: number;
+    };
+  }> => {
+    const res = await apiClient.get('/admin/categories', { params: query });
     return res.data;
   },
   getById: async (id: string): Promise<{ success: boolean; message: string; data: Category }> => {

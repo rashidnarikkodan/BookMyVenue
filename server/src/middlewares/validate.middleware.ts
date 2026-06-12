@@ -1,8 +1,8 @@
 import logger from '@/libs/logger';
 import { NextFunction, Request, Response } from 'express';
-import { ZodSchema } from 'zod';
 import mongoose from 'mongoose';
 import { AppError } from '@/utils/AppError';
+import { ZodError, ZodSchema } from 'zod';
 
 export const validateInputs = (schema: ZodSchema) => {
   return (req: Request, res: Response, next: NextFunction): void => {
@@ -36,6 +36,15 @@ export const validateQuery = (schema: ZodSchema) => {
       req.query = schema.parse(req.query) as any;
       next();
     } catch (error) {
+      if (error instanceof ZodError) {
+        res.status(400).json({
+          success: false,
+          message: 'Validation failed',
+          errors: error.flatten(),
+        });
+        return;
+      }
+
       next(error);
     }
   };
