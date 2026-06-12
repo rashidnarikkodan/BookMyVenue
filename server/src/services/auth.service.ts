@@ -1,4 +1,7 @@
 import argon2 from 'argon2';
+import { RegisterDto } from '@/dto/auth/register.dto';
+import { LoginDto } from '@/dto/auth/login.dto';
+import { VerifyOtpDto } from '@/dto/auth/verify-otp.dto';
 import { OAuth2Client } from 'google-auth-library';
 import { MESSAGES } from '@/constants/messages';
 import { HTTP_STATUS } from '@/constants/http';
@@ -17,7 +20,7 @@ type RegistrationTokenPayload = {
 };
 
 const signup = async (
-  userData: Partial<IUser>
+  userData: RegisterDto
 ): Promise<{ email: string; registrationToken: string }> => {
   const email = userData.email!.toLowerCase().trim();
 
@@ -37,6 +40,7 @@ const signup = async (
     ...userData,
     email,
     password: hashedPassword,
+    role: 'user',
     isVerified: false,
   });
 
@@ -74,13 +78,10 @@ const verifyRegistrationToken = (registrationToken: string): RegistrationTokenPa
   }
 };
 
-const verifyOtp = async (
-  registrationToken: string,
-  otp: string
-): Promise<{ user: Partial<IUser> }> => {
-  const payload = verifyRegistrationToken(registrationToken);
+const verifyOtp = async (data: VerifyOtpDto): Promise<{ user: Partial<IUser> }> => {
+  const payload = verifyRegistrationToken(data.registrationToken);
 
-  await otpService.verifyOtp(payload.email, otp);
+  await otpService.verifyOtp(payload.email, data.otp);
 
   const user = await userRepository.findByEmail(payload.email);
 
@@ -123,10 +124,9 @@ const resendOtp = async (registrationToken: string): Promise<void> => {
   await otpService.generateAndSendOtp(payload.email);
 };
 
-const signin = async (data: {
-  email: string;
-  password: string;
-}): Promise<{
+const signin = async (
+  data: LoginDto
+): Promise<{
   user: Partial<IUser>;
   accessToken: string;
   refreshToken: string;
@@ -146,21 +146,29 @@ const signin = async (data: {
     throw new AppError('Please sign in with Google', HTTP_STATUS.UNAUTHORIZED);
   }
 
-  const isMatch = await argon2.verify(user.password, data.password);
+  const isMatch = await argon2.verify(user.password, data.password as string);
 
   if (!isMatch) {
     throw new AppError(MESSAGES.INVALID_CREDENTIALS, HTTP_STATUS.UNAUTHORIZED);
   }
 
-  const accessToken = generateAccessToken(user);
-  const refreshToken = generateRefreshToken(user);
+  if (user.isBlocked) {
+    throw new AppError(
+      'Your account has been blocked by the administrator. Please contact support.',
+      HTTP_STATUS.FORBIDDEN
+    );
+  }
+
+  const userObj = user.toObject();
+
+  const accessToken = generateAccessToken(userObj);
+  const refreshToken = generateRefreshToken(userObj);
 
   const REFRESH_TOKEN_TTL = 7 * 24 * 60 * 60;
 
-  const key = `refresh_token:${user._id}`;
+  const key = `refresh_token:${userObj._id}`;
   await redisService.set(key, refreshToken, REFRESH_TOKEN_TTL);
 
-  const userObj = user.toObject();
   delete userObj.password;
 
   return {
@@ -195,6 +203,13 @@ const googleAuth = async (
   let user = await userRepository.findByEmail(email);
 
   if (user) {
+    if (user.isBlocked) {
+      throw new AppError(
+        'Your account has been blocked by the administrator. Please contact support.',
+        HTTP_STATUS.FORBIDDEN
+      );
+    }
+
     if (!user.googleId) {
       user = await userRepository.update(user._id!.toString(), {
         googleId,
@@ -211,6 +226,7 @@ const googleAuth = async (
       avatar: picture,
       authProvider: 'google',
       isVerified: true,
+      role: 'user',
     });
   }
 
@@ -260,10 +276,16 @@ export const refreshTokenService = async (refreshToken: string) => {
   return { accessToken: newAccessToken };
 };
 
+export const logout = async (userId: string): Promise<void> => {
+  const key = `refresh_token:${userId}`;
+  await redisService.del(key);
+};
+
 export const authService = {
   signup,
   verifyOtp,
   resendOtp,
   signin,
   googleAuth,
+  logout,
 };

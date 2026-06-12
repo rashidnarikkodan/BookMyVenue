@@ -5,11 +5,16 @@ import CategoriesList from '@/features/categories/pages/CategoriesList';
 import CategoryDetails from '@/features/categories/pages/CategoryDetails';
 import UsersList from '@/features/users/pages/UsersList';
 import UserDetails from '@/features/users/pages/UserDetails';
+import ProtectedRoute from '@/shared/components/ProtectedRoute';
 
 export const adminRoutes = {
   path: '/admin',
 
-  element: <AdminLayout />,
+  element: (
+    <ProtectedRoute allowedRoles={['admin']} redirectPath="/signin">
+      <AdminLayout />
+    </ProtectedRoute>
+  ),
   errorElement: <ErrorPage />,
   children: [
     {

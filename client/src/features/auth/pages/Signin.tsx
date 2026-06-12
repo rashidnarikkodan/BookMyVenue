@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowRight, Eye, EyeOff } from 'lucide-react';
 import { GoogleLogin } from '@react-oauth/google';
 import { useAppStore } from '@/store/app.store';
 import { googleAuthApi, signinApi } from '../services/auth.api';
+import { toast } from 'sonner';
 
 const getRoleRedirect = (role: string) => {
   if (role === 'owner') return '/owner/dashboard';
@@ -13,6 +14,7 @@ const getRoleRedirect = (role: string) => {
 
 const Signin = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const setAuth = useAppStore((state) => state.setAuth);
 
   const [formData, setFormData] = useState({
@@ -28,6 +30,16 @@ const Signin = () => {
     setError(null);
   };
 
+  const handleSuccessfulAuth = (data: any) => {
+    setAuth(data.user);
+
+    let from = location.state?.from?.pathname;
+
+    from = getRoleRedirect(data.user.role);
+
+    navigate(from, { replace: true });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -40,8 +52,7 @@ const Signin = () => {
         password: formData.password,
       });
 
-      setAuth(data.data.accessToken, data.data.refreshToken, data.data.user);
-      navigate(getRoleRedirect(data.data.user.role));
+      handleSuccessfulAuth(data.data);
     } catch (err: any) {
       let msg = 'Something went wrong';
       if (err.response?.data?.message) {
@@ -50,6 +61,9 @@ const Signin = () => {
         msg = err.message;
       }
       setError(msg);
+      if (err.response?.status === 403) {
+        toast.error(msg);
+      }
     } finally {
       setLoading(false);
     }
@@ -61,8 +75,7 @@ const Signin = () => {
     setError(null);
     try {
       const { data } = await googleAuthApi(credentialResponse.credential);
-      setAuth(data.data.accessToken, data.data.refreshToken, data.data.user);
-      navigate(getRoleRedirect(data.data.user.role));
+      handleSuccessfulAuth(data.data);
     } catch (err: any) {
       let msg = 'Google Auth Failed';
       if (err.response?.data?.message) {
@@ -71,6 +84,9 @@ const Signin = () => {
         msg = err.message;
       }
       setError(msg);
+      if (err.response?.status === 403) {
+        toast.error(msg, { duration: 6000 });
+      }
     } finally {
       setLoading(false);
     }
@@ -135,7 +151,7 @@ const Signin = () => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full mt-2 bg-primary-600 hover:bg-primary-500 text-white font-semibold text-sm py-2.5 rounded-xl shadow-lg shadow-primary-600/20 flex items-center justify-center transition-all group disabled:opacity-50"
+          className="w-full mt-2 bg-primary hover:bg-primary-500 text-white font-semibold text-sm py-2.5 rounded-xl shadow-lg shadow-primary-600/20 flex items-center justify-center transition-all group disabled:opacity-50"
         >
           {loading ? (
             <>

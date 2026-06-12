@@ -23,7 +23,7 @@ export const usersApi = {
       createdAt: u.createdAt,
       updatedAt: u.updatedAt,
     }));
-    console.log(usersData)
+    console.log(usersData);
     return {
       ...res.data,
       data: {

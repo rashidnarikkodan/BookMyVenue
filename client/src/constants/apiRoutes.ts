@@ -6,4 +6,5 @@ export const AUTH_ROUTES = {
   GOOGLE_AUTH: `${API_BASE_URL}/auth/google`,
   VERIFY_OTP: `${API_BASE_URL}/auth/verify-otp`,
   RESEND_OTP: `${API_BASE_URL}/auth/resend-otp`,
+  LOGOUT: `${API_BASE_URL}/auth/logout`,
 };

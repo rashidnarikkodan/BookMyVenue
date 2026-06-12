@@ -17,8 +17,8 @@ export const signup = async (req: Request, res: Response, next: NextFunction): P
 
 export const verifyOtp = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { registrationToken, otp } = req.body;
-    const result = await authService.verifyOtp(registrationToken, otp);
+    const data = req.body;
+    const result = await authService.verifyOtp(data);
     success(res, HTTP_STATUS.OK, result, MESSAGES.USER_VERIFIED);
   } catch (error: unknown) {
     next(error);
@@ -85,7 +85,7 @@ export const signin = async (req: Request, res: Response, next: NextFunction): P
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 15 * 60 * 1000, // 15 minutes
+      maxAge: 1 * 60 * 1000, // 15 minutes
     });
 
     success(res, HTTP_STATUS.OK, result, 'Sign In Successful');
@@ -112,7 +112,34 @@ export const refreshToken = async (
       maxAge: 15 * 60 * 1000, // 15 minutes
     });
 
-    success(res, HTTP_STATUS.OK, result, 'Token Refreshed Successfully');
+    success(res, HTTP_STATUS.OK, null, 'Token Refreshed Successfully');
+  } catch (error: unknown) {
+    next(error);
+  }
+};
+
+export const logout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      throw new AppError('Unauthorized access', HTTP_STATUS.UNAUTHORIZED);
+    }
+
+    await authService.logout(userId);
+
+    res.clearCookie('accessToken', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+    });
+
+    res.clearCookie('refreshToken', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+    });
+
+    success(res, HTTP_STATUS.OK, null, 'Logged out successfully');
   } catch (error: unknown) {
     next(error);
   }

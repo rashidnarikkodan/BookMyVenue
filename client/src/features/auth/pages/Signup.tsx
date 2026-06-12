@@ -15,6 +15,7 @@ const getRoleRedirect = (role: string) => {
 
 const Signup = () => {
   const navigate = useNavigate();
+
   const { signupStep, setRegistrationData, resetSignupFlow } = useAuthStore();
   const setAuth = useAppStore((state) => state.setAuth);
 
@@ -84,8 +85,12 @@ const Signup = () => {
       const { data } = await googleAuthApi(credentialResponse.credential);
 
       console.log('Google auth success', data);
-      setAuth(data.data.token, data.data.refreshToken, data.data.user);
-      navigate(getRoleRedirect(data.data.user.role));
+      const userObj = data.data.user;
+      setAuth(userObj);
+
+      let from = getRoleRedirect(userObj.role);
+
+      navigate(from);
     } catch (error) {
       console.log('Google auth Error: ', error);
       setError('Google Auth Failed');
@@ -225,7 +230,7 @@ const Signup = () => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full mt-2 bg-primary-600 hover:bg-primary-500 text-white font-semibold text-sm py-2.5 rounded-xl shadow-lg shadow-primary-600/20 flex items-center justify-center transition-all group disabled:opacity-50"
+          className="w-full mt-2 bg-primary hover:bg-primary-500 text-white font-semibold text-sm py-2.5 rounded-xl shadow-lg shadow-primary-600/20 flex items-center justify-center transition-all group disabled:opacity-50"
         >
           {loading ? (
             <>

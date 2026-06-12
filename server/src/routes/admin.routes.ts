@@ -2,8 +2,13 @@ import { Router } from 'express';
 import * as categoryController from '@/controllers/category.controller';
 import * as userController from '@/controllers/user.controller';
 import { upload } from '@/middlewares/upload.middleware';
+import { authMiddleware } from '@/middlewares/auth.middleware';
+import { authorizeRoles } from '@/middlewares/role.middleware';
 
 const router = Router();
+
+// Protect all admin routes
+router.use(authMiddleware, authorizeRoles('admin'));
 
 // Categories
 router

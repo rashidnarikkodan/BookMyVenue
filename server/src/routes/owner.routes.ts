@@ -1,3 +1,10 @@
+import { Router, Request, Response } from 'express';
+import { authMiddleware } from '@/middlewares/auth.middleware';
+import { authorizeRoles } from '@/middlewares/role.middleware';
+
+const router = Router();
+
+router.use(authMiddleware, authorizeRoles('owner'));
 import { Router } from 'express';
 import * as venueController from '@/controllers/venue.controller';
 import { validateInputs, validateObjectId, validateQuery } from '@/middlewares/validate.middleware';

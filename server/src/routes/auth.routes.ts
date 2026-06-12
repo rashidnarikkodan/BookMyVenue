@@ -3,6 +3,7 @@ import * as authController from '../controllers/auth.controller';
 import { validateInputs } from '@/middlewares/validate.middleware';
 import { resendOtpSchema, signinSchema, signupSchema, verifyOtpSchema } from '@/utils/validations';
 import { authRoutes } from '@/constants/routes';
+import { authMiddleware } from '@/middlewares/auth.middleware';
 
 const router = Router();
 
@@ -12,5 +13,6 @@ router.post(authRoutes.google, authController.googleAuth);
 router.post(authRoutes.verifyOtp, validateInputs(verifyOtpSchema), authController.verifyOtp);
 router.post(authRoutes.resendOtp, validateInputs(resendOtpSchema), authController.resendOtp);
 router.post(authRoutes.refreshToken, authController.refreshToken);
+router.post('/logout', authMiddleware, authController.logout);
 
 export default router;

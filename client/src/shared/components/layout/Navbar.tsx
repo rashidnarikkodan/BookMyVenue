@@ -3,6 +3,8 @@ import { Menu, X, Search, Bell, ChevronDown, LogOut } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { ThemeToggle, ProfileList, Notification } from '@/shared/components/ui';
 import { useAppStore } from '@/store/app.store';
+import { useLogout } from '@/features/auth/hooks/useLogout';
+import { useNavigate } from 'react-router-dom';
 import logoImg from '@/assets/logo.png';
 
 // Helper for navigation links
@@ -22,7 +24,16 @@ const Navbar = () => {
   const notificationRef = useRef<HTMLDivElement>(null);
 
   const user = useAppStore((state) => state.user);
-  const logout = useAppStore((state) => state.logout);
+  const handleLogout = useLogout();
+  const navigate = useNavigate();
+
+  const handleOwnerFlow = () => {
+    if (user?.role === 'owner') {
+      navigate('/owner/dashboard');
+    } else {
+      navigate('/owner/dashboard');
+    }
+  };
 
   const getInitials = (name?: string) => {
     if (!name) return 'U';
@@ -100,6 +111,15 @@ const Navbar = () => {
               aria-label="Search"
             >
               <Search className="w-5 h-5" />
+            </button>
+
+            <div className="w-px h-5 bg-border mx-1" aria-hidden="true" />
+
+            <button
+              onClick={handleOwnerFlow}
+              className="px-4 py-2 rounded-xl text-[13px] font-semibold bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all duration-300 shadow-sm"
+            >
+              {user?.role === 'owner' ? 'Owner Dashboard' : 'List your venue'}
             </button>
 
             {/* Notifications Bell */}
@@ -314,7 +334,7 @@ const Navbar = () => {
             <button
               onClick={() => {
                 setMobileOpen(false);
-                logout();
+                handleLogout();
               }}
               className="flex items-center justify-center gap-2 w-full py-2.5 mt-1 rounded-xl text-[13px] font-semibold bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all duration-300 cursor-pointer"
             >

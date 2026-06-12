@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
 
 interface User {
   _id: string;
@@ -11,28 +11,31 @@ interface User {
 }
 
 interface AppState {
-  token: string | null;
-  refreshToken: string | null;
   user: User | null;
   isAuthenticated: boolean;
-  setAuth: (token: string, refreshToken: string | undefined, user: User) => void;
+  _hasHydrated: boolean;
+  setAuth: (user: User) => void;
   logout: () => void;
+  setHasHydrated: (state: boolean) => void;
 }
 
 export const useAppStore = create<AppState>()(
   persist(
     (set) => ({
-      token: null,
-      refreshToken: null,
       user: null,
       isAuthenticated: false,
+      _hasHydrated: false,
 
-      setAuth: (token, refreshToken, user) =>
-        set({ token, refreshToken: refreshToken || null, user, isAuthenticated: true }),
-      logout: () => set({ token: null, refreshToken: null, user: null, isAuthenticated: false }),
+      setAuth: (user) => set({ user, isAuthenticated: true }),
+      logout: () => set({ user: null, isAuthenticated: false }),
+      setHasHydrated: (state) => set({ _hasHydrated: state }),
     }),
     {
-      name: 'app-storage', // key in local storage
+      name: 'app-storage',
+      storage: createJSONStorage(() => localStorage),
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
     }
   )
 );
