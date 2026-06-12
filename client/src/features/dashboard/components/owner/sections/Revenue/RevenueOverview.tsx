@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { TrendingUp, Calendar, ArrowUpRight, DollarSign } from 'lucide-react';
 import RevenueChart from './RevenueChart';
-import type { FilterType, RevenueTitleProps } from '../../types/ownerDashbord.types';
+import type { FilterType, RevenueTitleProps } from '../../../../types/ownerDashbord.types.ts';
 
 // --------------------
 // Shared type (IMPORTANT)
@@ -114,11 +114,10 @@ function RevenueTitle({
             <button
               key={t}
               onClick={() => setFilter(t)}
-              className={`px-4 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer ${
-                filter === t
+              className={`px-4 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer ${filter === t
                   ? 'bg-white dark:bg-zinc-800 text-[#e21a47] dark:text-[#f56565] shadow-sm'
                   : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200'
-              }`}
+                }`}
             >
               {t}
             </button>
