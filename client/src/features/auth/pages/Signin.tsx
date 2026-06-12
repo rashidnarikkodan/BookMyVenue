@@ -30,7 +30,7 @@ const Signin = () => {
   };
 
   const handleSuccessfulAuth = (data: any) => {
-    setAuth(data.accessToken, data.refreshToken, data.user);
+    setAuth(data.user);
     const from = location.state?.from?.pathname || getRoleRedirect(data.user.role);
     
     navigate(from, { replace: true });

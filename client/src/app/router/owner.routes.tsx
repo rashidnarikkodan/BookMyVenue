@@ -1,11 +1,16 @@
 import { Navigate } from 'react-router-dom';
 import OwnerLayout from '../layouts/OwnerLayout';
 import ErrorPage from '@/shared/pages/ErrorPage';
+import ProtectedRoute from '@/shared/components/ProtectedRoute';
 
 export const ownerRoutes = {
   path: '/owner',
 
-  element: <OwnerLayout />,
+  element: (
+    <ProtectedRoute allowedRoles={['owner']} redirectPath="/signin">
+      <OwnerLayout />
+    </ProtectedRoute>
+  ),
   errorElement: <ErrorPage />,
 
   children: [

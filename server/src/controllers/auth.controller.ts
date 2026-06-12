@@ -62,7 +62,8 @@ export const googleAuth = async (
       maxAge: 15 * 60 * 1000, // 15 minutes
     });
 
-    success(res, HTTP_STATUS.OK, result, 'Google Login Successful');
+    const { user: responseData } = result;
+    success(res, HTTP_STATUS.OK, responseData, 'Google Login Successful');
   } catch (error: unknown) {
     next(error);
   }
@@ -88,7 +89,8 @@ export const signin = async (req: Request, res: Response, next: NextFunction): P
       maxAge: 15 * 60 * 1000, // 15 minutes
     });
 
-    success(res, HTTP_STATUS.OK, result, 'Sign In Successful');
+    const { user: responseData } = result;
+    success(res, HTTP_STATUS.OK, responseData, 'Sign In Successful');
   } catch (error: unknown) {
     next(error);
   }
@@ -112,7 +114,7 @@ export const refreshToken = async (
       maxAge: 15 * 60 * 1000, // 15 minutes
     });
 
-    success(res, HTTP_STATUS.OK, result, 'Token Refreshed Successfully');
+    success(res, HTTP_STATUS.OK, null, 'Token Refreshed Successfully');
   } catch (error: unknown) {
     next(error);
   }

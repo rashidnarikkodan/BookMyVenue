@@ -84,7 +84,7 @@ const Signup = () => {
       const { data } = await googleAuthApi(credentialResponse.credential);
 
       console.log('Google auth success', data);
-      setAuth(data.data.token, data.data.refreshToken, data.data.user);
+      setAuth(data.data.user);
       navigate(getRoleRedirect(data.data.user.role));
     } catch (error) {
       console.log('Google auth Error: ', error);
