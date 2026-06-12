@@ -3,11 +3,16 @@ import Signup from '@/features/auth/pages/Signup';
 import ErrorPage from '@/shared/pages/ErrorPage';
 import Signin from '@/features/auth/pages/Signin';
 import AuthLayout from '../layouts/AuthLayout';
+import PublicRoute from '@/shared/components/PublicRoute';
 
 export const authRoutes = {
   path: '/',
 
-  element: <AuthLayout />,
+  element: (
+    <PublicRoute>
+      <AuthLayout />
+    </PublicRoute>
+  ),
   errorElement: <ErrorPage />,
   children: [
     // ── Primary auth routes (used by internal Links) ──────────────
@@ -30,7 +35,7 @@ export const authRoutes = {
       element: <Navigate to="/signup" replace />,
     },
 
-    // ── Owner & Admin auth (placeholders until pages are built) ───
+    // ── Owner auth (placeholders until pages are built) ───
     {
       path: 'owner/login',
       element: <>OwnerLoginPage</>,
@@ -42,10 +47,6 @@ export const authRoutes = {
     {
       path: 'owner/onboarding',
       element: <>OwnerOnboardingPage</>,
-    },
-    {
-      path: 'admin/login',
-      element: <>AdminLoginPage</>,
     },
   ],
 };

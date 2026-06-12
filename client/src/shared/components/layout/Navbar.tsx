@@ -3,6 +3,7 @@ import { Menu, X, Search, Bell, ChevronDown, LogOut } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { ThemeToggle, ProfileList, Notification } from '@/shared/components/ui';
 import { useAppStore } from '@/store/app.store';
+import { useLogout } from '@/features/auth/hooks/useLogout';
 import logoImg from '@/assets/logo.png';
 
 // Helper for navigation links
@@ -22,7 +23,7 @@ const Navbar = () => {
   const notificationRef = useRef<HTMLDivElement>(null);
 
   const user = useAppStore((state) => state.user);
-  const logout = useAppStore((state) => state.logout);
+  const handleLogout = useLogout();
 
   const getInitials = (name?: string) => {
     if (!name) return 'U';
@@ -314,7 +315,7 @@ const Navbar = () => {
             <button
               onClick={() => {
                 setMobileOpen(false);
-                logout();
+                handleLogout();
               }}
               className="flex items-center justify-center gap-2 w-full py-2.5 mt-1 rounded-xl text-[13px] font-semibold bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all duration-300 cursor-pointer"
             >

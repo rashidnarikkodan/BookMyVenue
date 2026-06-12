@@ -21,3 +21,7 @@ export const verifyOtpApi = async (registrationToken: string, otp: string) => {
 export const resendOtpApi = async (registrationToken: string) => {
   return await apiClient.post(AUTH_ROUTES.RESEND_OTP, { registrationToken });
 };
+
+export const logoutApi = async () => {
+  return await apiClient.post(AUTH_ROUTES.LOGOUT);
+};

@@ -10,6 +10,7 @@ import {
   Boxes,
 } from 'lucide-react';
 import { useUIStore } from '@/store/ui.store';
+import { useLogout } from '@/features/auth/hooks/useLogout';
 
 const adminNavLinks = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
@@ -22,6 +23,7 @@ const adminNavLinks = [
 
 export default function AdminSidebar() {
   const { sidebarOpen, setSidebarOpen } = useUIStore();
+  const handleLogout = useLogout();
 
   const closeSidebar = () => setSidebarOpen(false);
 
@@ -100,6 +102,7 @@ export default function AdminSidebar() {
         <div className="border-t border-border p-4">
           <button
             type="button"
+            onClick={handleLogout}
             className="
               group flex w-full items-center gap-3.5 rounded-xl px-4 py-3 text-sm font-medium text-error hover:bg-error/10 transition-colors duration-200
             "

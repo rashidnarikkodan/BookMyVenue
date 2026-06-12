@@ -258,10 +258,16 @@ export const refreshTokenService = async (refreshToken: string) => {
   return { accessToken: newAccessToken };
 };
 
+export const logout = async (userId: string): Promise<void> => {
+  const key = `refresh_token:${userId}`;
+  await redisService.del(key);
+};
+
 export const authService = {
   signup,
   verifyOtp,
   resendOtp,
   signin,
   googleAuth,
+  logout,
 };

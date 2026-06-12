@@ -117,3 +117,30 @@ export const refreshToken = async (
     next(error);
   }
 };
+
+export const logout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      throw new AppError('Unauthorized access', HTTP_STATUS.UNAUTHORIZED);
+    }
+
+    await authService.logout(userId);
+
+    res.clearCookie('accessToken', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+    });
+
+    res.clearCookie('refreshToken', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+    });
+
+    success(res, HTTP_STATUS.OK, null, 'Logged out successfully');
+  } catch (error: unknown) {
+    next(error);
+  }
+};

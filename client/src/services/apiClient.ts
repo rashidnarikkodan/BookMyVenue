@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { useAppStore } from '@/store/app.store';
 
 export const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -24,7 +25,8 @@ apiClient.interceptors.response.use(
 
         return apiClient(originalRequest);
       } catch (refreshError) {
-        window.location.href = '/login';
+        useAppStore.getState().logout();
+        window.location.href = '/signin';
         return Promise.reject(refreshError);
       }
     }

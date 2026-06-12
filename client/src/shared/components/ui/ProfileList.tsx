@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { User as UserIcon, Calendar, Heart, Settings, LogOut } from 'lucide-react';
 import { useAppStore } from '@/store/app.store';
+import { useLogout } from '@/features/auth/hooks/useLogout';
 
 interface ProfileListProps {
   onClose: () => void;
@@ -8,7 +9,7 @@ interface ProfileListProps {
 
 const ProfileList = ({ onClose }: ProfileListProps) => {
   const user = useAppStore((state) => state.user);
-  const logout = useAppStore((state) => state.logout);
+  const handleLogout = useLogout();
 
   return (
     <div className="absolute right-0 mt-2 w-56 rounded-xl border border-border bg-surface shadow-lg py-1.5 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
@@ -54,7 +55,7 @@ const ProfileList = ({ onClose }: ProfileListProps) => {
         <button
           onClick={() => {
             onClose();
-            logout();
+            handleLogout();
           }}
           className="flex items-center gap-2.5 w-full text-left px-4 py-2 text-[12px] text-foreground/85 hover:bg-primary/10 hover:text-primary transition-all duration-150 font-medium cursor-pointer"
         >
