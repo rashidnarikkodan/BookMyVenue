@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, Eye, EyeOff } from 'lucide-react';
 import { GoogleLogin } from '@react-oauth/google';
 import { useAppStore } from '@/store/app.store';
@@ -14,7 +14,6 @@ const getRoleRedirect = (role: string) => {
 
 const Signin = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const setAuth = useAppStore((state) => state.setAuth);
 
   const [formData, setFormData] = useState({
@@ -33,11 +32,9 @@ const Signin = () => {
   const handleSuccessfulAuth = (data: any) => {
     setAuth(data.user);
 
-    let from = location.state?.from?.pathname;
+    let path = getRoleRedirect(data.user.role);
 
-    from = getRoleRedirect(data.user.role);
-
-    navigate(from, { replace: true });
+    navigate(path, { replace: true });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

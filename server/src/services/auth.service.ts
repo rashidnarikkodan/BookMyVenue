@@ -40,7 +40,6 @@ const signup = async (
     ...userData,
     email,
     password: hashedPassword,
-    role: 'user',
     isVerified: false,
   });
 

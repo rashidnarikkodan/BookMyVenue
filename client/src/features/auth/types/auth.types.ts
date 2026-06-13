@@ -4,6 +4,7 @@ export interface ISignupData {
   phoneNumber: string;
   password?: string;
   confirmPassword?: string;
+  role:string
 }
 
 export interface ISigninData {
