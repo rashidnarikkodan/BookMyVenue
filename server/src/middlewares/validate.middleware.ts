@@ -1,8 +1,8 @@
-import mongoose from "mongoose";
-import { Request, Response, NextFunction } from "express";
-import { AppError } from "@/utils/AppError";
-import { HTTP_STATUS } from "@/constants/http";
-import { z } from "zod";
+import mongoose from 'mongoose';
+import { Request, Response, NextFunction } from 'express';
+import { AppError } from '@/utils/AppError';
+import { HTTP_STATUS } from '@/constants/http';
+import { z } from 'zod';
 
 export const validateObjectId = (paramName: string) => {
   return (req: Request, res: Response, next: NextFunction) => {

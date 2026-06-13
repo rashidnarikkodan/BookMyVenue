@@ -6,7 +6,6 @@ import venueRoutes from './venue.routes';
 import bookingRoutes from './booking.routes';
 import adminRoutes from './admin.routes';
 
-
 const router = Router();
 
 router.use('/auth', authRoutes);
