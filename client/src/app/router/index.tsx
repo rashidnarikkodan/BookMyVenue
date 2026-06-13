@@ -8,9 +8,9 @@ import PageNotFound from '@/shared/pages/PageNotFound';
 
 export const router = createBrowserRouter([
   authRoutes,
-  mainRoutes,
   ownerRoutes,
   adminRoutes,
+  mainRoutes,
   {
     path: '*',
     element: <PageNotFound />,
