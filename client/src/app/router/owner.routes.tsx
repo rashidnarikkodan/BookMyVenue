@@ -8,7 +8,7 @@ import OwnerDashboard from '@/features/dashboard/pages/OwnerDashboard';
 import OwnerVenuesList from '@/features/venues/pages/OwnerVenuesList';
 import OwnerVenueDetails from '@/features/venues/pages/OwnerVenueDetails';
 export const ownerRoutes = {
-  path: '/owners',
+  path: '/owner',
 
   element: (
     <ProtectedRoute allowedRoles={['owner']} redirectPath="/signin">
