@@ -9,6 +9,7 @@ export const validateInputs = (schema: ZodSchema) => {
     try {
       const validatedData = schema.parse(req.body);
       req.body = validatedData;
+
       logger.info(`Inputs: ${JSON.stringify(req.body)}`);
 
       next();
