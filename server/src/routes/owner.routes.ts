@@ -24,19 +24,13 @@ router.get('/dashboard', ownerDashboardController);
 // Venues
 router
   .route('/venues')
-  .post(upload.array('images', 10), venueController.createVenue)
-  .get(
-    validateQuery(getOwnerVenuesQuerySchema),
-    venueController.getOwnerVenues
-  );
+  .post(upload.array('images', 10), validateInputs(createVenueSchema), venueController.createVenue)
+  .get(validateQuery(getOwnerVenuesQuerySchema), venueController.getOwnerVenues);
 
 router
   .route('/venues/:id')
   .all(validateObjectId('id'))
   .get(venueController.getVenueById)
-  .patch(
-    upload.array('images', 10),
-    venueController.updateVenue
-  );
+  .patch(upload.array('images', 10), validateInputs(updateVenueSchema), venueController.updateVenue);
 
 export default router;
