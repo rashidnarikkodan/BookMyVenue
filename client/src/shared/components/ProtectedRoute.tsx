@@ -1,5 +1,5 @@
 import React, { type ReactNode } from 'react';
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 import { useAppStore } from '@/store/app.store';
 
 interface ProtectedRouteProps {
@@ -14,10 +14,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
 }) => {
   const { isAuthenticated, user } = useAppStore();
-  const location = useLocation();
 
   if (!isAuthenticated) {
-    return <Navigate to={redirectPath} state={{ from: location }} replace />;
+    return <Navigate to={redirectPath} replace />;
   }
 
   if (allowedRoles && (!user || !allowedRoles.includes(user.role))) {

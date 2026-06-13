@@ -5,11 +5,11 @@ import { authorizeRoles } from '@/middlewares/role.middleware';
 
 const router = Router();
 
+router.get('/home', getHomeData);
 // Protected user routes
 router.use(authMiddleware);
 
 // Public routes
-router.get('/home', getHomeData);
 
 router.use(authorizeRoles('user'));
 
