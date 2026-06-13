@@ -1,18 +1,12 @@
-import type { RevenueDistributionProps } from "@/features/dashboard/types/ownerDashbord.types";
-import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+import type { RevenueDistributionProps } from '@/features/dashboard/types/ownerDashbord.types';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 
 export const COLORS = [
-  "#e21a47", // Wedding Hall (Red)
-  "#f59e0b", // Conference Hall (Amber)
-  "#10b981", // Party Hall (Emerald)
-  "#3b82f6", // Sports Venue (Blue)
-  "#6366f1", // Other (Indigo)
+  '#e21a47', // Wedding Hall (Red)
+  '#f59e0b', // Conference Hall (Amber)
+  '#10b981', // Party Hall (Emerald)
+  '#3b82f6', // Sports Venue (Blue)
+  '#6366f1', // Other (Indigo)
 ];
 
 interface CustomTooltipProps {
@@ -37,9 +31,7 @@ const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
   return null;
 };
 
-export default function RevenueDistributionChart({
-  data,
-}: RevenueDistributionProps) {
+export default function RevenueDistributionChart({ data }: RevenueDistributionProps) {
   return (
     <ResponsiveContainer width="100%" height="100%">
       <PieChart>

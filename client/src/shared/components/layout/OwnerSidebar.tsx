@@ -12,12 +12,12 @@ import {
 import { useUIStore } from '@/store/ui.store';
 
 const ownerNavLinks = [
-  { name: 'Dashboard', href: '/owner/dashboard', icon: LayoutDashboard },
-  { name: 'My Venues', href: '/owner/venues', icon: Building2 },
-  { name: 'Bookings', href: '/owner/bookings', icon: CalendarDays },
-  { name: 'Revenue', href: '/owner/revenue', icon: TrendingUp },
-  { name: 'Reviews', href: '/owner/reviews', icon: Star },
-  { name: 'Settings', href: '/owner/settings', icon: Settings },
+  { name: 'Dashboard', href: '/owners/dashboard', icon: LayoutDashboard },
+  { name: 'My Venues', href: '/owners/venues', icon: Building2 },
+  { name: 'Bookings', href: '/owners/bookings', icon: CalendarDays },
+  { name: 'Revenue', href: '/owners/revenue', icon: TrendingUp },
+  { name: 'Reviews', href: '/owners/reviews', icon: Star },
+  { name: 'Settings', href: '/owners/settings', icon: Settings },
 ];
 
 export default function OwnerSidebar() {

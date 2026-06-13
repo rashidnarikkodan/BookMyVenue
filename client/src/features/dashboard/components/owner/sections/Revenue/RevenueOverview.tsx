@@ -1,70 +1,27 @@
 import { useState } from 'react';
 import { TrendingUp, Calendar, ArrowUpRight, DollarSign } from 'lucide-react';
 import RevenueChart from './RevenueChart';
-import type { FilterType, RevenueTitleProps } from '../../../../types/ownerDashbord.types.ts';
+import type {
+  FilterType,
+  RevenueTitleProps,
+  RevenueChartProps,
+} from '../../../../types/ownerDashbord.types.ts';
 
-// --------------------
-// Shared type (IMPORTANT)
-// --------------------
 type RevenuePoint = {
   period: string;
   revenue: number;
   bookings: number;
 };
 
-// --------------------
-// Mock data
-// --------------------
-const weeklyData: RevenuePoint[] = [
-  { period: 'Mon', revenue: 12000, bookings: 3 },
-  { period: 'Tue', revenue: 18000, bookings: 5 },
-  { period: 'Wed', revenue: 15000, bookings: 4 },
-  { period: 'Thu', revenue: 22000, bookings: 6 },
-  { period: 'Fri', revenue: 26000, bookings: 8 },
-  { period: 'Sat', revenue: 31000, bookings: 12 },
-  { period: 'Sun', revenue: 28000, bookings: 10 },
-];
-
-const monthlyData: RevenuePoint[] = [
-  { period: 'Jan', revenue: 120000, bookings: 15 },
-  { period: 'Feb', revenue: 180000, bookings: 22 },
-  { period: 'Mar', revenue: 150000, bookings: 18 },
-  { period: 'Apr', revenue: 220000, bookings: 28 },
-  { period: 'May', revenue: 260000, bookings: 32 },
-  { period: 'Jun', revenue: 310000, bookings: 38 },
-];
-
-const yearlyData: RevenuePoint[] = [
-  { period: '2022', revenue: 1200000, bookings: 180 },
-  { period: '2023', revenue: 1800000, bookings: 250 },
-  { period: '2024', revenue: 2500000, bookings: 340 },
-  { period: '2025', revenue: 3200000, bookings: 420 },
-];
-
-// --------------------
-// Parent Component
-// --------------------
-export default function RevenueOverView() {
+export default function RevenueOverView({ data }: RevenueChartProps) {
   const [filter, setFilter] = useState<FilterType>('monthly');
-
-  const dataMap: Record<FilterType, RevenuePoint[]> = {
-    weekly: weeklyData,
-    monthly: monthlyData,
-    yearly: yearlyData,
-  };
-
-  const chartData = dataMap[filter];
 
   return (
     <div className="rounded-3xl border border-zinc-200/80 dark:border-zinc-800/85 bg-white dark:bg-[#1a1a1a] p-6 text-foreground shadow-xl transition-all duration-300">
-      <RevenueTitle
-        filter={filter}
-        setFilter={setFilter}
-        chartData={chartData}
-      />
+      <RevenueTitle filter={filter} setFilter={setFilter} chartData={data} />
 
       <div className="mt-6">
-        <RevenueChart data={chartData} />
+        <RevenueChart data={data} />
       </div>
     </div>
   );
@@ -80,15 +37,9 @@ function RevenueTitle({
 }: RevenueTitleProps & {
   chartData: RevenuePoint[];
 }) {
-  const totalRevenue = chartData.reduce(
-    (sum, item) => sum + item.revenue,
-    0
-  );
+  const totalRevenue = chartData.reduce((sum, item) => sum + item.revenue, 0);
 
-  const totalBookings = chartData.reduce(
-    (sum, item) => sum + item.bookings,
-    0
-  );
+  const totalBookings = chartData.reduce((sum, item) => sum + item.bookings, 0);
 
   const avgBookingValue = totalBookings > 0 ? Math.round(totalRevenue / totalBookings) : 0;
 
@@ -114,10 +65,11 @@ function RevenueTitle({
             <button
               key={t}
               onClick={() => setFilter(t)}
-              className={`px-4 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer ${filter === t
+              className={`px-4 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+                filter === t
                   ? 'bg-white dark:bg-zinc-800 text-[#e21a47] dark:text-[#f56565] shadow-sm'
                   : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200'
-                }`}
+              }`}
             >
               {t}
             </button>
@@ -131,7 +83,9 @@ function RevenueTitle({
         <div className="bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/80 rounded-2xl p-4 relative overflow-hidden group hover:border-[#e21a47]/30 transition-all duration-300">
           <div className="absolute top-0 right-0 w-16 h-16 bg-[#e21a47]/5 rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform duration-300" />
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Earnings</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+              Earnings
+            </span>
             <div className="w-7 h-7 rounded-lg bg-[#e21a47]/10 flex items-center justify-center text-[#e21a47]">
               <TrendingUp className="w-3.5 h-3.5" />
             </div>
@@ -151,7 +105,9 @@ function RevenueTitle({
         <div className="bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/80 rounded-2xl p-4 relative overflow-hidden group hover:border-amber-500/30 transition-all duration-300">
           <div className="absolute top-0 right-0 w-16 h-16 bg-amber-500/5 rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform duration-300" />
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Bookings</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+              Bookings
+            </span>
             <div className="w-7 h-7 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-500 dark:text-amber-400">
               <Calendar className="w-3.5 h-3.5" />
             </div>
@@ -171,7 +127,9 @@ function RevenueTitle({
         <div className="bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/80 rounded-2xl p-4 relative overflow-hidden group hover:border-emerald-500/30 transition-all duration-300">
           <div className="absolute top-0 right-0 w-16 h-16 bg-emerald-500/5 rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform duration-300" />
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Avg / Book</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+              Avg / Book
+            </span>
             <div className="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500">
               <DollarSign className="w-3.5 h-3.5" />
             </div>

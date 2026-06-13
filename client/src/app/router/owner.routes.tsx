@@ -4,7 +4,7 @@ import ErrorPage from '@/shared/pages/ErrorPage';
 import OwnerDashboard from '@/features/dashboard/pages/OwnerDashboard';
 
 export const ownerRoutes = {
-  path: '/owner',
+  path: '/owners',
 
   element: <OwnerLayout />,
   errorElement: <ErrorPage />,
