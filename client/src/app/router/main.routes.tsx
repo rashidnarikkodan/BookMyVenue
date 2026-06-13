@@ -14,6 +14,5 @@ export const mainRoutes = {
     { path: 'venues/:id', element: <>VenueDetailsPage</> },
     { path: 'account/profile', element: <>ProfilePage</> },
     { path: 'account/bookings', element: <>MyBookingsPage</> },
-    { path: 'owner/dashboard', element: <>Venu Ownboarding</> },
   ],
 };
