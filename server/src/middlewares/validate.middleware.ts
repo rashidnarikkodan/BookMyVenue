@@ -1,25 +1,17 @@
+import logger from '@/libs/logger';
+import { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
-import { Request, Response, NextFunction } from 'express';
 import { AppError } from '@/utils/AppError';
-import { HTTP_STATUS } from '@/constants/http';
-import { z } from 'zod';
+import { ZodError, ZodSchema } from 'zod';
 
-export const validateObjectId = (paramName: string) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    const id = req.params[paramName] as string;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return next(new AppError('Invalid ID format', HTTP_STATUS.BAD_REQUEST));
-    }
-
-    next();
-  };
-};
-
-export const validateRequest = (schema: z.ZodTypeAny) => {
-  return (req: Request, res: Response, next: NextFunction) => {
+export const validateInputs = (schema: ZodSchema) => {
+  return (req: Request, res: Response, next: NextFunction): void => {
     try {
-      req.body = schema.parse(req.body);
+      const validatedData = schema.parse(req.body);
+      req.body = validatedData;
+
+      logger.info(`Inputs: ${JSON.stringify(req.body)}`);
+
       next();
     } catch (error) {
       next(error);
@@ -27,12 +19,33 @@ export const validateRequest = (schema: z.ZodTypeAny) => {
   };
 };
 
-export const validateQuery = (schema: z.ZodTypeAny) => {
-  return (req: Request, res: Response, next: NextFunction) => {
+export const validateObjectId = (paramName: string) => {
+  return (req: Request, res: Response, next: NextFunction): void => {
+    const id = req.params[paramName] as string;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new AppError('Invalid ID format', 400);
+    }
+
+    next();
+  };
+};
+
+export const validateQuery = (schema: ZodSchema) => {
+  return (req: Request, res: Response, next: NextFunction): void => {
     try {
       req.query = schema.parse(req.query) as any;
       next();
     } catch (error) {
+      if (error instanceof ZodError) {
+        res.status(400).json({
+          success: false,
+          message: 'Validation failed',
+          errors: error.flatten(),
+        });
+        return;
+      }
+
       next(error);
     }
   };

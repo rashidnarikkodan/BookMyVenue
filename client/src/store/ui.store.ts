@@ -12,7 +12,6 @@ interface UIState {
 }
 
 export const useUIStore = create<UIState>((set) => {
-  // Initialize mode from localStorage or media query safely
   const getInitialMode = (): ThemeMode => {
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem('theme-mode') as ThemeMode;

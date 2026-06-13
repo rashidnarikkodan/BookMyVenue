@@ -1,10 +1,16 @@
 import { Router } from 'express';
 import * as categoryController from '@/controllers/category.controller';
-import { validateObjectId } from '@/middlewares/validate.middleware';
+import * as userController from '@/controllers/user.controller';
 import { upload } from '@/middlewares/upload.middleware';
+import { authMiddleware } from '@/middlewares/auth.middleware';
+import { authorizeRoles } from '@/middlewares/role.middleware';
 
 const router = Router();
 
+// Protect all admin routes
+router.use(authMiddleware, authorizeRoles('admin'));
+
+// Categories
 router
   .route('/categories')
   .get(categoryController.getCategories)
@@ -12,11 +18,16 @@ router
 
 router
   .route('/categories/:id')
-  .all(validateObjectId('id'))
   .get(categoryController.getCategory)
   .patch(upload.single('image'), categoryController.updateCategory)
   .delete(categoryController.deleteCategory);
 
 router.route('/categories/:id/restore').patch(categoryController.restoreCategory);
+
+// Users
+router.route('/users').get(userController.getUsers);
+router.route('/users/:id').get(userController.getUser);
+router.route('/users/:id/block').patch(userController.blockUser);
+router.route('/users/:id/unblock').patch(userController.unblockUser);
 
 export default router;

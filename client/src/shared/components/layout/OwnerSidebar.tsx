@@ -10,6 +10,7 @@ import {
   X,
 } from 'lucide-react';
 import { useUIStore } from '@/store/ui.store';
+import { useLogout } from '@/features/auth/hooks/useLogout';
 
 const ownerNavLinks = [
   { name: 'Dashboard', href: '/owners/dashboard', icon: LayoutDashboard },
@@ -22,6 +23,7 @@ const ownerNavLinks = [
 
 export default function OwnerSidebar() {
   const { sidebarOpen, setSidebarOpen } = useUIStore();
+  const handleLogout = useLogout();
 
   const closeSidebar = () => setSidebarOpen(false);
 
@@ -54,7 +56,7 @@ export default function OwnerSidebar() {
             >
               <path d="M12 2L2 7l10 5 10-5-10-5zm0 13L2 9v8l10 5 10-5V9l-10 6z" />
             </svg>
-            <span className="text-xl font-bold tracking-tight text-foreground">BookMyVenue</span>
+            <span className="text-xl font-bold tracking-tight text-foreground">VenueOwner</span>
           </div>
 
           {/* Mobile Close Button */}
@@ -100,6 +102,7 @@ export default function OwnerSidebar() {
         <div className="border-t border-border p-4">
           <button
             type="button"
+            onClick={handleLogout}
             className="
               group flex w-full items-center gap-3.5 rounded-xl px-4 py-3 text-sm font-medium text-error hover:bg-error/10 transition-colors duration-200
             "

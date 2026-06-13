@@ -1,15 +1,14 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema, Document } from 'mongoose';
+import { IUser } from './interfaces/user-scheme.interface';
+export type { IUser };
 
-const userSchema = new mongoose.Schema(
+const userSchema = new Schema<IUser>(
   {
-    name: {
+    fullName: {
       type: String,
       required: true,
       trim: true,
-      minlength: 2,
-      maxlength: 100,
     },
-
     email: {
       type: String,
       required: true,
@@ -17,46 +16,35 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
-
     password: {
       type: String,
-      required: true,
-      minlength: 6,
-      select: false,
     },
-
-    phone: {
+    phoneNumber: {
       type: String,
-      required: true,
-      unique: true,
-      trim: true,
     },
-
     role: {
       type: String,
       enum: ['user', 'owner', 'admin'],
       default: 'user',
     },
-
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
     isBlocked: {
       type: Boolean,
       default: false,
     },
-
+    googleId: {
+      type: String,
+    },
+    avatar: {
+      type: String,
+    },
     authProvider: {
       type: String,
       enum: ['local', 'google'],
       default: 'local',
-    },
-
-    isVerified: {
-      type: Boolean,
-      defualt: false,
-    },
-
-    googleId: {
-      type: String,
-      default: null,
     },
   },
   {
@@ -64,6 +52,4 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-const User = mongoose.model('User', userSchema);
-
-export default User;
+export default mongoose.model<IUser>('User', userSchema);

@@ -7,6 +7,7 @@ import notFound from '@/utils/notFound';
 import errorHandler from './utils/error';
 import routes from '@/routes';
 import env from './configs/env.config';
+import cookieParser from 'cookie-parser';
 
 const app: Application = express();
 
@@ -44,6 +45,9 @@ app.use(
 // JSON parser & Form data parse
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Cookie parser (required for reading req.cookies in auth routes)
+app.use(cookieParser());
 
 // Health Check
 app.get('/health', (req: Request, res: Response, next: NextFunction) => {
