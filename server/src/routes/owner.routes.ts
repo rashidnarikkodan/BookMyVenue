@@ -6,12 +6,15 @@ import * as venueController from '@/controllers/venue.controller';
 import { authMiddleware } from '@/middlewares/auth.middleware';
 import { authorizeRoles } from '@/middlewares/role.middleware';
 import {
+  validateInputs,
   validateObjectId,
   validateQuery,
 } from '@/middlewares/validate.middleware';
 
 import { upload } from '@/middlewares/upload.middleware';
 import { getOwnerVenuesQuerySchema } from '@/dto/venue/get-owner-venues.dto';
+import { createVenueSchema } from '@/dto/venue/create-venue.dto';
+import { updateVenueSchema } from '@/dto/venue/update-venue.dto';
 
 const router = Router();
 
