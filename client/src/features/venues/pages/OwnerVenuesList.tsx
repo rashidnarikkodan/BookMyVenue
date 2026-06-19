@@ -9,7 +9,7 @@ import { useAsyncFetch } from '@/shared/hooks/useAsyncFetch';
 import { useDebounce } from '@/shared/hooks/useDebounce';
 import type { Venue, VenueListResponse, ApiResponse, PaginationInfo } from '../types/venues.types';
 import { Loading } from '@/shared/components/ui';
-import { toast } from 'sonner';
+// import { toast } from 'sonner';
 import { Building2, Clock, CheckCircle2, XCircle } from 'lucide-react';
 
 const OwnerVenuesList = () => {

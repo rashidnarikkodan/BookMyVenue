@@ -79,7 +79,7 @@ const VenueFormModal = ({ venue, onClose, onSuccess }: Props) => {
   useEffect(() => {
     categoriesApi
       .getAll({ status: 'active', sort: 'asc' })
-      .then((res) => setCategories(res.data))
+      .then((res) => setCategories(res.data.categories))
       .catch(() => toast.error('Failed to load categories'));
   }, []);
 
