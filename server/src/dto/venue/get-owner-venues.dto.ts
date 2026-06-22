@@ -20,6 +20,8 @@ export const getOwnerVenuesQuerySchema = z.object({
   category: z.string().optional(),
 
   sort: z.enum(['asc', 'desc']).optional().default('desc'),
+
+  isDeleted: z.enum(['true', 'false']).optional().default('false'),
 });
 
 export type GetOwnerVenuesQueryDTO = z.infer<typeof getOwnerVenuesQuerySchema>;

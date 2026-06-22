@@ -12,9 +12,11 @@ import {
   Users,
   IndianRupee,
   Calendar,
-  Building2,
-  Wifi,
   AlertTriangle,
+  Trash2,
+  ArchiveRestore,
+  Loader2,
+  Building2,
 } from 'lucide-react';
 
 const statusStyles: Record<string, string> = {
@@ -28,6 +30,9 @@ const OwnerVenueDetails = () => {
   const navigate = useNavigate();
   const [modalOpen, setModalOpen] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isRestoring, setIsRestoring] = useState(false);
 
   const { data: fetchResponse, loading, execute: fetchVenue } = useAsyncFetch<ApiResponse<Venue>>();
 
@@ -42,6 +47,35 @@ const OwnerVenueDetails = () => {
   useEffect(() => {
     loadVenue();
   }, [id]);
+
+  const handleDelete = async () => {
+    if (!venue) return;
+    setIsDeleting(true);
+    try {
+      await ownerVenuesApi.softDelete(venue._id);
+      toast.success('Venue archived successfully');
+      navigate('/owner/venues');
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Failed to archive venue');
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteConfirm(false);
+    }
+  };
+
+  const handleRestore = async () => {
+    if (!venue) return;
+    setIsRestoring(true);
+    try {
+      await ownerVenuesApi.restore(venue._id);
+      toast.success('Venue restored successfully');
+      loadVenue();
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Failed to restore venue');
+    } finally {
+      setIsRestoring(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -115,11 +149,17 @@ const OwnerVenueDetails = () => {
               <h1 className="text-2xl font-extrabold tracking-tight text-foreground">
                 {venue.name}
               </h1>
-              <span
-                className={`inline-flex items-center rounded-lg border px-2.5 py-0.5 text-xs font-semibold capitalize ${statusClass}`}
-              >
-                {venue.verificationStatus}
-              </span>
+              {venue.isDeleted ? (
+                <span className="inline-flex items-center rounded-lg border px-2.5 py-0.5 text-xs font-semibold capitalize border-error/20 bg-error/10 text-error">
+                  Archived
+                </span>
+              ) : (
+                <span
+                  className={`inline-flex items-center rounded-lg border px-2.5 py-0.5 text-xs font-semibold capitalize ${statusClass}`}
+                >
+                  {venue.verificationStatus}
+                </span>
+              )}
             </div>
             <p className="mt-1 text-xs text-muted">{categoryName}</p>
           </div>
@@ -127,18 +167,51 @@ const OwnerVenueDetails = () => {
 
         {/* Action Buttons */}
         <div className="flex items-center gap-3">
-          <button
-            onClick={() => setModalOpen(true)}
-            className="
-              inline-flex items-center justify-center gap-2
-              rounded-xl border border-border bg-background
-              px-4 py-2.5 text-sm font-semibold text-foreground
-              hover:bg-surface transition-all active:scale-95 cursor-pointer
-            "
-          >
-            <Pencil size={16} />
-            Edit Venue
-          </button>
+          {venue.isDeleted ? (
+            <button
+              onClick={handleRestore}
+              disabled={isRestoring}
+              className="
+                inline-flex items-center justify-center gap-2
+                rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white
+                hover:bg-accent transition-all active:scale-95 disabled:opacity-50
+              "
+            >
+              {isRestoring ? (
+                <Loader2 size={16} className="animate-spin" />
+              ) : (
+                <ArchiveRestore size={16} />
+              )}
+              Restore Venue
+            </button>
+          ) : (
+            <>
+              <button
+                onClick={() => setShowDeleteConfirm(true)}
+                className="
+                  inline-flex items-center justify-center gap-2
+                  rounded-xl border border-error/20 bg-error/5
+                  px-4 py-2.5 text-sm font-semibold text-error
+                  hover:bg-error/10 transition-all active:scale-95
+                "
+              >
+                <Trash2 size={16} />
+                Delete
+              </button>
+              <button
+                onClick={() => setModalOpen(true)}
+                className="
+                  inline-flex items-center justify-center gap-2
+                  rounded-xl border border-border bg-background
+                  px-4 py-2.5 text-sm font-semibold text-foreground
+                  hover:bg-surface transition-all active:scale-95
+                "
+              >
+                <Pencil size={16} />
+                Edit Venue
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -238,7 +311,6 @@ const OwnerVenueDetails = () => {
                     key={i}
                     className="inline-flex items-center gap-1.5 rounded-lg bg-background border border-border px-3 py-1.5 text-xs font-medium text-foreground"
                   >
-                    <Wifi size={12} className="text-primary" />
                     {amenity}
                   </span>
                 ))}
@@ -333,6 +405,38 @@ const OwnerVenueDetails = () => {
       {/* Edit Modal */}
       {modalOpen && (
         <VenueFormModal venue={venue} onClose={() => setModalOpen(false)} onSuccess={loadVenue} />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="bg-background rounded-2xl shadow-xl w-full max-w-md overflow-hidden border border-border p-6 text-center space-y-4">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-error/10 mb-2">
+              <AlertTriangle className="h-6 w-6 text-error" />
+            </div>
+            <h3 className="text-lg font-bold text-foreground">Delete Venue?</h3>
+            <p className="text-sm text-muted">
+              Are you sure you want to delete this venue? It will be moved to your Archived tab
+              where you can restore it later if needed.
+            </p>
+            <div className="flex gap-3 pt-4">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                disabled={isDeleting}
+                className="flex-1 rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-semibold text-foreground hover:bg-surface transition-all disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className="flex-1 inline-flex justify-center items-center gap-2 rounded-xl bg-error px-4 py-2.5 text-sm font-semibold text-white hover:bg-error/90 transition-all disabled:opacity-50"
+              >
+                {isDeleting ? <Loader2 size={16} className="animate-spin" /> : 'Yes, Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

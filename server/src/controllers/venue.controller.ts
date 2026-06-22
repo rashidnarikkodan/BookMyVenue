@@ -4,7 +4,8 @@ import { HTTP_STATUS } from '@/constants/http';
 import { AppError } from '@/utils/AppError';
 import { MESSAGES } from '@/constants/messages';
 import success from '@/utils/response';
-import { uploadToCloudinary } from '@/libs/cloudinary';
+import { uploadToCloudinary, deleteFromCloudinary } from '@/libs/cloudinary';
+import extractPublicId from '@/helpers/extractCloudinaryPublicId.helpers';
 import fs from 'fs/promises';
 
 // POST /owner/venues
@@ -12,6 +13,7 @@ export const createVenue = async (req: Request, res: Response, next: NextFunctio
   const tempFiles = (req.files as Express.Multer.File[]) || [];
   try {
     const ownerId = req.user?.id;
+
     if (!ownerId) throw new AppError(MESSAGES.UNAUTHORIZED, HTTP_STATUS.UNAUTHORIZED);
 
     // Upload images to Cloudinary
@@ -39,9 +41,10 @@ export const createVenue = async (req: Request, res: Response, next: NextFunctio
 export const getOwnerVenues = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const ownerId = req.user?.id;
+
     if (!ownerId) throw new AppError(MESSAGES.UNAUTHORIZED, HTTP_STATUS.UNAUTHORIZED);
 
-    const result = await venueService.getOwnerVenues(ownerId, req.query as any);
+    const result = await venueService.getOwnerVenues(ownerId, res.locals.validateQuery);
 
     return success(res, HTTP_STATUS.OK, result, MESSAGES.VENUES_FETCHED);
   } catch (error) {
@@ -54,6 +57,7 @@ export const getVenueById = async (req: Request, res: Response, next: NextFuncti
   try {
     const { id } = req.params;
     const ownerId = req.user?.id;
+
     if (!ownerId) throw new AppError(MESSAGES.UNAUTHORIZED, HTTP_STATUS.UNAUTHORIZED);
 
     const venue = await venueService.getVenueById(ownerId, id as string);
@@ -70,6 +74,7 @@ export const updateVenue = async (req: Request, res: Response, next: NextFunctio
   try {
     const { id } = req.params;
     const ownerId = req.user?.id;
+
     if (!ownerId) throw new AppError(MESSAGES.UNAUTHORIZED, HTTP_STATUS.UNAUTHORIZED);
 
     // Upload new images to Cloudinary if provided
@@ -89,8 +94,22 @@ export const updateVenue = async (req: Request, res: Response, next: NextFunctio
         existingImages = JSON.parse(data.existingImages);
       } catch {
         existingImages = [];
+        delete data.existingImages;
       }
-      delete data.existingImages;
+    }
+
+    // Fetch the current venue to find deleted images
+    const currentVenue = await venueService.getVenueById(ownerId, id as string);
+    if (currentVenue && currentVenue.images) {
+      const orphanedUrls = currentVenue.images.filter((url) => !existingImages.includes(url));
+
+      // Delete orphaned images from Cloudinary
+      for (const url of orphanedUrls) {
+        const publicId = extractPublicId(url);
+        await deleteFromCloudinary(publicId).catch((err) => {
+          console.error(`Failed to delete orphaned image: ${publicId}`, err);
+        });
+      }
     }
 
     // Combine existing + new images
@@ -106,6 +125,36 @@ export const updateVenue = async (req: Request, res: Response, next: NextFunctio
     for (const file of tempFiles) {
       await fs.unlink(file.path).catch(() => {});
     }
+    next(error);
+  }
+};
+
+export const softDeleteVenue = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    const ownerId = req.user?.id;
+
+    if (!ownerId) throw new AppError(MESSAGES.UNAUTHORIZED, HTTP_STATUS.UNAUTHORIZED);
+
+    const venue = await venueService.softDeleteVenue(ownerId, id as string);
+
+    return success(res, HTTP_STATUS.OK, venue, 'Venue archived successfully');
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const restoreVenue = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    const ownerId = req.user?.id;
+
+    if (!ownerId) throw new AppError(MESSAGES.UNAUTHORIZED, HTTP_STATUS.UNAUTHORIZED);
+
+    const venue = await venueService.restoreVenue(ownerId, id as string);
+
+    return success(res, HTTP_STATUS.OK, venue, 'Venue restored successfully');
+  } catch (error) {
     next(error);
   }
 };

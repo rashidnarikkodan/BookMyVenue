@@ -16,6 +16,7 @@ export const createVenueSchema = z.object({
   }),
 
   location: z.object({
+    type: z.literal('Point').default('Point'),
     coordinates: z.tuple([
       z.number(), // longitude
       z.number(), // latitude

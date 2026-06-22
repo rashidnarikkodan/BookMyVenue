@@ -8,7 +8,7 @@ export const authorizeRoles = (...allowedRoles: string[]) => {
       return next(new AppError('User not authenticated', HTTP_STATUS.UNAUTHORIZED));
     }
 
-    if (!allowedRoles.includes(req.user.role)) {
+    if (!allowedRoles.includes(req.user.role as string)) {
       return next(
         new AppError(
           'Access denied. You do not have the required permissions.',
