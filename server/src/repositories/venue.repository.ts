@@ -3,6 +3,8 @@ import { VenueDocument } from '@/types/venue.types';
 import { CreateVenueDTO } from '@/dto/venue/create-venue.dto';
 import { UpdateVenueDTO } from '@/dto/venue/update-venue.dto';
 import { GetOwnerVenuesQueryDTO } from '@/dto/venue/get-owner-venues.dto';
+import { GetAdminVenuesQueryDTO } from '@/dto/admin/get-venues.dto';
+import { GetPublicVenuesQueryDTO } from '@/dto/venue/get-public-venues.dto';
 
 type Return = Promise<VenueDocument>;
 
@@ -15,9 +17,12 @@ export const findVenueById = async (id: string): Promise<VenueDocument | null> =
 };
 
 export const findVenuesByOwner = async (ownerId: string, query: GetOwnerVenuesQueryDTO) => {
-  const { page, limit, search, status, category, sort } = query;
+  const { page, limit, search, status, category, sort, isDeleted } = query;
 
-  const filter: Record<string, any> = { ownerId };
+  const filter: Record<string, any> = {
+    ownerId,
+    isDeleted: isDeleted === 'true',
+  };
 
   // Status filter
   if (status && status !== 'all') {
@@ -64,4 +69,195 @@ export const updateVenue = async (
   data: UpdateVenueDTO
 ): Promise<VenueDocument | null> => {
   return await Venue.findByIdAndUpdate(id, data, { new: true }).populate('categoryId', 'name');
+};
+
+export const softDeleteVenue = async (id: string): Promise<VenueDocument | null> => {
+  return await Venue.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
+};
+
+export const restoreVenue = async (id: string): Promise<VenueDocument | null> => {
+  return await Venue.findByIdAndUpdate(id, { isDeleted: false }, { new: true });
+};
+
+// ── Admin Methods ──────────────────────────────────────────
+
+export const findAllVenues = async (query: GetAdminVenuesQueryDTO) => {
+  const { page, limit, search, status, category, sort } = query;
+
+  const filter: Record<string, any> = {
+    isDeleted: { $ne: true },
+  };
+
+  if (status && status !== 'all') {
+    filter.verificationStatus = status;
+  }
+
+  if (category) {
+    filter.categoryId = category;
+  }
+
+  if (search) {
+    filter.$or = [
+      { name: { $regex: search, $options: 'i' } },
+      { description: { $regex: search, $options: 'i' } },
+    ];
+  }
+
+  const sortOption: Record<string, 1 | -1> = {
+    createdAt: sort === 'asc' ? 1 : -1,
+  };
+
+  const skip = (page - 1) * limit;
+
+  const [venues, total] = await Promise.all([
+    Venue.find(filter)
+      .populate('categoryId', 'name')
+      .populate({
+        path: 'ownerId', // Go to the Owner profile
+        populate: {
+          path: 'userId', // Inside the Owner profile, go to the User profile!
+          select: 'fullName email',
+        },
+      })
+      .sort(sortOption)
+      .skip(skip)
+      .limit(limit),
+    Venue.countDocuments(filter),
+  ]);
+
+  return {
+    venues,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
+};
+
+export const findVenueByIdWithOwner = async (id: string): Promise<VenueDocument | null> => {
+  return await Venue.findById(id)
+    .populate('categoryId', 'name')
+    .populate({
+      path: 'ownerId',
+      populate: {
+        path: 'userId',
+        select: 'fullName email avatar',
+      },
+    });
+};
+
+export const approveVenue = async (id: string): Promise<VenueDocument | null> => {
+  return await Venue.findByIdAndUpdate(
+    id,
+    {
+      verificationStatus: 'approved',
+      verifiedAt: new Date(),
+      rejectionReason: null,
+    },
+    { new: true }
+  ).populate('categoryId', 'name');
+};
+
+export const rejectVenue = async (
+  id: string,
+  rejectionReason: string
+): Promise<VenueDocument | null> => {
+  return await Venue.findByIdAndUpdate(
+    id,
+    {
+      verificationStatus: 'rejected',
+      verifiedAt: null,
+      rejectionReason,
+    },
+    { new: true }
+  ).populate('categoryId', 'name');
+};
+
+// ── Public Methods ─────────────────────────────────────────
+
+export const findPublicVenues = async (query: GetPublicVenuesQueryDTO) => {
+  const { page, limit, search, category, minCapacity, maxCapacity, minPrice, maxPrice, sort } =
+    query;
+
+  // Only show approved, active, non-deleted venues
+  const filter: Record<string, any> = {
+    verificationStatus: 'approved',
+    isActive: true,
+    isDeleted: { $ne: true },
+  };
+
+  if (category) {
+    filter.categoryId = category;
+  }
+
+  if (minCapacity !== undefined || maxCapacity !== undefined) {
+    filter.capacity = {};
+    if (minCapacity !== undefined) filter.capacity.$gte = minCapacity;
+    if (maxCapacity !== undefined) filter.capacity.$lte = maxCapacity;
+  }
+
+  if (minPrice !== undefined || maxPrice !== undefined) {
+    filter['pricing.amount'] = {};
+    if (minPrice !== undefined) filter['pricing.amount'].$gte = minPrice;
+    if (maxPrice !== undefined) filter['pricing.amount'].$lte = maxPrice;
+  }
+
+  if (search) {
+    filter.$or = [
+      { name: { $regex: search, $options: 'i' } },
+      { description: { $regex: search, $options: 'i' } },
+    ];
+  }
+
+  // Dynamic sort
+  let sortOption: Record<string, 1 | -1>;
+  switch (sort) {
+    case 'oldest':
+      sortOption = { createdAt: 1 };
+      break;
+    case 'price_asc':
+      sortOption = { 'pricing.amount': 1 };
+      break;
+    case 'price_desc':
+      sortOption = { 'pricing.amount': -1 };
+      break;
+    case 'capacity_asc':
+      sortOption = { capacity: 1 };
+      break;
+    case 'capacity_desc':
+      sortOption = { capacity: -1 };
+      break;
+    case 'newest':
+    default:
+      sortOption = { createdAt: -1 };
+      break;
+  }
+
+  const skip = (page - 1) * limit;
+
+  const [venues, total] = await Promise.all([
+    Venue.find(filter).populate('categoryId', 'name').sort(sortOption).skip(skip).limit(limit),
+    Venue.countDocuments(filter),
+  ]);
+
+  return {
+    venues,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
+};
+
+export const findPublicVenueById = async (id: string): Promise<VenueDocument | null> => {
+  return await Venue.findOne({
+    _id: id,
+    verificationStatus: 'approved',
+    isActive: true,
+    isDeleted: { $ne: true },
+  }).populate('categoryId', 'name');
 };

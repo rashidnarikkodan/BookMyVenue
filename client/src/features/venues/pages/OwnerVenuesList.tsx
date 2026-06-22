@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import VenueHeader from '../components/layout/VenueHeader';
 import VenueToolbar from '../components/layout/VenueToolbar';
 import VenueTable from '../components/layout/VenueTable';
-import Pagination from '../components/layout/Pagination';
+import Pagination from '@/shared/components/ui/Pagination';
 import VenueFormModal from '../components/ui/VenueFormModal';
 import { ownerVenuesApi } from '../services/owner-venues.api';
 import { useAsyncFetch } from '@/shared/hooks/useAsyncFetch';
@@ -20,6 +20,7 @@ const OwnerVenuesList = () => {
     'all'
   );
   const [sortBy, setSortBy] = useState<'asc' | 'desc'>('desc');
+  const [activeTab, setActiveTab] = useState<'active' | 'archived'>('active');
 
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
@@ -53,18 +54,19 @@ const OwnerVenuesList = () => {
         search: debouncedSearch,
         status: statusFilter,
         sort: sortBy,
+        isDeleted: activeTab === 'archived' ? 'true' : 'false',
       })
     );
   };
 
   useEffect(() => {
     loadVenues();
-  }, [page, debouncedSearch, statusFilter, sortBy]);
+  }, [page, debouncedSearch, statusFilter, sortBy, activeTab]);
 
   // Reset page when filters change
   useEffect(() => {
     setPage(1);
-  }, [debouncedSearch, statusFilter, sortBy]);
+  }, [debouncedSearch, statusFilter, sortBy, activeTab]);
 
   // Handlers
   const handleEditClick = (venue: Venue) => {
@@ -149,6 +151,30 @@ const OwnerVenuesList = () => {
         </div>
       </div>
 
+      {/* Tabs */}
+      <div className="flex border-b border-border">
+        <button
+          onClick={() => setActiveTab('active')}
+          className={`px-6 py-3 text-sm font-semibold transition-colors border-b-2 ${
+            activeTab === 'active'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-muted hover:text-foreground'
+          }`}
+        >
+          Active Venues
+        </button>
+        <button
+          onClick={() => setActiveTab('archived')}
+          className={`px-6 py-3 text-sm font-semibold transition-colors border-b-2 ${
+            activeTab === 'archived'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-muted hover:text-foreground'
+          }`}
+        >
+          Archived Venues
+        </button>
+      </div>
+
       {/* Toolbar */}
       <VenueToolbar
         search={search}
@@ -165,7 +191,7 @@ const OwnerVenuesList = () => {
       ) : (
         <>
           <VenueTable venues={venues} onEdit={handleEditClick} />
-          <Pagination pagination={pagination} onPageChange={setPage} />
+          <Pagination pagination={pagination} onPageChange={setPage} itemName="venue" />
         </>
       )}
 

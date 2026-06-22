@@ -28,6 +28,7 @@ export interface Venue {
   isActive: boolean;
   isFeatured?: boolean;
   isElite?: boolean;
+  isDeleted: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -39,6 +40,7 @@ export interface VenueQuery {
   status?: 'pending' | 'approved' | 'rejected' | 'all';
   category?: string;
   sort?: 'asc' | 'desc';
+  isDeleted?: 'true' | 'false';
 }
 
 export interface PaginationInfo {

@@ -109,7 +109,7 @@ const PublicNavbar = () => {
             {/* Primary CTA — styled visually distinct with primary theme colors */}
             <Link
               to="/signup"
-              state={{role:'owner'}}
+              state={{ role: 'owner' }}
               className="flex items-center gap-1.5 px-4.5 py-2 rounded-xl text-[13px] font-semibold bg-primary text-white hover:bg-accent transition-all duration-300 shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 active:scale-95"
             >
               <Building2 size={14} />

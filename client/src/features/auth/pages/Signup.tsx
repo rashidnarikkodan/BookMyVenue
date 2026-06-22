@@ -86,7 +86,7 @@ const Signup = () => {
     setError(null);
     try {
       const { data } = await googleAuthApi(credentialResponse.credential);
-      
+
       const user = data.data.user;
       setAuth(user);
 
@@ -114,12 +114,17 @@ const Signup = () => {
   return (
     <>
       <div className="mb-5 text-center">
-        <h2 id="signup-header-title" className="text-lg font-semibold text-white tracking-tight">Create Account</h2>
+        <h2 id="signup-header-title" className="text-lg font-semibold text-white tracking-tight">
+          Create Account
+        </h2>
         <p className="text-[11px] text-slate-400 mt-1">Join our premium venue dashboard</p>
       </div>
 
       {error && (
-        <div id="signup-error-alert" className="bg-red-500/10 border border-red-500/50 text-red-400 text-xs p-3 rounded-xl mb-4 flex items-start gap-2">
+        <div
+          id="signup-error-alert"
+          className="bg-red-500/10 border border-red-500/50 text-red-400 text-xs p-3 rounded-xl mb-4 flex items-start gap-2"
+        >
           <span className="mt-0.5">⚠</span>
           <span>{error}</span>
         </div>
@@ -128,7 +133,12 @@ const Signup = () => {
       <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
         {/* Role Toggle */}
         <div className="flex flex-col gap-1.5">
-          <label id="signup-role-label" className="text-[10px] font-medium text-slate-400 tracking-wide uppercase">ROLE</label>
+          <label
+            id="signup-role-label"
+            className="text-[10px] font-medium text-slate-400 tracking-wide uppercase"
+          >
+            ROLE
+          </label>
           <div className="grid grid-cols-2 gap-3 mt-0.5">
             {/* User / Guest Card */}
             <button
@@ -206,7 +216,12 @@ const Signup = () => {
 
         {/* Full Name */}
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="signup-fullName" className="text-[10px] font-medium text-slate-400 tracking-wide uppercase">FULL NAME</label>
+          <label
+            htmlFor="signup-fullName"
+            className="text-[10px] font-medium text-slate-400 tracking-wide uppercase"
+          >
+            FULL NAME
+          </label>
           <input
             type="text"
             id="signup-fullName"
@@ -222,7 +237,10 @@ const Signup = () => {
 
         {/* Email */}
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="signup-email" className="text-[10px] font-medium text-slate-400 tracking-wide uppercase">
+          <label
+            htmlFor="signup-email"
+            className="text-[10px] font-medium text-slate-400 tracking-wide uppercase"
+          >
             EMAIL ADDRESS
           </label>
           <input
@@ -239,7 +257,10 @@ const Signup = () => {
 
         {/* Phone Number */}
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="signup-phoneNumber" className="text-[10px] font-medium text-slate-400 tracking-wide uppercase">
+          <label
+            htmlFor="signup-phoneNumber"
+            className="text-[10px] font-medium text-slate-400 tracking-wide uppercase"
+          >
             PHONE NUMBER
           </label>
           <input
@@ -258,7 +279,12 @@ const Signup = () => {
 
         {/* Password */}
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="signup-password" className="text-[10px] font-medium text-slate-400 tracking-wide uppercase">PASSWORD</label>
+          <label
+            htmlFor="signup-password"
+            className="text-[10px] font-medium text-slate-400 tracking-wide uppercase"
+          >
+            PASSWORD
+          </label>
           <div className="relative">
             <input
               type={showPassword ? 'text' : 'password'}
@@ -287,7 +313,10 @@ const Signup = () => {
 
         {/* Confirm Password */}
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="signup-confirmPassword" className="text-[10px] font-medium text-slate-400 tracking-wide uppercase">
+          <label
+            htmlFor="signup-confirmPassword"
+            className="text-[10px] font-medium text-slate-400 tracking-wide uppercase"
+          >
             CONFIRM PASSWORD
           </label>
           <div className="relative">
@@ -322,7 +351,12 @@ const Signup = () => {
         >
           {loading ? (
             <>
-              <svg id="signup-spinner" className="w-4 h-4 animate-spin mr-2" viewBox="0 0 24 24" fill="none">
+              <svg
+                id="signup-spinner"
+                className="w-4 h-4 animate-spin mr-2"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
                 <circle
                   className="opacity-25"
                   cx="12"
