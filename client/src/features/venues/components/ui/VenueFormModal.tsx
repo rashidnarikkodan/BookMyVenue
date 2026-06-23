@@ -3,7 +3,6 @@ import { useForm } from 'react-hook-form';
 import { X, Plus, Trash2, MapPin, Upload, Loader2, Pencil } from 'lucide-react';
 import ImageEditorModal from './ImageEditorModal';
 import { ownerVenuesApi } from '../../services/owner-venues.api';
-import { categoriesApi } from '@/features/categories/services/categories.api';
 import type { Venue } from '../../types/venues.types';
 import type { Category } from '@/features/categories/types';
 import { toast } from 'sonner';
@@ -11,7 +10,8 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { venueSchema, type FormValues } from '../../schemas/venue.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { venuesApi } from '../../services/venues.api';
+import { publicVenuesApi } from '@/features/public/services/public-venues.api';
+
 type Props = {
   venue: Venue | null; // null = create mode
   onClose: () => void;
@@ -74,7 +74,7 @@ const VenueFormModal = ({ venue, onClose, onSuccess }: Props) => {
 
   // Load categories for dropdown
   useEffect(() => {
-    venuesApi.getAllCategories()
+    publicVenuesApi.getCategoreis()
       .then((res) => setCategories(res?.data?.categories))
       .catch(() => toast.error('Failed to load categories'));
   }, []);
