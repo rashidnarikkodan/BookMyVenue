@@ -20,6 +20,8 @@ export const MESSAGES = {
   VENUE_UPDATED: 'Venue updated successfully',
   VENUE_DELETED: 'Venue deleted successfully',
   VENUES_FETCHED: 'Venues fetched successfully',
+  VENUE_APPROVED: 'Venue approved successfully',
+  VENUE_REJECTED: 'Venue rejected successfully',
 
   // general
   NOT_FOUND: 'Resource not found',

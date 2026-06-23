@@ -5,16 +5,13 @@ import * as venueController from '@/controllers/venue.controller';
 
 import { authMiddleware } from '@/middlewares/auth.middleware';
 import { authorizeRoles } from '@/middlewares/role.middleware';
-import {
-  validateInputs,
-  validateObjectId,
-  validateQuery,
-} from '@/middlewares/validate.middleware';
+import { validateInputs, validateObjectId, validateQuery } from '@/middlewares/validate.middleware';
 
 import { upload } from '@/middlewares/upload.middleware';
 import { getOwnerVenuesQuerySchema } from '@/dto/venue/get-owner-venues.dto';
 import { createVenueSchema } from '@/dto/venue/create-venue.dto';
 import { updateVenueSchema } from '@/dto/venue/update-venue.dto';
+import { parseVenueFormData } from '@/middlewares/venue.parse.middleware';
 
 const router = Router();
 
@@ -27,13 +24,26 @@ router.get('/dashboard', ownerDashboardController);
 // Venues
 router
   .route('/venues')
-  .post(upload.array('images', 10), validateInputs(createVenueSchema), venueController.createVenue)
+  .post(
+    upload.array('images', 10),
+    parseVenueFormData,
+    validateInputs(createVenueSchema),
+    venueController.createVenue
+  )
   .get(validateQuery(getOwnerVenuesQuerySchema), venueController.getOwnerVenues);
 
 router
   .route('/venues/:id')
   .all(validateObjectId('id'))
   .get(venueController.getVenueById)
-  .patch(upload.array('images', 10), validateInputs(updateVenueSchema), venueController.updateVenue);
+  .patch(
+    upload.array('images', 10),
+    parseVenueFormData,
+    validateInputs(updateVenueSchema),
+    venueController.updateVenue
+  )
+  .delete(venueController.softDeleteVenue);
+
+router.route('/venues/:id/restore').all(validateObjectId('id')).patch(venueController.restoreVenue);
 
 export default router;

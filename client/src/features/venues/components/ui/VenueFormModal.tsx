@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
-import { X, Plus, Trash2, MapPin, Upload, Loader2 } from 'lucide-react';
+import { X, Plus, Trash2, MapPin, Upload, Loader2, Pencil } from 'lucide-react';
+import ImageEditorModal from './ImageEditorModal';
 import { ownerVenuesApi } from '../../services/owner-venues.api';
 import { categoriesApi } from '@/features/categories/services/categories.api';
 import type { Venue } from '../../types/venues.types';
@@ -8,27 +9,12 @@ import type { Category } from '@/features/categories/types';
 import { toast } from 'sonner';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-
+import { venueSchema, type FormValues } from '../../schemas/venue.schema';
+import { zodResolver } from '@hookform/resolvers/zod';
 type Props = {
   venue: Venue | null; // null = create mode
   onClose: () => void;
   onSuccess: () => void;
-};
-
-type FormValues = {
-  name: string;
-  description: string;
-  categoryId: string;
-  street: string;
-  city: string;
-  district: string;
-  state: string;
-  pincode: string;
-  longitude: number;
-  latitude: number;
-  capacity: number;
-  pricingAmount: number;
-  pricingUnit: 'hour' | 'day';
 };
 
 const VenueFormModal = ({ venue, onClose, onSuccess }: Props) => {
@@ -44,6 +30,14 @@ const VenueFormModal = ({ venue, onClose, onSuccess }: Props) => {
   const mapInstanceRef = useRef<L.Map | null>(null);
   const markerRef = useRef<L.Marker | null>(null);
 
+  const [editingImage, setEditingImage] = useState<{
+    url: string;
+    index: number;
+    isExisting: boolean;
+  } | null>(null);
+
+  const [cropQueue, setCropQueue] = useState<{ file: File; objectUrl: string }[]>([]);
+
   const defaultLng = venue?.location?.coordinates?.[0] || 76.2711;
   const defaultLat = venue?.location?.coordinates?.[1] || 10.8505;
 
@@ -54,6 +48,8 @@ const VenueFormModal = ({ venue, onClose, onSuccess }: Props) => {
     watch,
     formState: { errors },
   } = useForm<FormValues>({
+    resolver: zodResolver(venueSchema),
+
     defaultValues: {
       name: venue?.name || '',
       description: venue?.description || '',
@@ -79,7 +75,7 @@ const VenueFormModal = ({ venue, onClose, onSuccess }: Props) => {
   useEffect(() => {
     categoriesApi
       .getAll({ status: 'active', sort: 'asc' })
-      .then((res) => setCategories(res.data.categories))
+      .then((res) => setCategories(res?.data?.categories))
       .catch(() => toast.error('Failed to load categories'));
   }, []);
 
@@ -119,7 +115,11 @@ const VenueFormModal = ({ venue, onClose, onSuccess }: Props) => {
     markerRef.current = marker;
 
     // Resize fix for modal
-    setTimeout(() => map.invalidateSize(), 200);
+    setTimeout(() => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.invalidateSize();
+      }
+    }, 200);
 
     return () => {
       map.remove();
@@ -139,16 +139,76 @@ const VenueFormModal = ({ venue, onClose, onSuccess }: Props) => {
   // Image file handling
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    setImageFiles((prev) => [...prev, ...files]);
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    const maxSize = 5 * 1024 * 1024; // 5MB
 
-    const newPreviews = files.map((file) => URL.createObjectURL(file));
-    setImagePreviews((prev) => [...prev, ...newPreviews]);
+    const validFiles = files.filter((file) => {
+      if (!validTypes.includes(file.type)) {
+        toast.error(`${file.name} is not a valid image. Only JPG, PNG, and WEBP are allowed.`);
+        return false;
+      }
+      if (file.size > maxSize) {
+        toast.error(`${file.name} is too large. Maximum size is 5MB.`);
+        return false;
+      }
+      return true;
+    });
+
+    if (validFiles.length > 0) {
+      const newQueueItems = validFiles.map((file) => ({
+        file,
+        objectUrl: URL.createObjectURL(file),
+      }));
+      setCropQueue((prev) => [...prev, ...newQueueItems]);
+    }
+
+    // Clear the input so the same files can be selected again if needed
+    e.target.value = '';
   };
 
   const removeNewImage = (index: number) => {
     URL.revokeObjectURL(imagePreviews[index]);
     setImageFiles((prev) => prev.filter((_, i) => i !== index));
     setImagePreviews((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSaveCrop = (croppedFiles: File[]) => {
+    if (editingImage) {
+      const croppedFile = croppedFiles[0];
+      if (editingImage.isExisting) {
+        setExistingImages((prev) => prev.filter((_, i) => i !== editingImage.index));
+        setImageFiles((prev) => [...prev, croppedFile]);
+        setImagePreviews((prev) => [...prev, URL.createObjectURL(croppedFile)]);
+      } else {
+        setImageFiles((prev) => {
+          const newFiles = [...prev];
+          newFiles[editingImage.index] = croppedFile;
+          return newFiles;
+        });
+        setImagePreviews((prev) => {
+          const newPreviews = [...prev];
+          URL.revokeObjectURL(newPreviews[editingImage.index]);
+          newPreviews[editingImage.index] = URL.createObjectURL(croppedFile);
+          return newPreviews;
+        });
+      }
+      setEditingImage(null);
+    } else if (cropQueue.length > 0) {
+      setImageFiles((prev) => [...prev, ...croppedFiles]);
+      const newPreviews = croppedFiles.map((f) => URL.createObjectURL(f));
+      setImagePreviews((prev) => [...prev, ...newPreviews]);
+      cropQueue.forEach((item) => URL.revokeObjectURL(item.objectUrl));
+      setCropQueue([]);
+    }
+  };
+
+  const handleCancelCrop = () => {
+    if (editingImage) {
+      setEditingImage(null);
+    } else if (cropQueue.length > 0) {
+      cropQueue.forEach((item) => URL.revokeObjectURL(item.objectUrl));
+      setCropQueue([]);
+    }
   };
 
   const removeExistingImage = (index: number) => {
@@ -230,7 +290,7 @@ const VenueFormModal = ({ venue, onClose, onSuccess }: Props) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-start justify-center overflow-y-auto bg-black/50 backdrop-blur-sm p-4 sm:p-6">
+    <div className="fixed inset-0 z-60 flex items-start justify-center overflow-y-auto bg-black/50 backdrop-blur-sm p-4 sm:p-6">
       <div className="relative w-full max-w-3xl rounded-3xl border border-border bg-card shadow-2xl my-8">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-border px-6 py-4">
@@ -519,6 +579,13 @@ const VenueFormModal = ({ venue, onClose, onSuccess }: Props) => {
                     <img src={url} alt={`Venue ${i + 1}`} className="h-24 w-full object-cover" />
                     <button
                       type="button"
+                      onClick={() => setEditingImage({ url, index: i, isExisting: true })}
+                      className="absolute top-1 right-8 rounded-full bg-primary/90 p-1 text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                    >
+                      <Pencil size={12} />
+                    </button>
+                    <button
+                      type="button"
                       onClick={() => removeExistingImage(i)}
                       className="absolute top-1 right-1 rounded-full bg-error/90 p-1 text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                     >
@@ -538,6 +605,13 @@ const VenueFormModal = ({ venue, onClose, onSuccess }: Props) => {
                     className="relative group rounded-xl overflow-hidden border border-primary/30"
                   >
                     <img src={url} alt={`New ${i + 1}`} className="h-24 w-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => setEditingImage({ url, index: i, isExisting: false })}
+                      className="absolute top-1 right-8 rounded-full bg-primary/90 p-1 text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                    >
+                      <Pencil size={12} />
+                    </button>
                     <button
                       type="button"
                       onClick={() => removeNewImage(i)}
@@ -560,7 +634,7 @@ const VenueFormModal = ({ venue, onClose, onSuccess }: Props) => {
               <input
                 type="file"
                 multiple
-                accept="image/*"
+                accept="image/jpeg, image/png, image/webp"
                 onChange={handleImageSelect}
                 className="hidden"
               />
@@ -589,6 +663,12 @@ const VenueFormModal = ({ venue, onClose, onSuccess }: Props) => {
           </button>
         </div>
       </div>
+      <ImageEditorModal
+        isOpen={!!editingImage || cropQueue.length > 0}
+        onClose={handleCancelCrop}
+        images={editingImage ? [editingImage.url] : cropQueue.map((item) => item.objectUrl)}
+        onSave={handleSaveCrop}
+      />
     </div>
   );
 };

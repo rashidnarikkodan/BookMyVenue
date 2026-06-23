@@ -5,6 +5,8 @@ import CategoriesList from '@/features/categories/pages/CategoriesList';
 import CategoryDetails from '@/features/categories/pages/CategoryDetails';
 import UsersList from '@/features/users/pages/UsersList';
 import UserDetails from '@/features/users/pages/UserDetails';
+import AdminVenuesList from '@/features/admin/pages/AdminVenuesList';
+import AdminVenueDetails from '@/features/admin/pages/AdminVenueDetails';
 import ProtectedRoute from '@/shared/components/ProtectedRoute';
 
 export const adminRoutes = {
@@ -40,6 +42,14 @@ export const adminRoutes = {
     {
       path: 'users/:id',
       element: <UserDetails />,
+    },
+    {
+      path: 'venues',
+      element: <AdminVenuesList />,
+    },
+    {
+      path: 'venues/:id',
+      element: <AdminVenueDetails />,
     },
   ],
 };

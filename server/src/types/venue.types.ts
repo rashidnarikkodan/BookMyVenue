@@ -29,6 +29,7 @@ export interface IVenue {
   isActive: boolean;
   isFeatured: boolean;
   isElite: boolean;
+  isDeleted: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

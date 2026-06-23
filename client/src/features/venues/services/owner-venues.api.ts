@@ -10,6 +10,7 @@ export const ownerVenuesApi = {
     if (query.status && query.status !== 'all') params.set('status', query.status);
     if (query.category) params.set('category', query.category);
     if (query.sort) params.set('sort', query.sort);
+    if (query.isDeleted) params.set('isDeleted', query.isDeleted);
 
     const res = await apiClient.get(`/owners/venues?${params.toString()}`);
     return res.data;
@@ -31,6 +32,16 @@ export const ownerVenuesApi = {
     const res = await apiClient.patch(`/owners/venues/${id}`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
+    return res.data;
+  },
+
+  softDelete: async (id: string): Promise<ApiResponse<Venue>> => {
+    const res = await apiClient.delete(`/owners/venues/${id}`);
+    return res.data;
+  },
+
+  restore: async (id: string): Promise<ApiResponse<Venue>> => {
+    const res = await apiClient.patch(`/owners/venues/${id}/restore`);
     return res.data;
   },
 };

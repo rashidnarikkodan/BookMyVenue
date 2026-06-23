@@ -19,6 +19,7 @@ export const updateVenueSchema = z.object({
 
   location: z
     .object({
+      type: z.literal('Point').default('Point'),
       coordinates: z.tuple([
         z.number(), // longitude
         z.number(), // latitude
@@ -36,7 +37,7 @@ export const updateVenueSchema = z.object({
     .optional(),
 
   images: z.array(z.string()).optional(),
-
+  existingImages: z.string().optional(),
   amenities: z.array(z.string()).optional(),
 });
 

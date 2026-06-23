@@ -34,7 +34,7 @@ export const validateObjectId = (paramName: string) => {
 export const validateQuery = (schema: ZodSchema) => {
   return (req: Request, res: Response, next: NextFunction): void => {
     try {
-      req.query = schema.parse(req.query) as any;
+      res.locals.validateQuery = schema.parse(req.query);
       next();
     } catch (error) {
       if (error instanceof ZodError) {
