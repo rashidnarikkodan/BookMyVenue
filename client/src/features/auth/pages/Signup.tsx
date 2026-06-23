@@ -85,7 +85,7 @@ const Signup = () => {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await googleAuthApi(credentialResponse.credential);
+      const { data } = await googleAuthApi(credentialResponse.credential, role);
 
       const user = data.data.user;
       setAuth(user);

@@ -4,7 +4,7 @@ import {
   Users,
   Building2,
   CalendarDays,
-  Settings,
+  User,
   LogOut,
   X,
   Boxes,
@@ -18,7 +18,7 @@ const adminNavLinks = [
   { name: 'Categories', href: '/admin/categories', icon: Boxes },
   { name: 'Manage Venues', href: '/admin/venues', icon: Building2 },
   { name: 'Bookings Overview', href: '/admin/bookings', icon: CalendarDays },
-  { name: 'System Settings', href: '/admin/settings', icon: Settings },
+  { name: 'Profile Settings', href: '/admin/profile', icon: User },
 ];
 
 export default function AdminSidebar() {

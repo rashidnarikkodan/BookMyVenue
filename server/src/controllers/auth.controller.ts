@@ -41,12 +41,12 @@ export const googleAuth = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { credential } = req.body;
+    const { credential, role } = req.body;
     if (!credential) {
       next(new AppError('Google credential is required', HTTP_STATUS.BAD_REQUEST));
       return;
     }
-    const result = await authService.googleAuth(credential);
+    const result = await authService.googleAuth(credential, role);
 
     res.cookie('refreshToken', result.refreshToken, {
       httpOnly: true,

@@ -10,8 +10,8 @@ export const signinApi = async (data: ISigninData) => {
   return await apiClient.post(AUTH_ROUTES.SIGNIN, data);
 };
 
-export const googleAuthApi = async (credential: string) => {
-  return await apiClient.post(AUTH_ROUTES.GOOGLE_AUTH, { credential });
+export const googleAuthApi = async (credential: string, role?: string) => {
+  return await apiClient.post(AUTH_ROUTES.GOOGLE_AUTH, { credential, role });
 };
 
 export const verifyOtpApi = async (registrationToken: string, otp: string) => {

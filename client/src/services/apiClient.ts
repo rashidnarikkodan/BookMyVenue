@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useAppStore } from '@/store/app.store';
+import { toast } from 'sonner';
 
 const PUBLIC_AUTH_ROUTES = [
   '/auth/signin',
@@ -28,8 +29,9 @@ apiClient.interceptors.response.use(
     const requestUrl: string = originalRequest?.url ?? '';
 
     const isPublicAuthRoute = PUBLIC_AUTH_ROUTES.some((route) => requestUrl.includes(route));
+    const status = error.response?.status;
 
-    if (error.response?.status === 401 && !originalRequest._retry && !isPublicAuthRoute) {
+    if (status === 401 && !originalRequest._retry && !isPublicAuthRoute) {
       originalRequest._retry = true;
 
       try {
@@ -43,17 +45,23 @@ apiClient.interceptors.response.use(
       }
     }
 
-    if (error.response?.status === 401 && requestUrl.includes('/auth/refresh-token')) {
+    if (status === 401 && requestUrl.includes('/auth/refresh-token')) {
       useAppStore.getState().logout();
       window.location.href = '/signin';
     }
 
     if (
-      error.response?.status === 403 &&
+      status === 403 &&
       error.response?.data?.message?.toLowerCase().includes('blocked')
     ) {
       useAppStore.getState().logout();
       window.location.href = '/signin';
+    }
+
+    // Toast error messages for failed requests (except initial transient 401s which are retried)
+    if (!(status === 401 && !originalRequest._retry && !isPublicAuthRoute)) {
+      const errorMessage = error.response?.data?.message || error.message || 'Request failed';
+      toast.error(errorMessage, { id: `api-err-${errorMessage}` });
     }
 
     return Promise.reject(error);
