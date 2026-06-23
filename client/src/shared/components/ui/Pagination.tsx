@@ -14,6 +14,8 @@ type Props = {
 };
 
 const Pagination = ({ pagination, onPageChange, itemName = 'item' }: Props) => {
+  if (!pagination) return null;
+
   const { page, totalPages, total } = pagination;
 
   if (totalPages <= 1) return null;

@@ -1,8 +1,10 @@
 import { Bell, Settings, UserCircle, Menu } from 'lucide-react';
 import { ThemeToggle } from '@/shared/components/ui';
 import { useUIStore } from '@/store/ui.store';
+import { useAppStore } from '@/store/app.store';
 
 const OwnerNavbar = () => {
+  const user = useAppStore((state) => state.user);
   const { toggleSidebar } = useUIStore();
 
   return (
@@ -49,8 +51,8 @@ const OwnerNavbar = () => {
           <div className="flex items-center gap-3 rounded-xl border border-border bg-background px-3 py-2">
             <UserCircle size={28} className="text-primary" />
             <div className="hidden text-right md:block">
-              <p className="text-sm font-medium text-foreground">Jane Smith</p>
-              <p className="text-muted text-xs">Venue Owner</p>
+              <p className="text-sm font-medium text-foreground">{user?.fullName || 'Venue Owner'}</p>
+              <p className="text-muted text-xs capitalize">{user?.role || 'owner'}</p>
             </div>
           </div>
         </div>
