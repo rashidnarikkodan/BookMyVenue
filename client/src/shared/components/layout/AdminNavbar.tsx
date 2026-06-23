@@ -1,9 +1,10 @@
 import { Bell, Settings, UserCircle, Menu } from 'lucide-react';
 import { ThemeToggle } from '@/shared/components/ui';
-
 import { useUIStore } from '@/store/ui.store';
+import { useAppStore } from '@/store/app.store';
 
 const AdminNavbar = () => {
+  const user = useAppStore((state) => state.user);
   const { toggleSidebar } = useUIStore();
 
   return (
@@ -110,8 +111,8 @@ const AdminNavbar = () => {
             <UserCircle size={28} className="text-primary" />
 
             <div className="hidden text-right md:block">
-              <p className="text-sm font-medium text-foreground">Admin</p>
-              <p className="text-muted text-xs">Super Administrator</p>
+              <p className="text-sm font-medium text-foreground">{user?.fullName || 'Admin'}</p>
+              <p className="text-muted text-xs capitalize">{user?.role || 'administrator'}</p>
             </div>
           </div>
         </div>

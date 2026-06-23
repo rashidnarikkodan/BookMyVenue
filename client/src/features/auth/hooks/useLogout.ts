@@ -13,7 +13,7 @@ export const useLogout = () => {
       console.error('Logout API failed:', error);
     } finally {
       logoutState();
-      navigate('/signin', { replace: true });
+      navigate('/', { replace: true });
     }
   };
 
