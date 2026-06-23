@@ -1,4 +1,4 @@
-import { Menu, Bell, Settings, UserCircle } from 'lucide-react';
+import { Menu, Bell, UserCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import ThemeToggle from './ThemeToggle';
 import { useUIStore } from '@/store/ui.store';
@@ -54,14 +54,6 @@ const DashboardNavbar = ({
             <Bell size={20} />
             <span className={`absolute top-1 right-1 h-2 w-2 rounded-full ${bellColor}`} />
           </button>
-
-          <Link
-            to={profileLink}
-            className="rounded-xl p-2 text-muted transition hover:bg-background hover:text-foreground flex items-center justify-center"
-            aria-label="Settings"
-          >
-            <Settings size={20} />
-          </Link>
 
           <Link
             to={profileLink}

@@ -28,7 +28,11 @@ const UserNavbar = () => {
   const navigate = useNavigate();
 
   const handleOwnerFlow = () => {
-    navigate('/owner/dashboard');
+    if (user?.role === 'owner') {
+      navigate('/owner/dashboard');
+    } else {
+      navigate('/owner/onboarding');
+    }
   };
 
   const getInitials = (name?: string) => {
@@ -110,12 +114,15 @@ const UserNavbar = () => {
 
             <div className="w-px h-5 bg-border mx-1" aria-hidden="true" />
 
-            <button
-              onClick={handleOwnerFlow}
-              className="px-4 py-2 rounded-xl text-[13px] font-semibold bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all duration-300 shadow-sm cursor-pointer"
-            >
-              {user?.role === 'owner' ? 'Owner Dashboard' : 'List your venue'}
-            </button>
+            {
+              user?.role == 'owner' &&
+              <button
+                onClick={handleOwnerFlow}
+                className="px-4 py-2 rounded-xl text-[13px] font-semibold bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all duration-300 shadow-sm cursor-pointer"
+              >
+                Owner Dashboard
+              </button>
+            }
 
             {/* Notifications Bell */}
             <div className="relative" ref={notificationRef}>

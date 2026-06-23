@@ -1,9 +1,16 @@
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Home, Search, ArrowLeft } from 'lucide-react';
+import { toast, Toaster } from 'sonner';
 
 const PageNotFound = () => {
+  useEffect(() => {
+    toast.error('Page not found: The path you entered does not exist.', { id: 'page-not-found' });
+  }, []);
+
   return (
     <main className="flex min-h-screen items-center justify-center bg-background px-6">
+      <Toaster richColors position="top-right" />
       <div className="max-w-xl text-center">
         <div className="mb-6">
           <span className="text-primary text-8xl font-bold">404</span>

@@ -116,9 +116,9 @@ const AdminVenueDetails = () => {
 
   // Owner info from populated field
   const ownerInfo = venue.ownerId as any;
-  const ownerName = typeof ownerInfo === 'object' ? ownerInfo.fullName : 'Unknown';
-  const ownerEmail = typeof ownerInfo === 'object' ? ownerInfo.email : 'N/A';
-  const ownerAvatar = typeof ownerInfo === 'object' ? ownerInfo.avatar : null;
+  const ownerName = (ownerInfo && typeof ownerInfo === 'object') ? ownerInfo.fullName : 'Unknown';
+  const ownerEmail = (ownerInfo && typeof ownerInfo === 'object') ? ownerInfo.email : 'N/A';
+  const ownerAvatar = (ownerInfo && typeof ownerInfo === 'object') ? ownerInfo.avatar : null;
 
   const formattedCreated = venue.createdAt
     ? new Date(venue.createdAt).toLocaleString('en-IN', {

@@ -215,7 +215,7 @@ const AdminVenuesList = () => {
 
               // Owner info from populated field
               const ownerInfo = venue.ownerId as any;
-              const ownerName = typeof ownerInfo === 'object' ? ownerInfo.fullName : 'Unknown';
+              const ownerName = (ownerInfo && typeof ownerInfo === 'object') ? ownerInfo.fullName : 'Unknown';
 
               return (
                 <div

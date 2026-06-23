@@ -18,7 +18,7 @@ const ownerNavLinks = [
   { name: 'Bookings', href: '/owner/bookings', icon: CalendarDays },
   { name: 'Revenue', href: '/owner/revenue', icon: TrendingUp },
   { name: 'Reviews', href: '/owner/reviews', icon: Star },
-  { name: 'Profile Settings', href: '/account/profile', icon: User },
+  { name: 'Profile Settings', href: '/owner/profile', icon: User },
 ];
 
 export default function OwnerSidebar() {

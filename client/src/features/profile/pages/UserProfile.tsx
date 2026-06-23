@@ -21,6 +21,7 @@ import {
 const UserProfile = () => {
   const currentUser = useAppStore((state) => state.user);
   const setAuth = useAppStore((state) => state.setAuth);
+  const setOwner = useAppStore((state) => state.setOwner);
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -49,8 +50,6 @@ const UserProfile = () => {
   const [idProofFile, setIdProofFile] = useState<File | null>(null);
   const [idProofName, setIdProofName] = useState<string>('');
 
-  const [activeTab, setActiveTab] = useState<'profile' | 'owner'>('profile');
-
   // Input refs
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const profileImageInputRef = useRef<HTMLInputElement>(null);
@@ -62,6 +61,7 @@ const UserProfile = () => {
       const res = await profileApi.getProfile();
       if (res.success) {
         setProfileData(res.data);
+        setOwner(res.data.owner || null);
         // Initialize form fields
         setFullName(res.data.user.fullName || '');
         setPhoneNumber(res.data.user.phoneNumber || '');
@@ -154,6 +154,7 @@ const UserProfile = () => {
       if (res.success) {
         toast.success('Profile updated successfully!');
         setProfileData(res.data);
+        setOwner(res.data.owner || null);
 
         // Update globally stored user details
         setAuth({
@@ -259,154 +260,119 @@ const UserProfile = () => {
       )}
 
       {/* Outer Layout Box */}
-      <div className="bg-surface rounded-3xl border border-border shadow-md overflow-hidden flex flex-col md:flex-row min-h-[600px] w-full">
-        {/* Sidebar Nav */}
-        <div className="w-full md:w-72 border-b md:border-b-0 md:border-r border-border p-6 bg-muted/10">
-          <div className="flex flex-row md:flex-col gap-2">
-            <button
-              type="button"
-              onClick={() => setActiveTab('profile')}
-              className={`flex items-center gap-3.5 px-5 py-4 rounded-2xl text-sm font-semibold transition-all duration-200 cursor-pointer w-full text-left ${
-                activeTab === 'profile'
-                  ? 'bg-primary/10 text-primary border-l-4 border-primary pl-4'
-                  : 'text-foreground/70 hover:bg-muted/30 hover:text-foreground border-l-4 border-transparent'
-              }`}
-            >
-              <UserIcon size={18} />
-              Personal Info
-            </button>
-
-            {user?.role === 'owner' && (
-              <button
-                type="button"
-                onClick={() => setActiveTab('owner')}
-                className={`flex items-center gap-3.5 px-5 py-4 rounded-2xl text-sm font-semibold transition-all duration-200 cursor-pointer w-full text-left ${
-                  activeTab === 'owner'
-                    ? 'bg-primary/10 text-primary border-l-4 border-primary pl-4'
-                    : 'text-foreground/70 hover:bg-muted/30 hover:text-foreground border-l-4 border-transparent'
-                }`}
-              >
-                <Building size={18} />
-                Venue Owner Info
-              </button>
-            )}
-          </div>
-        </div>
-
+      <div className="bg-surface rounded-3xl border border-border shadow-md overflow-hidden min-h-[600px] w-full">
         {/* Form Container */}
-        <form onSubmit={handleSubmit} className="flex-1 p-8 sm:p-12 md:p-14 flex flex-col justify-between">
-          <div className="space-y-8">
-            {/* 1. PERSONAL INFO TAB */}
-            {activeTab === 'profile' && (
-              <div className="space-y-8">
-                <div>
-                  <h3 className="text-xl sm:text-2xl font-bold text-foreground">Personal Information</h3>
-                  <p className="text-sm text-foreground/50 mt-1.5">Configure your primary contact and identification data.</p>
-                </div>
+        <form onSubmit={handleSubmit} className="p-8 sm:p-12 md:p-14 flex flex-col justify-between">
+          <div className="space-y-12">
+            {/* 1. PERSONAL INFO SECTION */}
+            <div className="space-y-8">
+              <div>
+                <h3 className="text-xl sm:text-2xl font-bold text-foreground">Personal Information</h3>
+                <p className="text-sm text-foreground/50 mt-1.5">Configure your primary contact and identification data.</p>
+              </div>
 
-                {/* Avatar upload */}
-                <div className="flex items-center gap-6">
-                  <div className="relative group">
-                    <div className="w-28 h-28 rounded-full overflow-hidden border-2 border-border bg-muted/20 flex items-center justify-center">
-                      {avatarPreview ? (
-                        <img src={avatarPreview} alt="Avatar" className="w-full h-full object-cover" />
-                      ) : (
-                        <UserIcon className="w-12 h-12 text-foreground/30" />
-                      )}
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => avatarInputRef.current?.click()}
-                      className="absolute bottom-0 right-0 p-2.5 rounded-full bg-primary text-white border-2 border-surface shadow-md hover:bg-accent transition-all duration-200 cursor-pointer"
-                      aria-label="Upload Avatar"
-                    >
-                      <Camera size={16} />
-                    </button>
+              {/* Avatar upload */}
+              <div className="flex items-center gap-6">
+                <div className="relative group">
+                  <div className="w-28 h-28 rounded-full overflow-hidden border-2 border-border bg-muted/20 flex items-center justify-center">
+                    {avatarPreview ? (
+                      <img src={avatarPreview} alt="Avatar" className="w-full h-full object-cover" />
+                    ) : (
+                      <UserIcon className="w-12 h-12 text-foreground/30" />
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => avatarInputRef.current?.click()}
+                    className="absolute bottom-0 right-0 p-2.5 rounded-full bg-primary text-white border-2 border-surface shadow-md hover:bg-accent transition-all duration-200 cursor-pointer"
+                    aria-label="Upload Avatar"
+                  >
+                    <Camera size={16} />
+                  </button>
+                  <input
+                    type="file"
+                    ref={avatarInputRef}
+                    onChange={handleAvatarChange}
+                    accept="image/*"
+                    className="hidden"
+                  />
+                </div>
+                <div>
+                  <h4 className="text-base sm:text-lg font-semibold text-foreground">Profile Picture</h4>
+                  <p className="text-sm text-foreground/50 mt-1">JPG, PNG or GIF. Max 5MB.</p>
+                </div>
+              </div>
+
+              <div className="grid gap-6 grid-cols-1 sm:grid-cols-2">
+                {/* Full Name */}
+                <div className="space-y-2">
+                  <label htmlFor="fullName" className="text-sm font-semibold text-foreground/80">Full Name</label>
+                  <div className="relative">
+                    <UserIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-foreground/40" />
                     <input
-                      type="file"
-                      ref={avatarInputRef}
-                      onChange={handleAvatarChange}
-                      accept="image/*"
-                      className="hidden"
+                      id="fullName"
+                      type="text"
+                      required
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      placeholder="John Doe"
+                      className="w-full pl-11 pr-4 py-3 rounded-xl border border-border bg-surface text-sm sm:text-base text-foreground focus:outline-none focus:border-primary transition-all duration-200 shadow-xs"
                     />
                   </div>
-                  <div>
-                    <h4 className="text-base sm:text-lg font-semibold text-foreground">Profile Picture</h4>
-                    <p className="text-sm text-foreground/50 mt-1">JPG, PNG or GIF. Max 5MB.</p>
+                </div>
+
+                {/* Phone Number */}
+                <div className="space-y-2">
+                  <label htmlFor="phoneNumber" className="text-sm font-semibold text-foreground/80">Phone Number</label>
+                  <div className="relative">
+                    <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-foreground/40" />
+                    <input
+                      id="phoneNumber"
+                      type="tel"
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(e.target.value)}
+                      placeholder="+1234567890"
+                      className="w-full pl-11 pr-4 py-3 rounded-xl border border-border bg-surface text-sm sm:text-base text-foreground focus:outline-none focus:border-primary transition-all duration-200 shadow-xs"
+                    />
                   </div>
                 </div>
 
-                <div className="grid gap-6 grid-cols-1 sm:grid-cols-2">
-                  {/* Full Name */}
-                  <div className="space-y-2">
-                    <label htmlFor="fullName" className="text-sm font-semibold text-foreground/80">Full Name</label>
-                    <div className="relative">
-                      <UserIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-foreground/40" />
-                      <input
-                        id="fullName"
-                        type="text"
-                        required
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
-                        placeholder="John Doe"
-                        className="w-full pl-11 pr-4 py-3 rounded-xl border border-border bg-surface text-sm sm:text-base text-foreground focus:outline-none focus:border-primary transition-all duration-200 shadow-xs"
-                      />
-                    </div>
+                {/* Email (Read Only) */}
+                <div className="space-y-2">
+                  <label htmlFor="email" className="text-sm font-semibold text-foreground/80">Email Address</label>
+                  <div className="relative">
+                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-foreground/40" />
+                    <input
+                      id="email"
+                      type="email"
+                      disabled
+                      value={user?.email || ''}
+                      className="w-full pl-11 pr-4 py-3 rounded-xl border border-border bg-muted/20 text-sm sm:text-base text-foreground/60 cursor-not-allowed"
+                    />
                   </div>
+                  <span className="text-xs text-foreground/40">Registered email cannot be modified.</span>
+                </div>
 
-                  {/* Phone Number */}
-                  <div className="space-y-2">
-                    <label htmlFor="phoneNumber" className="text-sm font-semibold text-foreground/80">Phone Number</label>
-                    <div className="relative">
-                      <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-foreground/40" />
-                      <input
-                        id="phoneNumber"
-                        type="tel"
-                        value={phoneNumber}
-                        onChange={(e) => setPhoneNumber(e.target.value)}
-                        placeholder="+1234567890"
-                        className="w-full pl-11 pr-4 py-3 rounded-xl border border-border bg-surface text-sm sm:text-base text-foreground focus:outline-none focus:border-primary transition-all duration-200 shadow-xs"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Email (Read Only) */}
-                  <div className="space-y-2">
-                    <label htmlFor="email" className="text-sm font-semibold text-foreground/80">Email Address</label>
-                    <div className="relative">
-                      <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-foreground/40" />
-                      <input
-                        id="email"
-                        type="email"
-                        disabled
-                        value={user?.email || ''}
-                        className="w-full pl-11 pr-4 py-3 rounded-xl border border-border bg-muted/20 text-sm sm:text-base text-foreground/60 cursor-not-allowed"
-                      />
-                    </div>
-                    <span className="text-xs text-foreground/40">Registered email cannot be modified.</span>
-                  </div>
-
-                  {/* Role (Read Only) */}
-                  <div className="space-y-2">
-                    <label htmlFor="role" className="text-sm font-semibold text-foreground/80">User Role</label>
-                    <div className="relative">
-                      <Building className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-foreground/40" />
-                      <input
-                        id="role"
-                        type="text"
-                        disabled
-                        value={user?.role?.toUpperCase() || 'USER'}
-                        className="w-full pl-11 pr-4 py-3 rounded-xl border border-border bg-muted/20 text-sm sm:text-base text-foreground/60 cursor-not-allowed"
-                      />
-                    </div>
+                {/* Role (Read Only) */}
+                <div className="space-y-2">
+                  <label htmlFor="role" className="text-sm font-semibold text-foreground/80">User Role</label>
+                  <div className="relative">
+                    <Building className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-foreground/40" />
+                    <input
+                      id="role"
+                      type="text"
+                      disabled
+                      value={user?.role?.toUpperCase() || 'USER'}
+                      className="w-full pl-11 pr-4 py-3 rounded-xl border border-border bg-muted/20 text-sm sm:text-base text-foreground/60 cursor-not-allowed"
+                    />
                   </div>
                 </div>
               </div>
-            )}
+            </div>
 
-            {/* 2. OWNER INFO TAB */}
-            {activeTab === 'owner' && user?.role === 'owner' && (
-              <div className="space-y-8">
+            {/* 2. OWNER INFO SECTION */}
+            {user?.role === 'owner' && (
+              <div className="space-y-8 border-t border-border pt-10">
                 <div>
                   <h3 className="text-xl sm:text-2xl font-bold text-foreground">Venue Owner Information</h3>
                   <p className="text-sm text-foreground/50 mt-1.5">Submit documents, business address and bank details for revenue payouts.</p>

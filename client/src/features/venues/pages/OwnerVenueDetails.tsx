@@ -5,6 +5,7 @@ import { useAsyncFetch } from '@/shared/hooks/useAsyncFetch';
 import type { Venue, ApiResponse } from '../types/venues.types';
 import VenueFormModal from '../components/ui/VenueFormModal';
 import { toast } from 'sonner';
+import { useAppStore } from '@/store/app.store';
 import {
   ChevronLeft,
   Pencil,
@@ -33,6 +34,9 @@ const OwnerVenueDetails = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isRestoring, setIsRestoring] = useState(false);
+
+  const owner = useAppStore((state) => state.owner);
+  const isApproved = owner?.verificationStatus === 'approved';
 
   const { data: fetchResponse, loading, execute: fetchVenue } = useAsyncFetch<ApiResponse<Venue>>();
 
@@ -170,12 +174,14 @@ const OwnerVenueDetails = () => {
           {venue.isDeleted ? (
             <button
               onClick={handleRestore}
-              disabled={isRestoring}
-              className="
+              disabled={isRestoring || !isApproved}
+              title={!isApproved ? 'You must complete your verification onboarding before restoring venues.' : ''}
+              className={`
                 inline-flex items-center justify-center gap-2
                 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white
-                hover:bg-accent transition-all active:scale-95 disabled:opacity-50
-              "
+                transition-all
+                ${!isApproved ? 'opacity-50 cursor-not-allowed' : 'hover:bg-accent active:scale-95'}
+              `}
             >
               {isRestoring ? (
                 <Loader2 size={16} className="animate-spin" />
@@ -188,24 +194,30 @@ const OwnerVenueDetails = () => {
             <>
               <button
                 onClick={() => setShowDeleteConfirm(true)}
-                className="
+                disabled={!isApproved}
+                title={!isApproved ? 'You must complete your verification onboarding before deleting venues.' : ''}
+                className={`
                   inline-flex items-center justify-center gap-2
                   rounded-xl border border-error/20 bg-error/5
                   px-4 py-2.5 text-sm font-semibold text-error
-                  hover:bg-error/10 transition-all active:scale-95
-                "
+                  transition-all
+                  ${!isApproved ? 'opacity-50 cursor-not-allowed' : 'hover:bg-error/10 active:scale-95'}
+                `}
               >
                 <Trash2 size={16} />
                 Delete
               </button>
               <button
                 onClick={() => setModalOpen(true)}
-                className="
+                disabled={!isApproved}
+                title={!isApproved ? 'You must complete your verification onboarding before editing venues.' : ''}
+                className={`
                   inline-flex items-center justify-center gap-2
                   rounded-xl border border-border bg-background
                   px-4 py-2.5 text-sm font-semibold text-foreground
-                  hover:bg-surface transition-all active:scale-95
-                "
+                  transition-all
+                  ${!isApproved ? 'opacity-50 cursor-not-allowed' : 'hover:bg-surface active:scale-95'}
+                `}
               >
                 <Pencil size={16} />
                 Edit Venue
