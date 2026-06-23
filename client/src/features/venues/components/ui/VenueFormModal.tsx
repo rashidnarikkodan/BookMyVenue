@@ -11,6 +11,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { venueSchema, type FormValues } from '../../schemas/venue.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { venuesApi } from '../../services/venues.api';
 type Props = {
   venue: Venue | null; // null = create mode
   onClose: () => void;
@@ -73,8 +74,7 @@ const VenueFormModal = ({ venue, onClose, onSuccess }: Props) => {
 
   // Load categories for dropdown
   useEffect(() => {
-    categoriesApi
-      .getAll({ status: 'active', sort: 'asc' })
+    venuesApi.getAllCategories()
       .then((res) => setCategories(res?.data?.categories))
       .catch(() => toast.error('Failed to load categories'));
   }, []);
