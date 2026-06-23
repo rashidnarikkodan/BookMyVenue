@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { adminVenuesApi, type AdminVenueQuery } from '../services/admin-venues.api';
+import { adminVenuesApi } from '../services/admin-venues.api';
 import { useAsyncFetch } from '@/shared/hooks/useAsyncFetch';
 import { useDebounce } from '@/shared/hooks/useDebounce';
 import Pagination, { type PaginationInfo } from '@/shared/components/ui/Pagination';
-import type { Venue, VenueListResponse, ApiResponse } from '@/features/venues/types/venues.types';
+import type { VenueListResponse, ApiResponse } from '@/features/venues/types/venues.types';
 import { Loading } from '@/shared/components/ui';
 import {
   Search,

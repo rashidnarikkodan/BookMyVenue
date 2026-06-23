@@ -1,4 +1,4 @@
-import { OwnerNavbar, OwnerSidebar } from '@/shared/components/layout';
+import { ProtectedNavbar, OwnerSidebar } from '@/shared/components/layout';
 import { Outlet } from 'react-router-dom';
 import { ThemeProvider } from '@/shared/providers/ThemeProvider';
 import { Toaster } from 'sonner';
@@ -12,7 +12,7 @@ export default function OwnerLayout() {
 
         {/* Content panel */}
         <div className="flex flex-1 flex-col lg:pl-64">
-          <OwnerNavbar />
+          <ProtectedNavbar />
 
           <main className="flex-1 p-6">
             <Outlet />

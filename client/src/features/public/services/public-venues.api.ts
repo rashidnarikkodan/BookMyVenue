@@ -37,7 +37,7 @@ export const publicVenuesApi = {
   },
 
   getCategoreis: async (
-    query?: CategoryQuery
+    _query?: CategoryQuery
   ): Promise<{
     success: boolean;
     message: string;

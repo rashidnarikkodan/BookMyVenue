@@ -73,7 +73,15 @@ const CategoryTable: React.FC<Props> = ({
           </tbody>
         </table>
       </div>
-      <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={onPageChange} />
+      <Pagination
+        pagination={{
+          page: currentPage,
+          totalPages: totalPages,
+          total: 0,
+          limit: 10,
+        }}
+        onPageChange={onPageChange}
+      />
     </div>
   );
 };
