@@ -37,7 +37,7 @@ export const publicVenuesApi = {
   },
 
   getCategoreis: async (
-    query: CategoryQuery
+    query?: CategoryQuery
   ): Promise<{
     success: boolean;
     message: string;
@@ -48,7 +48,7 @@ export const publicVenuesApi = {
       totalInactive: number;
     };
   }> => {
-    const res = await apiClient.get('/categories');
+    const res = await apiClient.get('/venues/categories');
     return res.data;
   },
 };
