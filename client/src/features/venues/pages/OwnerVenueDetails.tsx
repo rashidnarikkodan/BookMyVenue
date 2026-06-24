@@ -175,7 +175,11 @@ const OwnerVenueDetails = () => {
             <button
               onClick={handleRestore}
               disabled={isRestoring || !isApproved}
-              title={!isApproved ? 'You must complete your verification onboarding before restoring venues.' : ''}
+              title={
+                !isApproved
+                  ? 'You must complete your verification onboarding before restoring venues.'
+                  : ''
+              }
               className={`
                 inline-flex items-center justify-center gap-2
                 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white
@@ -195,7 +199,11 @@ const OwnerVenueDetails = () => {
               <button
                 onClick={() => setShowDeleteConfirm(true)}
                 disabled={!isApproved}
-                title={!isApproved ? 'You must complete your verification onboarding before deleting venues.' : ''}
+                title={
+                  !isApproved
+                    ? 'You must complete your verification onboarding before deleting venues.'
+                    : ''
+                }
                 className={`
                   inline-flex items-center justify-center gap-2
                   rounded-xl border border-error/20 bg-error/5
@@ -210,7 +218,11 @@ const OwnerVenueDetails = () => {
               <button
                 onClick={() => setModalOpen(true)}
                 disabled={!isApproved}
-                title={!isApproved ? 'You must complete your verification onboarding before editing venues.' : ''}
+                title={
+                  !isApproved
+                    ? 'You must complete your verification onboarding before editing venues.'
+                    : ''
+                }
                 className={`
                   inline-flex items-center justify-center gap-2
                   rounded-xl border border-border bg-background

@@ -50,10 +50,7 @@ apiClient.interceptors.response.use(
       window.location.href = '/signin';
     }
 
-    if (
-      status === 403 &&
-      error.response?.data?.message?.toLowerCase().includes('blocked')
-    ) {
+    if (status === 403 && error.response?.data?.message?.toLowerCase().includes('blocked')) {
       useAppStore.getState().logout();
       window.location.href = '/signin';
     }

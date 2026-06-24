@@ -201,7 +201,9 @@ const UserProfile = () => {
     <div className="w-full max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
       {/* Page Title */}
       <div className="mb-10">
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-foreground tracking-tight">Account Settings</h1>
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-foreground tracking-tight">
+          Account Settings
+        </h1>
         <p className="mt-2 text-sm sm:text-base text-foreground/60">
           Manage your personal details, credentials, and venue owner onboarding details.
         </p>
@@ -216,7 +218,9 @@ const UserProfile = () => {
               <div>
                 <h4 className="font-semibold text-base">Onboarding Required</h4>
                 <p className="mt-1.5 text-sm sm:text-base text-foreground/75 leading-relaxed">
-                  You are registered as a Venue Owner. Please complete the **Venue Owner Info** section below to submit your details for verification. Once approved, you can start listing venues.
+                  You are registered as a Venue Owner. Please complete the **Venue Owner Info**
+                  section below to submit your details for verification. Once approved, you can
+                  start listing venues.
                 </p>
               </div>
             </div>
@@ -226,7 +230,8 @@ const UserProfile = () => {
               <div>
                 <h4 className="font-semibold text-base">Verification Pending</h4>
                 <p className="mt-1.5 text-sm sm:text-base text-foreground/75 leading-relaxed">
-                  Your owner profile is currently pending administrator verification. We will verify your ID proof and bank details shortly.
+                  Your owner profile is currently pending administrator verification. We will verify
+                  your ID proof and bank details shortly.
                 </p>
               </div>
             </div>
@@ -236,7 +241,8 @@ const UserProfile = () => {
               <div>
                 <h4 className="font-semibold text-base">Verification Approved</h4>
                 <p className="mt-1.5 text-sm sm:text-base text-foreground/75 leading-relaxed">
-                  Congratulations! Your owner profile has been fully verified and approved. You have full access to listing and managing venues.
+                  Congratulations! Your owner profile has been fully verified and approved. You have
+                  full access to listing and managing venues.
                 </p>
               </div>
             </div>
@@ -246,7 +252,8 @@ const UserProfile = () => {
               <div>
                 <h4 className="font-semibold text-base">Verification Rejected</h4>
                 <p className="mt-1.5 text-sm sm:text-base text-foreground/75 leading-relaxed">
-                  Your verification details were rejected. Please review the reason below, update your details, and resubmit for approval.
+                  Your verification details were rejected. Please review the reason below, update
+                  your details, and resubmit for approval.
                 </p>
                 {owner.rejectionReason && (
                   <div className="mt-4 p-4 rounded-xl bg-error/10 border border-error/20 text-xs sm:text-sm font-semibold text-error">
@@ -267,8 +274,12 @@ const UserProfile = () => {
             {/* 1. PERSONAL INFO SECTION */}
             <div className="space-y-8">
               <div>
-                <h3 className="text-xl sm:text-2xl font-bold text-foreground">Personal Information</h3>
-                <p className="text-sm text-foreground/50 mt-1.5">Configure your primary contact and identification data.</p>
+                <h3 className="text-xl sm:text-2xl font-bold text-foreground">
+                  Personal Information
+                </h3>
+                <p className="text-sm text-foreground/50 mt-1.5">
+                  Configure your primary contact and identification data.
+                </p>
               </div>
 
               {/* Avatar upload */}
@@ -276,7 +287,11 @@ const UserProfile = () => {
                 <div className="relative group">
                   <div className="w-28 h-28 rounded-full overflow-hidden border-2 border-border bg-muted/20 flex items-center justify-center">
                     {avatarPreview ? (
-                      <img src={avatarPreview} alt="Avatar" className="w-full h-full object-cover" />
+                      <img
+                        src={avatarPreview}
+                        alt="Avatar"
+                        className="w-full h-full object-cover"
+                      />
                     ) : (
                       <UserIcon className="w-12 h-12 text-foreground/30" />
                     )}
@@ -298,7 +313,9 @@ const UserProfile = () => {
                   />
                 </div>
                 <div>
-                  <h4 className="text-base sm:text-lg font-semibold text-foreground">Profile Picture</h4>
+                  <h4 className="text-base sm:text-lg font-semibold text-foreground">
+                    Profile Picture
+                  </h4>
                   <p className="text-sm text-foreground/50 mt-1">JPG, PNG or GIF. Max 5MB.</p>
                 </div>
               </div>
@@ -306,7 +323,9 @@ const UserProfile = () => {
               <div className="grid gap-6 grid-cols-1 sm:grid-cols-2">
                 {/* Full Name */}
                 <div className="space-y-2">
-                  <label htmlFor="fullName" className="text-sm font-semibold text-foreground/80">Full Name</label>
+                  <label htmlFor="fullName" className="text-sm font-semibold text-foreground/80">
+                    Full Name
+                  </label>
                   <div className="relative">
                     <UserIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-foreground/40" />
                     <input
@@ -323,7 +342,9 @@ const UserProfile = () => {
 
                 {/* Phone Number */}
                 <div className="space-y-2">
-                  <label htmlFor="phoneNumber" className="text-sm font-semibold text-foreground/80">Phone Number</label>
+                  <label htmlFor="phoneNumber" className="text-sm font-semibold text-foreground/80">
+                    Phone Number
+                  </label>
                   <div className="relative">
                     <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-foreground/40" />
                     <input
@@ -339,7 +360,9 @@ const UserProfile = () => {
 
                 {/* Email (Read Only) */}
                 <div className="space-y-2">
-                  <label htmlFor="email" className="text-sm font-semibold text-foreground/80">Email Address</label>
+                  <label htmlFor="email" className="text-sm font-semibold text-foreground/80">
+                    Email Address
+                  </label>
                   <div className="relative">
                     <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-foreground/40" />
                     <input
@@ -350,12 +373,16 @@ const UserProfile = () => {
                       className="w-full pl-11 pr-4 py-3 rounded-xl border border-border bg-muted/20 text-sm sm:text-base text-foreground/60 cursor-not-allowed"
                     />
                   </div>
-                  <span className="text-xs text-foreground/40">Registered email cannot be modified.</span>
+                  <span className="text-xs text-foreground/40">
+                    Registered email cannot be modified.
+                  </span>
                 </div>
 
                 {/* Role (Read Only) */}
                 <div className="space-y-2">
-                  <label htmlFor="role" className="text-sm font-semibold text-foreground/80">User Role</label>
+                  <label htmlFor="role" className="text-sm font-semibold text-foreground/80">
+                    User Role
+                  </label>
                   <div className="relative">
                     <Building className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-foreground/40" />
                     <input
@@ -374,19 +401,29 @@ const UserProfile = () => {
             {user?.role === 'owner' && (
               <div className="space-y-8 border-t border-border pt-10">
                 <div>
-                  <h3 className="text-xl sm:text-2xl font-bold text-foreground">Venue Owner Information</h3>
-                  <p className="text-sm text-foreground/50 mt-1.5">Submit documents, business address and bank details for revenue payouts.</p>
+                  <h3 className="text-xl sm:text-2xl font-bold text-foreground">
+                    Venue Owner Information
+                  </h3>
+                  <p className="text-sm text-foreground/50 mt-1.5">
+                    Submit documents, business address and bank details for revenue payouts.
+                  </p>
                 </div>
 
                 {/* Owner profileImage and ID Proof */}
                 <div className="grid gap-6 grid-cols-1 sm:grid-cols-2">
                   {/* Profile Image (Business Logo or Photo) */}
                   <div className="space-y-2.5">
-                    <label className="text-sm font-semibold text-foreground/80">Owner Profile Image / Logo</label>
+                    <label className="text-sm font-semibold text-foreground/80">
+                      Owner Profile Image / Logo
+                    </label>
                     <div className="flex items-center gap-5">
                       <div className="w-20 h-20 rounded-xl border border-border overflow-hidden bg-muted/20 flex items-center justify-center flex-shrink-0">
                         {profileImagePreview ? (
-                          <img src={profileImagePreview} alt="Owner Profile" className="w-full h-full object-cover" />
+                          <img
+                            src={profileImagePreview}
+                            alt="Owner Profile"
+                            className="w-full h-full object-cover"
+                          />
                         ) : (
                           <Building className="w-8 h-8 text-foreground/30" />
                         )}
@@ -411,7 +448,9 @@ const UserProfile = () => {
 
                   {/* ID Proof upload */}
                   <div className="space-y-2.5">
-                    <label className="text-sm font-semibold text-foreground/80">ID Proof (PDF, JPG, PNG)</label>
+                    <label className="text-sm font-semibold text-foreground/80">
+                      ID Proof (PDF, JPG, PNG)
+                    </label>
                     <div className="flex items-center gap-4">
                       <button
                         type="button"
@@ -449,7 +488,9 @@ const UserProfile = () => {
 
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <label htmlFor="street" className="text-xs font-semibold text-foreground/60">Street Address</label>
+                      <label htmlFor="street" className="text-xs font-semibold text-foreground/60">
+                        Street Address
+                      </label>
                       <input
                         id="street"
                         type="text"
@@ -462,7 +503,9 @@ const UserProfile = () => {
 
                     <div className="grid gap-5 grid-cols-1 sm:grid-cols-3">
                       <div className="space-y-2">
-                        <label htmlFor="city" className="text-xs font-semibold text-foreground/60">City</label>
+                        <label htmlFor="city" className="text-xs font-semibold text-foreground/60">
+                          City
+                        </label>
                         <input
                           id="city"
                           type="text"
@@ -474,7 +517,9 @@ const UserProfile = () => {
                       </div>
 
                       <div className="space-y-2">
-                        <label htmlFor="state" className="text-xs font-semibold text-foreground/60">State / Region</label>
+                        <label htmlFor="state" className="text-xs font-semibold text-foreground/60">
+                          State / Region
+                        </label>
                         <input
                           id="state"
                           type="text"
@@ -486,7 +531,12 @@ const UserProfile = () => {
                       </div>
 
                       <div className="space-y-2">
-                        <label htmlFor="pincode" className="text-xs font-semibold text-foreground/60">Pincode</label>
+                        <label
+                          htmlFor="pincode"
+                          className="text-xs font-semibold text-foreground/60"
+                        >
+                          Pincode
+                        </label>
                         <input
                           id="pincode"
                           type="text"
@@ -509,7 +559,12 @@ const UserProfile = () => {
 
                   <div className="grid gap-5 grid-cols-1 sm:grid-cols-3">
                     <div className="space-y-2">
-                      <label htmlFor="accountHolderName" className="text-xs font-semibold text-foreground/60">Account Holder Name</label>
+                      <label
+                        htmlFor="accountHolderName"
+                        className="text-xs font-semibold text-foreground/60"
+                      >
+                        Account Holder Name
+                      </label>
                       <input
                         id="accountHolderName"
                         type="text"
@@ -521,7 +576,12 @@ const UserProfile = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <label htmlFor="accountNumber" className="text-xs font-semibold text-foreground/60">Account Number</label>
+                      <label
+                        htmlFor="accountNumber"
+                        className="text-xs font-semibold text-foreground/60"
+                      >
+                        Account Number
+                      </label>
                       <input
                         id="accountNumber"
                         type="text"
@@ -533,7 +593,12 @@ const UserProfile = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <label htmlFor="ifscCode" className="text-xs font-semibold text-foreground/60">IFSC / Routing Code</label>
+                      <label
+                        htmlFor="ifscCode"
+                        className="text-xs font-semibold text-foreground/60"
+                      >
+                        IFSC / Routing Code
+                      </label>
                       <input
                         id="ifscCode"
                         type="text"

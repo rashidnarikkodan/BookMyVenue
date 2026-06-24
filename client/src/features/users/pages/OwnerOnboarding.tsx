@@ -223,15 +223,21 @@ export default function OwnerOnboarding() {
               Verification Under Review
             </h2>
             <p className="text-sm text-foreground/60 leading-relaxed">
-              Hello, <span className="font-semibold text-foreground">{user?.fullName}</span>. Your onboarding information has been received and is currently under review by our administrator.
+              Hello, <span className="font-semibold text-foreground">{user?.fullName}</span>. Your
+              onboarding information has been received and is currently under review by our
+              administrator.
             </p>
           </div>
 
           <div className="border-t border-border pt-6 space-y-4 text-left text-xs text-foreground/75">
-            <p className="font-bold text-foreground text-center mb-2 uppercase tracking-wide">Submitted Details</p>
+            <p className="font-bold text-foreground text-center mb-2 uppercase tracking-wide">
+              Submitted Details
+            </p>
             <div className="grid grid-cols-3 gap-2 py-1">
               <span className="font-semibold text-foreground/50">Address:</span>
-              <span className="col-span-2 truncate">{ownerData.address.street}, {ownerData.address.city}</span>
+              <span className="col-span-2 truncate">
+                {ownerData.address.street}, {ownerData.address.city}
+              </span>
             </div>
             <div className="grid grid-cols-3 gap-2 py-1">
               <span className="font-semibold text-foreground/50">Account Name:</span>
@@ -239,7 +245,9 @@ export default function OwnerOnboarding() {
             </div>
             <div className="grid grid-cols-3 gap-2 py-1">
               <span className="font-semibold text-foreground/50">Account No:</span>
-              <span className="col-span-2 truncate">••••{ownerData.bankDetails.accountNumber.slice(-4)}</span>
+              <span className="col-span-2 truncate">
+                ••••{ownerData.bankDetails.accountNumber.slice(-4)}
+              </span>
             </div>
           </div>
 
@@ -271,7 +279,9 @@ export default function OwnerOnboarding() {
       <header className="border-b border-border bg-surface/85 backdrop-blur-xs px-6 py-4 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2">
           <Building className="text-primary w-6 h-6" />
-          <span className="font-bold text-foreground text-base tracking-tight">BookMyVenue Owner Onboarding</span>
+          <span className="font-bold text-foreground text-base tracking-tight">
+            BookMyVenue Owner Onboarding
+          </span>
         </div>
         <button
           onClick={handleLogout}
@@ -291,7 +301,8 @@ export default function OwnerOnboarding() {
                 <div className="space-y-1.5">
                   <h4 className="font-bold text-sm">Onboarding Details Rejected</h4>
                   <p className="text-xs sm:text-sm text-foreground/80 leading-relaxed">
-                    Your verification was rejected by the administrator. Please update the incorrect details below and resubmit.
+                    Your verification was rejected by the administrator. Please update the incorrect
+                    details below and resubmit.
                   </p>
                   {ownerData.rejectionReason && (
                     <p className="text-xs font-bold text-error bg-error/10 p-3 rounded-lg border border-error/25 mt-2">
@@ -308,7 +319,8 @@ export default function OwnerOnboarding() {
                 Complete Your Onboarding
               </h2>
               <p className="mt-2 text-sm text-foreground/60">
-                Submit your verification files and bank settings to start listing venues and receiving bookings.
+                Submit your verification files and bank settings to start listing venues and
+                receiving bookings.
               </p>
             </div>
 
@@ -321,8 +333,8 @@ export default function OwnerOnboarding() {
                       step === s
                         ? 'bg-primary text-white scale-110 shadow-md shadow-primary/25'
                         : step > s
-                        ? 'bg-success/15 text-success border border-success/30'
-                        : 'bg-muted/30 text-foreground/50 border border-border'
+                          ? 'bg-success/15 text-success border border-success/30'
+                          : 'bg-muted/30 text-foreground/50 border border-border'
                     }`}
                   >
                     {step > s ? <CheckCircle size={15} className="stroke-[2.5]" /> : s}
@@ -347,18 +359,28 @@ export default function OwnerOnboarding() {
               {step === 1 && (
                 <div className="space-y-6 animate-in fade-in duration-200">
                   <div>
-                    <h3 className="text-lg font-bold text-foreground">Upload Verification Documents</h3>
-                    <p className="text-xs sm:text-sm text-foreground/50 mt-1">Please upload an ID proof and optional business logo.</p>
+                    <h3 className="text-lg font-bold text-foreground">
+                      Upload Verification Documents
+                    </h3>
+                    <p className="text-xs sm:text-sm text-foreground/50 mt-1">
+                      Please upload an ID proof and optional business logo.
+                    </p>
                   </div>
 
                   <div className="grid gap-8 grid-cols-1 md:grid-cols-2 pt-2">
                     {/* Profile Image (Business Logo or Photo) */}
                     <div className="space-y-3 p-6 rounded-2xl border border-border bg-muted/10 flex flex-col justify-between">
-                      <label className="text-sm font-bold text-foreground/80">Owner Profile Image / Logo</label>
+                      <label className="text-sm font-bold text-foreground/80">
+                        Owner Profile Image / Logo
+                      </label>
                       <div className="flex items-center gap-5 mt-2">
                         <div className="w-20 h-20 rounded-xl border border-border overflow-hidden bg-muted/20 flex items-center justify-center flex-shrink-0 shadow-sm">
                           {profileImagePreview ? (
-                            <img src={profileImagePreview} alt="Owner Profile" className="w-full h-full object-cover" />
+                            <img
+                              src={profileImagePreview}
+                              alt="Owner Profile"
+                              className="w-full h-full object-cover"
+                            />
                           ) : (
                             <Building className="w-8 h-8 text-foreground/30" />
                           )}
@@ -379,21 +401,31 @@ export default function OwnerOnboarding() {
                           className="hidden"
                         />
                       </div>
-                      <p className="text-[10.5px] text-foreground/40 mt-3">Used as your public profile photo or corporate logo.</p>
+                      <p className="text-[10.5px] text-foreground/40 mt-3">
+                        Used as your public profile photo or corporate logo.
+                      </p>
                     </div>
 
                     {/* ID Proof upload */}
                     <div className="space-y-3 p-6 rounded-2xl border border-border bg-muted/10 flex flex-col justify-between">
-                      <label className="text-sm font-bold text-foreground/80">ID Proof Document *</label>
+                      <label className="text-sm font-bold text-foreground/80">
+                        ID Proof Document *
+                      </label>
                       <div className="flex flex-col gap-4 mt-2">
                         {idProofPreview ? (
                           <div className="w-full h-32 rounded-xl border border-border overflow-hidden bg-background flex items-center justify-center shadow-xs">
-                            <img src={idProofPreview} alt="ID Proof Preview" className="w-full h-full object-contain p-2" />
+                            <img
+                              src={idProofPreview}
+                              alt="ID Proof Preview"
+                              className="w-full h-full object-contain p-2"
+                            />
                           </div>
                         ) : idProofName ? (
                           <div className="w-full h-32 rounded-xl border border-border bg-background flex flex-col items-center justify-center gap-2 shadow-xs">
                             <FileText className="w-10 h-10 text-primary animate-pulse" />
-                            <span className="text-xs font-semibold text-foreground/70 truncate px-4 max-w-xs">{idProofName}</span>
+                            <span className="text-xs font-semibold text-foreground/70 truncate px-4 max-w-xs">
+                              {idProofName}
+                            </span>
                             {ownerData?.idProof && (
                               <a
                                 href={ownerData.idProof}
@@ -428,11 +460,15 @@ export default function OwnerOnboarding() {
                               <span className="truncate">{idProofName}</span>
                             </div>
                           ) : (
-                            <span className="text-xs text-foreground/40">No document uploaded.</span>
+                            <span className="text-xs text-foreground/40">
+                              No document uploaded.
+                            </span>
                           )}
                         </div>
                       </div>
-                      <p className="text-[10.5px] text-foreground/40 mt-3">Accepts PDF, JPG, PNG (Aadhaar, Passport, etc.). Max 5MB.</p>
+                      <p className="text-[10.5px] text-foreground/40 mt-3">
+                        Accepts PDF, JPG, PNG (Aadhaar, Passport, etc.). Max 5MB.
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -446,12 +482,16 @@ export default function OwnerOnboarding() {
                       <MapPin size={18} className="text-primary" />
                       Business Address Details
                     </h3>
-                    <p className="text-xs sm:text-sm text-foreground/50 mt-1">Physical location of your corporate operations or billing entity.</p>
+                    <p className="text-xs sm:text-sm text-foreground/50 mt-1">
+                      Physical location of your corporate operations or billing entity.
+                    </p>
                   </div>
 
                   <div className="grid gap-6 grid-cols-1 md:grid-cols-2 pt-2">
                     <div className="space-y-1.5 md:col-span-2">
-                      <label htmlFor="street" className="text-xs font-semibold text-foreground/70">Street Address</label>
+                      <label htmlFor="street" className="text-xs font-semibold text-foreground/70">
+                        Street Address
+                      </label>
                       <input
                         id="street"
                         type="text"
@@ -464,7 +504,9 @@ export default function OwnerOnboarding() {
                     </div>
 
                     <div className="space-y-1.5">
-                      <label htmlFor="city" className="text-xs font-semibold text-foreground/70">City</label>
+                      <label htmlFor="city" className="text-xs font-semibold text-foreground/70">
+                        City
+                      </label>
                       <input
                         id="city"
                         type="text"
@@ -478,7 +520,12 @@ export default function OwnerOnboarding() {
 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-1.5">
-                        <label htmlFor="stateName" className="text-xs font-semibold text-foreground/70">State</label>
+                        <label
+                          htmlFor="stateName"
+                          className="text-xs font-semibold text-foreground/70"
+                        >
+                          State
+                        </label>
                         <input
                           id="stateName"
                           type="text"
@@ -491,7 +538,12 @@ export default function OwnerOnboarding() {
                       </div>
 
                       <div className="space-y-1.5">
-                        <label htmlFor="pincode" className="text-xs font-semibold text-foreground/70">Pincode</label>
+                        <label
+                          htmlFor="pincode"
+                          className="text-xs font-semibold text-foreground/70"
+                        >
+                          Pincode
+                        </label>
                         <input
                           id="pincode"
                           type="text"
@@ -515,12 +567,19 @@ export default function OwnerOnboarding() {
                       <CreditCard size={18} className="text-primary" />
                       Payout Bank Account
                     </h3>
-                    <p className="text-xs sm:text-sm text-foreground/50 mt-1">Please provide checking or savings details for booking payouts.</p>
+                    <p className="text-xs sm:text-sm text-foreground/50 mt-1">
+                      Please provide checking or savings details for booking payouts.
+                    </p>
                   </div>
 
                   <div className="grid gap-6 grid-cols-1 md:grid-cols-2 pt-2">
                     <div className="space-y-1.5 md:col-span-2">
-                      <label htmlFor="accountHolderName" className="text-xs font-semibold text-foreground/70">Account Holder Name</label>
+                      <label
+                        htmlFor="accountHolderName"
+                        className="text-xs font-semibold text-foreground/70"
+                      >
+                        Account Holder Name
+                      </label>
                       <input
                         id="accountHolderName"
                         type="text"
@@ -533,7 +592,12 @@ export default function OwnerOnboarding() {
                     </div>
 
                     <div className="space-y-1.5">
-                      <label htmlFor="accountNumber" className="text-xs font-semibold text-foreground/70">Account Number</label>
+                      <label
+                        htmlFor="accountNumber"
+                        className="text-xs font-semibold text-foreground/70"
+                      >
+                        Account Number
+                      </label>
                       <input
                         id="accountNumber"
                         type="text"
@@ -546,7 +610,12 @@ export default function OwnerOnboarding() {
                     </div>
 
                     <div className="space-y-1.5">
-                      <label htmlFor="ifscCode" className="text-xs font-semibold text-foreground/70">IFSC / Routing Code</label>
+                      <label
+                        htmlFor="ifscCode"
+                        className="text-xs font-semibold text-foreground/70"
+                      >
+                        IFSC / Routing Code
+                      </label>
                       <input
                         id="ifscCode"
                         type="text"

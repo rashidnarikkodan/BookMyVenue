@@ -53,7 +53,8 @@ export default function OwnerLayout() {
         <div className="flex items-center gap-3">
           <AlertTriangle className="w-5 h-5 shrink-0" />
           <div className="text-sm">
-            <span className="font-bold">Onboarding Required:</span> Please complete your venue owner onboarding to start listing and managing venues.
+            <span className="font-bold">Onboarding Required:</span> Please complete your venue owner
+            onboarding to start listing and managing venues.
           </div>
         </div>
         <Link
@@ -71,7 +72,8 @@ export default function OwnerLayout() {
         <div className="flex items-center gap-3">
           <Clock className="w-5 h-5 shrink-0 animate-pulse" />
           <div className="text-sm">
-            <span className="font-bold">Verification Under Review:</span> Your details are being verified by our team. You can view the dashboard but cannot create or manage venues yet.
+            <span className="font-bold">Verification Under Review:</span> Your details are being
+            verified by our team. You can view the dashboard but cannot create or manage venues yet.
           </div>
         </div>
         <Link
@@ -89,9 +91,12 @@ export default function OwnerLayout() {
         <div className="flex items-center gap-3">
           <XCircle className="w-5 h-5 shrink-0" />
           <div className="text-sm">
-            <span className="font-bold">Verification Rejected:</span> Your owner details were rejected.{' '}
+            <span className="font-bold">Verification Rejected:</span> Your owner details were
+            rejected.{' '}
             {owner.rejectionReason && (
-              <span className="italic text-foreground/80 font-medium">Reason: "{owner.rejectionReason}"</span>
+              <span className="italic text-foreground/80 font-medium">
+                Reason: "{owner.rejectionReason}"
+              </span>
             )}
           </div>
         </div>
@@ -115,7 +120,7 @@ export default function OwnerLayout() {
         {/* Content panel */}
         <div className="flex flex-1 flex-col lg:pl-64">
           <ProtectedNavbar />
-          
+
           {banner}
 
           <main className="flex-1 p-6">

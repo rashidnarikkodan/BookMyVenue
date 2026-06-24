@@ -46,6 +46,9 @@ router
   )
   .delete(requireOwnerVerification, venueController.softDeleteVenue);
 
-router.route('/venues/:id/restore').all(validateObjectId('id')).patch(requireOwnerVerification, venueController.restoreVenue);
+router
+  .route('/venues/:id/restore')
+  .all(validateObjectId('id'))
+  .patch(requireOwnerVerification, venueController.restoreVenue);
 
 export default router;

@@ -24,7 +24,11 @@ const VenueHeader = ({ onAddClick }: Props) => {
       <button
         onClick={onAddClick}
         disabled={!isApproved}
-        title={!isApproved ? 'You must complete your verification onboarding before creating venues.' : ''}
+        title={
+          !isApproved
+            ? 'You must complete your verification onboarding before creating venues.'
+            : ''
+        }
         className={`
           inline-flex items-center justify-center gap-2
           rounded-xl bg-primary px-5 py-2.5

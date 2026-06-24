@@ -22,7 +22,11 @@ export const authorizeRoles = (...allowedRoles: string[]) => {
   };
 };
 
-export const requireOwnerVerification = async (req: Request, _res: Response, next: NextFunction) => {
+export const requireOwnerVerification = async (
+  req: Request,
+  _res: Response,
+  next: NextFunction
+) => {
   if (!req.user) {
     return next(new AppError('User not authenticated', HTTP_STATUS.UNAUTHORIZED));
   }

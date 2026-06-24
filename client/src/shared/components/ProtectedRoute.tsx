@@ -20,7 +20,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     if (!isAuthenticated) {
       toast.error('Please sign in to access this page.', { id: 'auth-required' });
     } else if (allowedRoles && (!user || !allowedRoles.includes(user.role))) {
-      toast.error('Access denied. You do not have the required permissions.', { id: 'auth-forbidden' });
+      toast.error('Access denied. You do not have the required permissions.', {
+        id: 'auth-forbidden',
+      });
     }
   }, [isAuthenticated, user, allowedRoles]);
 

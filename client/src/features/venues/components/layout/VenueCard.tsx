@@ -95,7 +95,11 @@ const VenueCard = ({ venue, onEdit }: Props) => {
           <button
             onClick={() => onEdit(venue)}
             disabled={!isApproved}
-            title={!isApproved ? 'You must complete your verification onboarding before editing venues.' : ''}
+            title={
+              !isApproved
+                ? 'You must complete your verification onboarding before editing venues.'
+                : ''
+            }
             className={`
               flex-1 inline-flex items-center justify-center gap-1.5
               rounded-lg bg-primary/10 border border-primary/20

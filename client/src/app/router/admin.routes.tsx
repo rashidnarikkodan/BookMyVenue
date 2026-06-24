@@ -8,6 +8,7 @@ import UserDetails from '@/features/users/pages/UserDetails';
 import AdminVenuesList from '@/features/admin/pages/AdminVenuesList';
 import AdminVenueDetails from '@/features/admin/pages/AdminVenueDetails';
 import ProtectedRoute from '@/shared/components/ProtectedRoute';
+import AdminDashboard from '@/features/dashboard/pages/AdminDashboard';
 import UserProfile from '@/features/profile/pages/UserProfile';
 
 export const adminRoutes = {
@@ -26,7 +27,7 @@ export const adminRoutes = {
     },
     {
       path: 'dashboard',
-      element: <>Admin Dashboard</>,
+      element: <AdminDashboard />,
     },
     {
       path: 'categories',

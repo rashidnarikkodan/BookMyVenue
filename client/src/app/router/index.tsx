@@ -13,7 +13,7 @@ export const router = createBrowserRouter([
   {
     path: '/owner/onboarding',
     element: (
-      <ProtectedRoute allowedRoles={['owner','user']} redirectPath="/signin">
+      <ProtectedRoute allowedRoles={['owner', 'user']} redirectPath="/signin">
         <OwnerOnboarding />
       </ProtectedRoute>
     ),

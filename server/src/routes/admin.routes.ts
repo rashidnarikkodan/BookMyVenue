@@ -2,6 +2,7 @@ import { Router } from 'express';
 import * as categoryController from '@/controllers/category.controller';
 import * as userController from '@/controllers/user.controller';
 import * as adminVenueController from '@/controllers/admin-venue.controller';
+import * as dashboardController from '@/controllers/dashboard.controller';
 import { upload } from '@/middlewares/upload.middleware';
 import { authMiddleware } from '@/middlewares/auth.middleware';
 import { authorizeRoles } from '@/middlewares/role.middleware';
@@ -13,6 +14,9 @@ const router = Router();
 
 // Protect all admin routes
 router.use(authMiddleware, authorizeRoles('admin'));
+
+// Dashboard
+router.route('/dashboard').get(dashboardController.adminDashboardController);
 
 // Categories
 router

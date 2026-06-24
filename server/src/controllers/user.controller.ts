@@ -145,7 +145,9 @@ export const updateProfile = async (req: Request, res: Response, next: NextFunct
       await fs.unlink(avatarFile.path).catch(() => {});
     }
 
-    const updatedUser = await User.findByIdAndUpdate(userId, userUpdate, { new: true }).select('-password -googleId');
+    const updatedUser = await User.findByIdAndUpdate(userId, userUpdate, { new: true }).select(
+      '-password -googleId'
+    );
 
     let updatedOwner = null;
     if (user.role === 'owner') {
@@ -188,12 +190,22 @@ export const updateProfile = async (req: Request, res: Response, next: NextFunct
             street: req.body.street !== undefined ? req.body.street : existingOwner.address?.street,
             city: req.body.city !== undefined ? req.body.city : existingOwner.address?.city,
             state: req.body.state !== undefined ? req.body.state : existingOwner.address?.state,
-            pincode: req.body.pincode !== undefined ? req.body.pincode : existingOwner.address?.pincode,
+            pincode:
+              req.body.pincode !== undefined ? req.body.pincode : existingOwner.address?.pincode,
           },
           bankDetails: {
-            accountHolderName: req.body.accountHolderName !== undefined ? req.body.accountHolderName : existingOwner.bankDetails?.accountHolderName,
-            accountNumber: req.body.accountNumber !== undefined ? req.body.accountNumber : existingOwner.bankDetails?.accountNumber,
-            ifscCode: req.body.ifscCode !== undefined ? req.body.ifscCode : existingOwner.bankDetails?.ifscCode,
+            accountHolderName:
+              req.body.accountHolderName !== undefined
+                ? req.body.accountHolderName
+                : existingOwner.bankDetails?.accountHolderName,
+            accountNumber:
+              req.body.accountNumber !== undefined
+                ? req.body.accountNumber
+                : existingOwner.bankDetails?.accountNumber,
+            ifscCode:
+              req.body.ifscCode !== undefined
+                ? req.body.ifscCode
+                : existingOwner.bankDetails?.ifscCode,
           },
         };
 
@@ -206,15 +218,14 @@ export const updateProfile = async (req: Request, res: Response, next: NextFunct
           mergedUpdate.rejectionReason = null;
         }
 
-        updatedOwner = await Owner.findOneAndUpdate(
-          { userId },
-          mergedUpdate,
-          { new: true }
-        );
+        updatedOwner = await Owner.findOneAndUpdate({ userId }, mergedUpdate, { new: true });
       } else {
         // If owner doesn't exist, create
         if (!ownerUpdate.idProof && !req.body.idProof) {
-          throw new AppError('ID proof document is required for venue owners', HTTP_STATUS.BAD_REQUEST);
+          throw new AppError(
+            'ID proof document is required for venue owners',
+            HTTP_STATUS.BAD_REQUEST
+          );
         }
 
         updatedOwner = await Owner.create({

@@ -74,7 +74,8 @@ const VenueFormModal = ({ venue, onClose, onSuccess }: Props) => {
 
   // Load categories for dropdown
   useEffect(() => {
-    publicVenuesApi.getCategoreis()
+    publicVenuesApi
+      .getCategoreis()
       .then((res) => setCategories(res?.data?.categories))
       .catch(() => toast.error('Failed to load categories'));
   }, []);
