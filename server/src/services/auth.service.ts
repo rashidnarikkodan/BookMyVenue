@@ -178,7 +178,8 @@ const signin = async (
 };
 
 const googleAuth = async (
-  idToken: string
+  idToken: string,
+  requestedRole?: string
 ): Promise<{
   user: Partial<IUser>;
   accessToken: string;
@@ -218,6 +219,8 @@ const googleAuth = async (
       });
     }
   } else {
+    const finalRole =
+      requestedRole === 'owner' || requestedRole === 'admin' ? requestedRole : 'user';
     user = await userRepository.create({
       fullName: name || 'Google User',
       email,
@@ -225,7 +228,7 @@ const googleAuth = async (
       avatar: picture,
       authProvider: 'google',
       isVerified: true,
-      role: 'user',
+      role: finalRole,
     });
   }
 

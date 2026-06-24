@@ -77,7 +77,9 @@ export default function AlertsPanel({ data = [] }: AlertsPanelProps) {
                   className="group p-4 rounded-2xl border border-zinc-200/50 dark:border-zinc-800/60 bg-zinc-50/50 dark:bg-zinc-900/20 transition-all duration-300 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-zinc-350 dark:hover:border-zinc-700"
                 >
                   <div className="flex items-start gap-4">
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 relative ${alert.colorClass}`}>
+                    <div
+                      className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 relative ${alert.colorClass}`}
+                    >
                       <Icon className="w-5 h-5" />
                       {alert.pulse && (
                         <span className="absolute -top-1 -right-1 flex h-3 w-3">
@@ -91,7 +93,9 @@ export default function AlertsPanel({ data = [] }: AlertsPanelProps) {
                         <h4 className="font-bold text-sm text-black dark:text-white group-hover:text-[#e21a47] transition-colors duration-200">
                           {alert.title}
                         </h4>
-                        <span className={`text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-md border ${alert.colorClass}`}>
+                        <span
+                          className={`text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-md border ${alert.colorClass}`}
+                        >
                           {alert.badgeText}
                         </span>
                       </div>

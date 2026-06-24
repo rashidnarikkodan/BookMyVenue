@@ -12,8 +12,10 @@ export const useLogout = () => {
     } catch (error) {
       console.error('Logout API failed:', error);
     } finally {
-      logoutState();
-      navigate('/signin', { replace: true });
+      navigate('/', { replace: true });
+      setTimeout(() => {
+        logoutState();
+      }, 0);
     }
   };
 

@@ -26,7 +26,8 @@ function getColorScheme(index: number) {
     return {
       text: 'text-emerald-500',
       bg: 'bg-emerald-500/10 dark:bg-emerald-500/20',
-      border: 'hover:border-emerald-500/40 dark:hover:border-emerald-500/50 hover:shadow-emerald-500/5',
+      border:
+        'hover:border-emerald-500/40 dark:hover:border-emerald-500/50 hover:shadow-emerald-500/5',
       glow: 'bg-emerald-500/5',
       trend: '0 pending',
       trendLabel: 'approval queue',
@@ -111,7 +112,9 @@ export default function AdminStatCards({ data }: AdminStatCardsProps) {
               <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-550">
                 {stat.title}
               </span>
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-md ${color.bg} ${color.text}`}>
+              <div
+                className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-md ${color.bg} ${color.text}`}
+              >
                 {stat.icon}
               </div>
             </div>
@@ -135,8 +138,8 @@ export default function AdminStatCards({ data }: AdminStatCardsProps) {
                     color.trendType === 'positive'
                       ? 'text-emerald-500'
                       : color.trendType === 'warning'
-                      ? 'text-amber-500'
-                      : 'text-rose-500'
+                        ? 'text-amber-500'
+                        : 'text-rose-500'
                   }`}
                 >
                   <ArrowUpRight className="w-3.5 h-3.5" />

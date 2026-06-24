@@ -4,7 +4,7 @@ import { ownerDashboardController } from '@/controllers/dashboard.controller';
 import * as venueController from '@/controllers/venue.controller';
 
 import { authMiddleware } from '@/middlewares/auth.middleware';
-import { authorizeRoles } from '@/middlewares/role.middleware';
+import { authorizeRoles, requireOwnerVerification } from '@/middlewares/role.middleware';
 import { validateInputs, validateObjectId, validateQuery } from '@/middlewares/validate.middleware';
 
 import { upload } from '@/middlewares/upload.middleware';
@@ -25,6 +25,7 @@ router.get('/dashboard', ownerDashboardController);
 router
   .route('/venues')
   .post(
+    requireOwnerVerification,
     upload.array('images', 10),
     parseVenueFormData,
     validateInputs(createVenueSchema),
@@ -37,13 +38,17 @@ router
   .all(validateObjectId('id'))
   .get(venueController.getVenueById)
   .patch(
+    requireOwnerVerification,
     upload.array('images', 10),
     parseVenueFormData,
     validateInputs(updateVenueSchema),
     venueController.updateVenue
   )
-  .delete(venueController.softDeleteVenue);
+  .delete(requireOwnerVerification, venueController.softDeleteVenue);
 
-router.route('/venues/:id/restore').all(validateObjectId('id')).patch(venueController.restoreVenue);
+router
+  .route('/venues/:id/restore')
+  .all(validateObjectId('id'))
+  .patch(requireOwnerVerification, venueController.restoreVenue);
 
 export default router;

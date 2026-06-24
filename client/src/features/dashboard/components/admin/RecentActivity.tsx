@@ -1,4 +1,11 @@
-import { UserPlus, Building2, CheckCircle2, ShieldCheck, RotateCcw, ArrowRight } from 'lucide-react';
+import {
+  UserPlus,
+  Building2,
+  CheckCircle2,
+  ShieldCheck,
+  RotateCcw,
+  ArrowRight,
+} from 'lucide-react';
 
 interface ActivityItem {
   title: string;
@@ -75,7 +82,9 @@ export default function RecentActivity({ data = [] }: RecentActivityProps) {
                   key={index}
                   className="flex items-start gap-3.5 pb-4 border-b border-zinc-100 dark:border-zinc-800/60 last:border-b-0 last:pb-0"
                 >
-                  <div className={`w-8.5 h-8.5 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${activity.colorClass}`}>
+                  <div
+                    className={`w-8.5 h-8.5 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${activity.colorClass}`}
+                  >
                     <Icon className="w-4.5 h-4.5" />
                   </div>
 

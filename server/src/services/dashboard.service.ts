@@ -101,7 +101,8 @@ export async function adminDashboardService() {
     });
   }
 
-  const eliteVenue = await Venue.findOne({ isElite: true }) || await Venue.findOne({ isFeatured: true });
+  const eliteVenue =
+    (await Venue.findOne({ isElite: true })) || (await Venue.findOne({ isFeatured: true }));
   if (eliteVenue) {
     platformLeaders.push({
       rank: 3,
@@ -115,7 +116,7 @@ export async function adminDashboardService() {
   const topOwners = await Venue.aggregate([
     { $group: { _id: '$ownerId', count: { $sum: 1 } } },
     { $sort: { count: -1 } },
-    { $limit: 1 }
+    { $limit: 1 },
   ]);
   if (topOwners.length > 0) {
     const ownerInfo = await Owner.findById(topOwners[0]._id).populate('userId');

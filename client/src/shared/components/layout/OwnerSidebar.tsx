@@ -5,7 +5,7 @@ import {
   CalendarDays,
   TrendingUp,
   Star,
-  Settings,
+  User,
   LogOut,
   X,
 } from 'lucide-react';
@@ -18,7 +18,7 @@ const ownerNavLinks = [
   { name: 'Bookings', href: '/owner/bookings', icon: CalendarDays },
   { name: 'Revenue', href: '/owner/revenue', icon: TrendingUp },
   { name: 'Reviews', href: '/owner/reviews', icon: Star },
-  { name: 'Settings', href: '/owner/settings', icon: Settings },
+  { name: 'Profile Settings', href: '/owner/profile', icon: User },
 ];
 
 export default function OwnerSidebar() {

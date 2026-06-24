@@ -34,19 +34,5 @@ export const authRoutes = {
       path: 'register',
       element: <Navigate to="/signup" replace />,
     },
-
-    // ── Owner auth (placeholders until pages are built) ───
-    {
-      path: 'owner/login',
-      element: <>OwnerLoginPage</>,
-    },
-    {
-      path: 'owner/register',
-      element: <>OwnerRegisterPage</>,
-    },
-    {
-      path: 'owner/onboarding',
-      element: <>OwnerOnboardingPage</>,
-    },
   ],
 };

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { User as UserIcon, Calendar, Heart, Settings, LogOut } from 'lucide-react';
+import { User as UserIcon, Calendar, Heart, Settings, LogOut, Building } from 'lucide-react';
 import { useAppStore } from '@/store/app.store';
 import { useLogout } from '@/features/auth/hooks/useLogout';
 
@@ -18,8 +18,39 @@ const ProfileList = ({ onClose }: ProfileListProps) => {
         {user?.email && <p className="text-[11px] text-foreground/60">{user.email}</p>}
       </div>
       <div className="py-1">
+        {user?.role === 'owner' ? (
+          <Link
+            to="/owner/dashboard"
+            onClick={onClose}
+            className="flex items-center gap-2.5 px-4 py-2 text-[12px] text-foreground/80 hover:bg-muted/30 hover:text-primary transition-all duration-150 font-semibold"
+          >
+            <Building size={14} className="text-foreground/50" />
+            Owner Dashboard
+          </Link>
+        ) : user?.role === 'admin' ? (
+          <Link
+            to="/admin/dashboard"
+            onClick={onClose}
+            className="flex items-center gap-2.5 px-4 py-2 text-[12px] text-foreground/80 hover:bg-muted/30 hover:text-primary transition-all duration-150 font-semibold"
+          >
+            <Building size={14} className="text-foreground/50" />
+            Admin Dashboard
+          </Link>
+        ) : (
+          <Link
+            to="/owner/onboarding"
+            onClick={onClose}
+            className="flex items-center gap-2.5 px-4 py-2 text-[12px] text-primary hover:bg-primary/10 transition-all duration-150 font-semibold"
+          >
+            <Building size={14} className="text-primary" />
+            List Your Venue
+          </Link>
+        )}
+
+        <div className="h-px bg-border my-1" />
+
         <Link
-          to="/profile"
+          to="/account/profile"
           onClick={onClose}
           className="flex items-center gap-2.5 px-4 py-2 text-[12px] text-foreground/80 hover:bg-muted/30 hover:text-primary transition-all duration-150"
         >

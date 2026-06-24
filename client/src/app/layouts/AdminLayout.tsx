@@ -1,4 +1,4 @@
-import { AdminNavbar, AdminSidebar } from '@/shared/components/layout';
+import { ProtectedNavbar, AdminSidebar } from '@/shared/components/layout';
 import { ThemeProvider } from '@/shared/providers/ThemeProvider';
 import { Outlet } from 'react-router-dom';
 import { Toaster } from 'sonner';
@@ -11,7 +11,7 @@ export default function AdminLayout() {
 
         {/* Content panel */}
         <div className="flex flex-1 flex-col lg:pl-64">
-          <AdminNavbar />
+          <ProtectedNavbar />
 
           <main className="flex-1 p-6">
             <Outlet />

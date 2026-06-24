@@ -32,9 +32,7 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
         <div className="space-y-2">
           {payload.map((entry, index) => {
             const dotColor =
-              entry.dataKey === 'revenue'
-                ? 'var(--color-primary)'
-                : 'var(--color-success)';
+              entry.dataKey === 'revenue' ? 'var(--color-primary)' : 'var(--color-success)';
 
             return (
               <div key={index} className="flex items-center justify-between gap-8">

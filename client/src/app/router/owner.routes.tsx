@@ -7,6 +7,8 @@ import ProtectedRoute from '@/shared/components/ProtectedRoute';
 import OwnerDashboard from '@/features/dashboard/pages/OwnerDashboard';
 import OwnerVenuesList from '@/features/venues/pages/OwnerVenuesList';
 import OwnerVenueDetails from '@/features/venues/pages/OwnerVenueDetails';
+import UserProfile from '@/features/profile/pages/UserProfile';
+
 export const ownerRoutes = {
   path: '/owner',
 
@@ -33,6 +35,10 @@ export const ownerRoutes = {
     {
       path: 'venues/:id',
       element: <OwnerVenueDetails />,
+    },
+    {
+      path: 'profile',
+      element: <UserProfile />,
     },
   ],
 };

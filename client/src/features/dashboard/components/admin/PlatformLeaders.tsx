@@ -16,7 +16,8 @@ export default function PlatformLeaders({ data = [] }: PlatformLeadersProps) {
     if (rank === 1) {
       return {
         icon: TrendingUp,
-        colorClass: 'from-amber-500/20 to-yellow-500/10 border-amber-500/30 text-amber-500 dark:text-amber-400',
+        colorClass:
+          'from-amber-500/20 to-yellow-500/10 border-amber-500/30 text-amber-500 dark:text-amber-400',
         rankBg: 'bg-gradient-to-r from-amber-500 to-yellow-400 text-black',
         glowClass: 'bg-amber-500/5',
       };
@@ -24,7 +25,8 @@ export default function PlatformLeaders({ data = [] }: PlatformLeadersProps) {
     if (rank === 2) {
       return {
         icon: Calendar,
-        colorClass: 'from-blue-500/20 to-cyan-500/10 border-blue-500/30 text-blue-500 dark:text-blue-400',
+        colorClass:
+          'from-blue-500/20 to-cyan-500/10 border-blue-500/30 text-blue-500 dark:text-blue-400',
         rankBg: 'bg-gradient-to-r from-zinc-400 to-zinc-300 text-black',
         glowClass: 'bg-blue-500/5',
       };
@@ -32,14 +34,16 @@ export default function PlatformLeaders({ data = [] }: PlatformLeadersProps) {
     if (rank === 3) {
       return {
         icon: Star,
-        colorClass: 'from-emerald-500/20 to-teal-500/10 border-emerald-500/30 text-emerald-550 dark:text-emerald-400',
+        colorClass:
+          'from-emerald-500/20 to-teal-500/10 border-emerald-500/30 text-emerald-550 dark:text-emerald-400',
         rankBg: 'bg-gradient-to-r from-orange-400 to-amber-600 text-white',
         glowClass: 'bg-emerald-500/5',
       };
     }
     return {
       icon: Users,
-      colorClass: 'from-indigo-500/20 to-purple-500/10 border-indigo-500/30 text-indigo-500 dark:text-indigo-400',
+      colorClass:
+        'from-indigo-500/20 to-purple-500/10 border-indigo-500/30 text-indigo-500 dark:text-indigo-400',
       rankBg: 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300',
       glowClass: 'bg-indigo-500/5',
     };
@@ -84,7 +88,9 @@ export default function PlatformLeaders({ data = [] }: PlatformLeadersProps) {
                   />
 
                   <div className="flex items-center justify-between mb-4">
-                    <span className={`w-6 h-6 rounded-full text-xs font-black flex items-center justify-center shadow-inner ${leader.rankBg}`}>
+                    <span
+                      className={`w-6 h-6 rounded-full text-xs font-black flex items-center justify-center shadow-inner ${leader.rankBg}`}
+                    >
                       {leader.rank}
                     </span>
                     <div className="w-8.5 h-8.5 rounded-xl bg-white/70 dark:bg-black/30 flex items-center justify-center shadow-sm">

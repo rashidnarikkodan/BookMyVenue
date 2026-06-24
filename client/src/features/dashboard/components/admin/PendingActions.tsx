@@ -72,7 +72,9 @@ export default function PendingActions({ data }: PendingActionsProps) {
                 className={`group p-4 rounded-2xl border border-zinc-200/50 dark:border-zinc-800/60 bg-zinc-50/50 dark:bg-zinc-900/20 transition-all duration-300 flex items-center justify-between ${action.borderColor}`}
               >
                 <div className="flex items-center gap-4">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${action.colorClass}`}>
+                  <div
+                    className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${action.colorClass}`}
+                  >
                     <Icon className="w-5 h-5" />
                   </div>
                   <div>

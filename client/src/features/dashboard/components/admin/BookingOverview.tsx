@@ -35,8 +35,8 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
               entry.dataKey === 'confirmed'
                 ? 'var(--color-success)'
                 : entry.dataKey === 'cancelled'
-                ? 'var(--color-error)'
-                : 'var(--color-primary)';
+                  ? 'var(--color-error)'
+                  : 'var(--color-primary)';
 
             return (
               <div key={index} className="flex items-center justify-between gap-8">
