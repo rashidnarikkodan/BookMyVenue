@@ -10,9 +10,6 @@ export const parseVenueFormData = (req: Request, res: Response, next: NextFuncti
       req.body.location = JSON.parse(req.body.location);
     }
 
-    if (req.body.pricing) {
-      req.body.pricing = JSON.parse(req.body.pricing);
-    }
 
     if (req.body.amenities) {
       req.body.amenities = JSON.parse(req.body.amenities);

@@ -29,12 +29,7 @@ export const updateVenueSchema = z.object({
 
   capacity: z.number().positive().optional(),
 
-  pricing: z
-    .object({
-      amount: z.number().positive(),
-      unit: z.enum(['hour', 'day']).default('day'),
-    })
-    .optional(),
+
 
   images: z.array(z.string()).optional(),
   existingImages: z.string().optional(),

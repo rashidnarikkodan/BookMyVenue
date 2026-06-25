@@ -64,8 +64,6 @@ const VenueFormModal = ({ venue, onClose, onSuccess }: Props) => {
       longitude: defaultLng,
       latitude: defaultLat,
       capacity: venue?.capacity || 1,
-      pricingAmount: venue?.pricing?.amount || 1,
-      pricingUnit: venue?.pricing?.unit || 'day',
     },
   });
 
@@ -260,10 +258,6 @@ const VenueFormModal = ({ venue, onClose, onSuccess }: Props) => {
       );
 
       formData.append('capacity', String(data.capacity));
-      formData.append(
-        'pricing',
-        JSON.stringify({ amount: data.pricingAmount, unit: data.pricingUnit })
-      );
 
       // Amenities
       formData.append('amenities', JSON.stringify(amenities));
@@ -465,12 +459,12 @@ const VenueFormModal = ({ venue, onClose, onSuccess }: Props) => {
             </p>
           </fieldset>
 
-          {/* Capacity & Pricing */}
+          {/* Capacity */}
           <fieldset className="space-y-4">
             <legend className="text-sm font-bold text-foreground uppercase tracking-wider mb-2">
-              Capacity & Pricing
+              Capacity
             </legend>
-            <div className="grid gap-4 sm:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-1">
               <div>
                 <label className="block text-xs font-semibold text-muted mb-1.5">Capacity *</label>
                 <input
@@ -486,32 +480,6 @@ const VenueFormModal = ({ venue, onClose, onSuccess }: Props) => {
                 {errors.capacity && (
                   <p className="text-xs text-error mt-1">{errors.capacity.message}</p>
                 )}
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-muted mb-1.5">Price (₹) *</label>
-                <input
-                  type="number"
-                  {...register('pricingAmount', {
-                    required: 'Required',
-                    valueAsNumber: true,
-                    min: { value: 1, message: 'Min ₹1' },
-                  })}
-                  className="w-full rounded-xl border border-border bg-background py-2.5 px-4 text-sm text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
-                  placeholder="Amount"
-                />
-                {errors.pricingAmount && (
-                  <p className="text-xs text-error mt-1">{errors.pricingAmount.message}</p>
-                )}
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-muted mb-1.5">Per Unit *</label>
-                <select
-                  {...register('pricingUnit')}
-                  className="w-full rounded-xl border border-border bg-background py-2.5 px-4 text-sm text-foreground outline-none cursor-pointer focus:border-primary focus:ring-2 focus:ring-primary/10"
-                >
-                  <option value="day">Per Day</option>
-                  <option value="hour">Per Hour</option>
-                </select>
               </div>
             </div>
           </fieldset>

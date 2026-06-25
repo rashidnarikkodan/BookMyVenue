@@ -42,6 +42,8 @@ const OwnerVenueDetails = () => {
 
   const venue = fetchResponse?.data;
 
+
+
   const loadVenue = () => {
     if (id) {
       fetchVenue(() => ownerVenuesApi.getById(id));
@@ -316,7 +318,9 @@ const OwnerVenueDetails = () => {
                     Pricing
                   </span>
                   <span className="text-sm font-bold text-foreground">
-                    ₹{venue.pricing.amount.toLocaleString()} / {venue.pricing.unit}
+                    {venue.isAvailabilityConfigured && venue.availability
+                      ? `₹${venue.availability.pricePerHour.toLocaleString()} / hour`
+                      : 'N/A'}
                   </span>
                 </div>
               </div>

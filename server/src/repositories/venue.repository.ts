@@ -13,7 +13,7 @@ export const createVenue = async (ownerId: string, venueData: CreateVenueDTO): R
 };
 
 export const findVenueById = async (id: string): Promise<VenueDocument | null> => {
-  return await Venue.findById(id).populate('categoryId', 'name');
+  return await Venue.findById(id).populate('categoryId', 'name').populate('availability');
 };
 
 export const findVenuesByOwner = async (ownerId: string, query: GetOwnerVenuesQueryDTO) => {
@@ -49,7 +49,12 @@ export const findVenuesByOwner = async (ownerId: string, query: GetOwnerVenuesQu
   const skip = (page - 1) * limit;
 
   const [venues, total] = await Promise.all([
-    Venue.find(filter).populate('categoryId', 'name').sort(sortOption).skip(skip).limit(limit),
+    Venue.find(filter)
+      .populate('categoryId', 'name')
+      .populate('availability')
+      .sort(sortOption)
+      .skip(skip)
+      .limit(limit),
     Venue.countDocuments(filter),
   ]);
 
@@ -68,7 +73,9 @@ export const updateVenue = async (
   id: string,
   data: UpdateVenueDTO
 ): Promise<VenueDocument | null> => {
-  return await Venue.findByIdAndUpdate(id, data, { new: true }).populate('categoryId', 'name');
+  return await Venue.findByIdAndUpdate(id, data, { new: true })
+    .populate('categoryId', 'name')
+    .populate('availability');
 };
 
 export const softDeleteVenue = async (id: string): Promise<VenueDocument | null> => {
@@ -112,6 +119,7 @@ export const findAllVenues = async (query: GetAdminVenuesQueryDTO) => {
   const [venues, total] = await Promise.all([
     Venue.find(filter)
       .populate('categoryId', 'name')
+      .populate('availability')
       .populate({
         path: 'ownerId', // Go to the Owner profile
         populate: {
@@ -139,6 +147,7 @@ export const findAllVenues = async (query: GetAdminVenuesQueryDTO) => {
 export const findVenueByIdWithOwner = async (id: string): Promise<VenueDocument | null> => {
   return await Venue.findById(id)
     .populate('categoryId', 'name')
+    .populate('availability')
     .populate({
       path: 'ownerId',
       populate: {
@@ -157,7 +166,9 @@ export const approveVenue = async (id: string): Promise<VenueDocument | null> =>
       rejectionReason: null,
     },
     { new: true }
-  ).populate('categoryId', 'name');
+  )
+    .populate('categoryId', 'name')
+    .populate('availability');
 };
 
 export const rejectVenue = async (
@@ -172,7 +183,9 @@ export const rejectVenue = async (
       rejectionReason,
     },
     { new: true }
-  ).populate('categoryId', 'name');
+  )
+    .populate('categoryId', 'name')
+    .populate('availability');
 };
 
 // ── Public Methods ─────────────────────────────────────────
@@ -238,7 +251,12 @@ export const findPublicVenues = async (query: GetPublicVenuesQueryDTO) => {
   const skip = (page - 1) * limit;
 
   const [venues, total] = await Promise.all([
-    Venue.find(filter).populate('categoryId', 'name').sort(sortOption).skip(skip).limit(limit),
+    Venue.find(filter)
+      .populate('categoryId', 'name')
+      .populate('availability')
+      .sort(sortOption)
+      .skip(skip)
+      .limit(limit),
     Venue.countDocuments(filter),
   ]);
 
@@ -259,5 +277,7 @@ export const findPublicVenueById = async (id: string): Promise<VenueDocument | n
     verificationStatus: 'approved',
     isActive: true,
     isDeleted: { $ne: true },
-  }).populate('categoryId', 'name');
+  })
+    .populate('categoryId', 'name')
+    .populate('availability');
 };

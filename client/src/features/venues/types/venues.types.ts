@@ -17,10 +17,8 @@ export interface Venue {
     coordinates: number[];
   };
   capacity: number;
-  pricing: {
-    amount: number;
-    unit: 'hour' | 'day';
-  };
+  isAvailabilityConfigured: boolean;
+  availability?: AvailabilityConfig;
   amenities: string[];
   verificationStatus: 'pending' | 'approved' | 'rejected';
   verifiedAt: string | null;
@@ -59,4 +57,16 @@ export interface ApiResponse<T> {
   success: boolean;
   message: string;
   data: T;
+}
+
+export interface AvailabilityConfig {
+  _id?: string;
+  venueId?: string;
+  openingTime: string;
+  closingTime: string;
+  availableDays: number[];
+  minBookingDuration: number;
+  maxBookingDuration?: number | null;
+  pricePerHour: number;
+  bufferTime?: number;
 }

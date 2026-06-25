@@ -25,10 +25,7 @@ export const createVenueSchema = z.object({
 
   capacity: z.number().positive(),
 
-  pricing: z.object({
-    amount: z.number().positive(),
-    unit: z.enum(['hour', 'day']).default('day'),
-  }),
+
 
   images: z.array(z.string()).optional(),
 

@@ -18,10 +18,7 @@ export interface IVenue {
     coordinates: number[]; // [longitude, latitude]
   };
   capacity: number;
-  pricing: {
-    amount: number;
-    unit: 'hour' | 'day';
-  };
+  isAvailabilityConfigured: boolean;
   amenities: string[];
   verificationStatus: 'pending' | 'approved' | 'rejected';
   verifiedAt: Date | null;
