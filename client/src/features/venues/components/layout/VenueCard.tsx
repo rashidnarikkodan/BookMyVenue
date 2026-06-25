@@ -1,4 +1,4 @@
-import { MapPin, Users, IndianRupee, Eye, Pencil } from 'lucide-react';
+import { MapPin, Users, IndianRupee, Eye, Pencil, Calendar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import type { Venue } from '../../types/venues.types';
 import { useAppStore } from '@/store/app.store';
@@ -111,6 +111,21 @@ const VenueCard = ({ venue, onEdit }: Props) => {
             <Pencil size={14} />
             Edit
           </button>
+          
+          {venue.verificationStatus === 'approved' && (
+            <button
+              onClick={() => navigate(`/owner/venues/${venue._id}/slots`)}
+              className="
+                flex-1 inline-flex items-center justify-center gap-1.5
+                rounded-lg bg-secondary/10 border border-secondary/20
+                py-2 text-xs font-semibold text-secondary
+                hover:bg-secondary/20 active:scale-95 cursor-pointer
+              "
+            >
+              <Calendar size={14} />
+              Setup Slot
+            </button>
+          )}
         </div>
       </div>
     </div>
