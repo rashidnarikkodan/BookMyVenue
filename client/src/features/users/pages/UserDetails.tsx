@@ -11,8 +11,14 @@ import {
   User as UserIcon,
   Shield,
   Mail,
+  IndianRupee,
+  Building2,
+  FileText,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import SummaryCard from '../components/ui/SummaryCard';
+import OwnerActions from '../components/ui/OwnerActions';
+import { useOwnerActions } from '../hooks/useOwnerActions';
 
 const UserDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -31,8 +37,15 @@ const UserDetails = () => {
     message: string;
     data: User;
   }>();
+  const { loading: ownerActionLoading, approveOwner, rejectOwner } = useOwnerActions();
 
-  const user = fetchResponse?.data;
+  const [user, setUser] = useState<User | undefined>(undefined);
+
+  useEffect(() => {
+    if (fetchResponse?.data) {
+      setUser(fetchResponse.data);
+    }
+  }, [fetchResponse]);
 
   const loadUser = useCallback(() => {
     if (id) {
@@ -139,6 +152,96 @@ const UserDetails = () => {
     user: 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/30 dark:bg-emerald-950/10 dark:text-emerald-400',
   };
 
+  const isOwner = user.role === 'owner';
+
+  const handleApproveOwner = async () => {
+    if (!user) return;
+
+    // Optimistic UI Update
+    setUser((prev) =>
+      prev
+        ? {
+            ...prev,
+            verificationStatus: 'approved',
+            verifiedAt: new Date().toISOString(),
+          }
+        : undefined
+    );
+
+    try {
+      await approveOwner(user.id || user._id || '');
+      toast.success('Owner approved successfully');
+      loadUser();
+    } catch (err) {
+      toast.error('Failed to approve owner');
+      loadUser(); // Revert back to server state
+    }
+  };
+
+  const handleRejectOwner = async (reason: string) => {
+    if (!user) return;
+
+    // Optimistic UI Update
+    setUser((prev) =>
+      prev
+        ? {
+            ...prev,
+            verificationStatus: 'rejected',
+            rejectionReason: reason,
+          }
+        : undefined
+    );
+
+    try {
+      await rejectOwner(user.id || user._id || '', reason);
+      toast.success('Owner rejected successfully');
+      loadUser();
+    } catch (err) {
+      toast.error('Failed to reject owner');
+      loadUser(); // Revert back to server state
+    }
+  };
+
+  const ownerStats = (
+    <>
+      <div className="flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2">
+        <Building2 size={14} />
+        <div>
+          <p className="text-sm font-bold">4</p>
+          <p className="text-[10px] text-muted">Venues</p>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2">
+        <IndianRupee size={14} />
+        <div>
+          <p className="text-sm font-bold">₹2.3L</p>
+          <p className="text-[10px] text-muted">Revenue</p>
+        </div>
+      </div>
+    </>
+  );
+
+  const userStats = (
+    <>
+      <div className="flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2">
+        <Calendar size={14} />
+        <div>
+          <p className="text-sm font-bold">4</p>
+          <p className="text-[10px] text-muted">Bookings</p>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2">
+        <IndianRupee size={14} />
+        <div>
+          <p className="text-sm font-bold">₹2.3L</p>
+          <p className="text-[10px] text-muted">Spendings</p>
+        </div>
+      </div>
+    </>
+  );
+  console.log(user);
   return (
     <div className="space-y-6">
       {/* Top Navigation & Header Actions */}
@@ -152,7 +255,7 @@ const UserDetails = () => {
             <ChevronLeft size={20} />
           </button>
           <div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 flex-wrap">
               <h1 className="text-2xl font-extrabold tracking-tight text-foreground">
                 {user.name}
               </h1>
@@ -163,6 +266,23 @@ const UserDetails = () => {
               ) : (
                 <span className="inline-flex items-center rounded-lg border border-error/20 bg-error/10 px-2.5 py-0.5 text-xs font-semibold text-error">
                   Inactive
+                </span>
+              )}
+              {isOwner && (
+                <span
+                  className={`inline-flex items-center rounded-lg border px-2.5 py-0.5 text-xs font-semibold ${
+                    user.verificationStatus === 'approved'
+                      ? 'border-success/20 bg-success/10 text-success'
+                      : user.verificationStatus === 'rejected'
+                        ? 'border-error/20 bg-error/10 text-error'
+                        : 'border-warning/20 bg-warning/10 text-warning animate-pulse'
+                  }`}
+                >
+                  {user.verificationStatus === 'approved'
+                    ? 'Verified Owner'
+                    : user.verificationStatus === 'rejected'
+                      ? 'Rejected Owner'
+                      : 'Pending Onboarding'}
                 </span>
               )}
             </div>
@@ -237,6 +357,20 @@ const UserDetails = () => {
         {/* Left Side: Info blocks */}
         <div className="lg:col-span-2 space-y-6">
           {/* Details Card */}
+          <SummaryCard
+            title={isOwner ? 'Owner Summary' : 'User Summary'}
+            stats={isOwner ? ownerStats : userStats}
+            actions={
+              isOwner &&
+              user.verificationStatus !== 'approved' && (
+                <OwnerActions
+                  loading={ownerActionLoading}
+                  onApprove={handleApproveOwner}
+                  onReject={handleRejectOwner}
+                />
+              )
+            }
+          />
           <div className="rounded-3xl border border-border bg-card p-6 shadow-sm space-y-5">
             <h3 className="text-sm font-bold text-foreground uppercase tracking-wider">
               Profile Details
@@ -307,27 +441,168 @@ const UserDetails = () => {
           </div>
         </div>
 
-        {/* Right Side: Avatar Preview */}
-        <div className="rounded-3xl border border-border bg-card p-6 shadow-sm space-y-4 flex flex-col items-center justify-center">
-          <h3 className="text-sm font-bold text-foreground uppercase tracking-wider self-start">
-            User Avatar
-          </h3>
+        {/* Right Side: Avatar Preview & Onboarding */}
+        <div className="space-y-6">
+          <div className="rounded-3xl border border-border bg-card p-6 shadow-sm space-y-4 flex flex-col items-center justify-center">
+            <h3 className="text-sm font-bold text-foreground uppercase tracking-wider self-start">
+              User Avatar
+            </h3>
 
-          <div className="relative overflow-hidden rounded-2xl border border-border bg-surface flex items-center justify-center h-48 w-48 shadow-inner mt-4">
-            {user.imageUrl && !imageError ? (
-              <img
-                src={user.imageUrl}
-                alt={user.name}
-                onError={() => setImageError(true)}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <div className="h-full w-full bg-gradient-to-tr from-primary/10 to-secondary/10 flex items-center justify-center text-primary">
-                <UserIcon className="h-20 w-20 stroke-[1.2]" />
-              </div>
-            )}
+            <div className="relative overflow-hidden rounded-2xl border border-border bg-surface flex items-center justify-center h-48 w-48 shadow-inner mt-4">
+              {user.imageUrl && !imageError ? (
+                <img
+                  src={user.imageUrl}
+                  alt={user.name}
+                  onError={() => setImageError(true)}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <div className="h-full w-full bg-gradient-to-tr from-primary/10 to-secondary/10 flex items-center justify-center text-primary">
+                  <UserIcon className="h-20 w-20 stroke-[1.2]" />
+                </div>
+              )}
+            </div>
+            <span className="text-xs text-muted mt-2 font-medium">{roleLabels[user.role]}</span>
           </div>
-          <span className="text-xs text-muted mt-2 font-medium">{roleLabels[user.role]}</span>
+
+          {isOwner && user.owner && (
+            <div className="rounded-3xl border border-border bg-card p-6 shadow-sm space-y-6 animate-in fade-in duration-300">
+              <div className="flex items-center justify-between border-b border-border/50 pb-3">
+                <h3 className="text-sm font-bold text-foreground uppercase tracking-wider">
+                  Owner Verification
+                </h3>
+                <span
+                  className={`inline-flex items-center rounded-lg border px-2.5 py-1 text-xs font-semibold ${
+                    user.verificationStatus === 'approved'
+                      ? 'border-success/20 bg-success/10 text-success'
+                      : user.verificationStatus === 'rejected'
+                        ? 'border-error/20 bg-error/10 text-error'
+                        : 'border-warning/20 bg-warning/10 text-warning animate-pulse'
+                  }`}
+                >
+                  {user.verificationStatus === 'approved'
+                    ? 'Approved'
+                    : user.verificationStatus === 'rejected'
+                      ? 'Rejected'
+                      : 'Pending'}
+                </span>
+              </div>
+
+              {user.verificationStatus === 'rejected' && user.rejectionReason && (
+                <div className="p-4 rounded-2xl border border-error/20 bg-error/5 text-error-foreground text-xs font-semibold">
+                  <p className="text-error font-bold mb-1">Rejection Reason:</p>
+                  <p className="text-foreground/80 leading-relaxed font-medium">
+                    {user.rejectionReason}
+                  </p>
+                </div>
+              )}
+
+              {user.verificationStatus === 'approved' && user.verifiedAt && (
+                <div className="p-4 rounded-2xl border border-success/20 bg-success/5 text-success-foreground text-xs font-semibold">
+                  <p className="text-success font-bold mb-1">Verified On:</p>
+                  <p className="text-foreground/80 leading-relaxed font-medium">
+                    {new Date(user.verifiedAt).toLocaleString('en-US', {
+                      month: 'long',
+                      day: 'numeric',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </p>
+                </div>
+              )}
+
+              <div className="grid gap-6 grid-cols-1">
+                {/* Address Info */}
+                <div className="space-y-4">
+                  <h4 className="text-xs font-bold text-muted uppercase tracking-wider">
+                    Business Address
+                  </h4>
+                  <div className="rounded-2xl border border-border bg-background p-4 space-y-2 text-xs">
+                    <div className="flex justify-between">
+                      <span className="text-muted">Street:</span>
+                      <span className="font-semibold text-foreground">
+                        {user.owner.address?.street || 'N/A'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted">City:</span>
+                      <span className="font-semibold text-foreground">
+                        {user.owner.address?.city || 'N/A'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted">State:</span>
+                      <span className="font-semibold text-foreground">
+                        {user.owner.address?.state || 'N/A'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted">Pincode:</span>
+                      <span className="font-semibold text-foreground">
+                        {user.owner.address?.pincode || 'N/A'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bank Details */}
+                <div className="space-y-4">
+                  <h4 className="text-xs font-bold text-muted uppercase tracking-wider">
+                    Payout Bank Account
+                  </h4>
+                  <div className="rounded-2xl border border-border bg-background p-4 space-y-2 text-xs">
+                    <div className="flex justify-between">
+                      <span className="text-muted">Holder Name:</span>
+                      <span className="font-semibold text-foreground">
+                        {user.owner.bankDetails?.accountHolderName || 'N/A'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted">Account No:</span>
+                      <span className="font-semibold text-foreground">
+                        {user.owner.bankDetails?.accountNumber || 'N/A'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted">IFSC / Routing:</span>
+                      <span className="font-semibold text-foreground">
+                        {user.owner.bankDetails?.ifscCode || 'N/A'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* ID Proof Document */}
+              {user.owner.idProof && (
+                <div className="space-y-3 pt-2">
+                  <h4 className="text-xs font-bold text-muted uppercase tracking-wider">
+                    Verification Documents
+                  </h4>
+                  <div className="flex flex-col gap-3 p-4 rounded-2xl border border-border bg-background">
+                    <div className="flex items-center gap-3">
+                      <div className="rounded-xl bg-primary/10 p-2.5 text-primary">
+                        <FileText size={20} />
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold text-foreground">ID Proof Document</p>
+                        <p className="text-[10px] text-muted mt-0.5">Submitted identity proof</p>
+                      </div>
+                    </div>
+                    <a
+                      href={user.owner.idProof}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full text-center inline-flex items-center justify-center gap-1.5 rounded-xl border border-border bg-card px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-foreground hover:bg-surface hover:border-primary/20 transition-all cursor-pointer"
+                    >
+                      View Document
+                    </a>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

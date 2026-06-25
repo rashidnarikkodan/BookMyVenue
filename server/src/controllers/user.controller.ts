@@ -49,7 +49,12 @@ export const getUser = async (req: Request, res: Response, next: NextFunction) =
     // Exclude sensitive data from response
     const { password, googleId, ...safeUser } = user.toObject();
 
-    return success(res, HTTP_STATUS.OK, safeUser, 'User fetched successfully');
+    let owner = null;
+    if (user.role === 'owner') {
+      owner = await Owner.findOne({ userId: id });
+    }
+
+    return success(res, HTTP_STATUS.OK, { ...safeUser, owner }, 'User fetched successfully');
   } catch (error) {
     next(error);
   }

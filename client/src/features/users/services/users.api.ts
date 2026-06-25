@@ -1,5 +1,5 @@
 import { apiClient } from '@/services/apiClient';
-import type { User, UserQuery } from '../types';
+import type { OwnerVerificationResponse, User, UserQuery } from '../types';
 
 export const usersApi = {
   getAll: async (
@@ -45,6 +45,10 @@ export const usersApi = {
       imageUrl: u.avatar || null,
       createdAt: u.createdAt,
       updatedAt: u.updatedAt,
+      verificationStatus: u.owner?.verificationStatus,
+      rejectionReason: u.owner?.rejectionReason,
+      verifiedAt: u.owner?.verifiedAt,
+      owner: u.owner,
     };
     return {
       ...res.data,
@@ -87,6 +91,30 @@ export const usersApi = {
     return {
       ...res.data,
       data: mappedUser,
+    };
+  },
+  approveOwner: async (
+    id: string
+  ): Promise<{ success: boolean; message: string; data: OwnerVerificationResponse }> => {
+    const res = await apiClient.patch(`/admin/owners/${id}/approve`);
+
+    console.log(res.data);
+
+    return {
+      ...res.data,
+    };
+  },
+
+  rejectOwner: async (
+    id: string,
+    reason: string
+  ): Promise<{ success: boolean; message: string; data: OwnerVerificationResponse }> => {
+    const res = await apiClient.patch(`/admin/owners/${id}/reject`, {
+      reason,
+    });
+
+    return {
+      ...res.data,
     };
   },
 };

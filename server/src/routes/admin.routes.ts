@@ -9,6 +9,7 @@ import { authorizeRoles } from '@/middlewares/role.middleware';
 import { validateInputs, validateObjectId, validateQuery } from '@/middlewares/validate.middleware';
 import { getAdminVenuesQuerySchema } from '@/dto/admin/get-venues.dto';
 import { rejectVenueSchema } from '@/dto/admin/reject-venue.dto';
+import * as ownerController from '@/controllers/owner.controller';
 
 const router = Router();
 
@@ -37,6 +38,9 @@ router.route('/users').get(userController.getUsers);
 router.route('/users/:id').get(userController.getUser);
 router.route('/users/:id/block').patch(userController.blockUser);
 router.route('/users/:id/unblock').patch(userController.unblockUser);
+
+router.route('/owners/:id/approve').patch(ownerController.approveOwner);
+router.route('/owners/:id/reject').patch(ownerController.rejectOwner);
 
 // Venues
 router

@@ -8,6 +8,10 @@ export interface User {
   imageUrl?: string | null;
   createdAt: string;
   updatedAt: string;
+  verificationStatus?: 'pending' | 'approved' | 'rejected';
+  rejectionReason?: string | null;
+  verifiedAt?: string | null;
+  owner?: any;
 }
 
 export interface CreateUserDto {
@@ -34,4 +38,18 @@ export interface UserQuery {
   role?: 'all' | 'admin' | 'owner' | 'user';
   page?: number;
   limit?: number;
+}
+
+export interface OwnerVerificationResponse {
+  id: string;
+  verificationStatus: 'pending' | 'approved' | 'rejected';
+  verifiedAt: string | null;
+  rejectionReason: string | null;
+
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+  };
 }
