@@ -1,12 +1,5 @@
-import type React from 'react';
 import { Users, Building2, CalendarDays, IndianRupee, ArrowUpRight } from 'lucide-react';
 
-interface CardProps {
-  title: string;
-  value: string | number;
-  icon: React.ReactNode;
-  index: number;
-}
 
 function getColorScheme(index: number) {
   if (index === 0) {

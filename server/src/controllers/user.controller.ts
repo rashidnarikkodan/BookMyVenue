@@ -98,7 +98,7 @@ export const getProfile = async (req: Request, res: Response, next: NextFunction
 
     const user = await User.findById(userId).select('-password -googleId');
     if (!user) {
-      return next(new AppError('User not found', HTTP_STATUS.NOT_FOUND));
+      throw new AppError('User not found', HTTP_STATUS.NOT_FOUND)
     }
 
     let owner = null;
@@ -235,7 +235,6 @@ export const updateProfile = async (req: Request, res: Response, next: NextFunct
 
         updatedOwner = await Owner.create({
           userId,
-          profileImage: ownerUpdate.profileImage || null,
           idProof: ownerUpdate.idProof || req.body.idProof,
           address: ownerUpdate.address,
           bankDetails: ownerUpdate.bankDetails,

@@ -1,4 +1,4 @@
-import { AlertTriangle, Clock, ShieldAlert, CreditCard, ArrowRight } from 'lucide-react';
+import { AlertTriangle, Clock, ShieldAlert, ArrowRight } from 'lucide-react';
 
 interface AlertItem {
   id: string;

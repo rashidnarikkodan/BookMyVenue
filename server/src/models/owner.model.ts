@@ -9,11 +9,6 @@ const ownerSchema = new mongoose.Schema(
       unique: true,
     },
 
-    profileImage: {
-      type: String,
-      default: null,
-    },
-
     idProof: {
       type: String,
       required: true,

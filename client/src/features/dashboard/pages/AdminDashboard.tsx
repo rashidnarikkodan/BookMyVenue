@@ -12,7 +12,7 @@ import type { AdminDashboardData } from '../types/adminDashboard.types';
 import { getAdminDashboardData } from '../services/adminDashboar.services';
 
 export default function AdminDashboard() {
-  const { data, loading, execute } = useAsyncFetch<AdminDashboardData>();
+  const { data, execute } = useAsyncFetch<AdminDashboardData>();
 
   useEffect(() => {
     execute(getAdminDashboardData);
