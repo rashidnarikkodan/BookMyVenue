@@ -80,18 +80,9 @@ const venueSchema = new mongoose.Schema(
       min: 1,
     },
 
-    pricing: {
-      amount: {
-        type: Number,
-        required: true,
-        min: 0,
-      },
-
-      unit: {
-        type: String,
-        enum: ['hour', 'day'],
-        default: 'day',
-      },
+    isAvailabilityConfigured: {
+      type: Boolean,
+      default: false,
     },
 
     amenities: [
@@ -144,6 +135,17 @@ const venueSchema = new mongoose.Schema(
 
 // Nearby venue search
 venueSchema.index({ location: '2dsphere' });
+
+// Virtual for Availability config
+venueSchema.virtual('availability', {
+  ref: 'Availability',
+  localField: '_id',
+  foreignField: 'venueId',
+  justOne: true,
+});
+
+venueSchema.set('toJSON', { virtuals: true });
+venueSchema.set('toObject', { virtuals: true });
 
 const Venue = mongoose.model<IVenue>('Venue', venueSchema);
 

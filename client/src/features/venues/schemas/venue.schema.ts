@@ -50,13 +50,6 @@ export const venueSchema = z
       .min(1, 'Capacity must be at least 1')
       .max(50000, 'Capacity cannot exceed 50,000'),
 
-    pricingAmount: z
-      .number()
-      .positive('Price must be greater than zero')
-      .max(10000000, 'Price cannot exceed ₹1,00,00,000'),
-
-    pricingUnit: z.enum(['hour', 'day']),
-
     amenities: z
       .array(
         z.string().trim().min(2, 'Amenity name is too short').max(50, 'Amenity name is too long')
@@ -84,18 +77,6 @@ export const venueSchema = z
       });
     }
 
-    // Prevent absurd pricing per person ratio
-    if (
-      data.capacity > 0 &&
-      data.pricingAmount > 0 &&
-      data.pricingAmount / data.capacity > 100000
-    ) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ['pricingAmount'],
-        message: 'Pricing seems unusually high for the specified capacity',
-      });
-    }
   });
 
 export type FormValues = z.infer<typeof venueSchema>;

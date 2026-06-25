@@ -51,4 +51,22 @@ router
   .all(validateObjectId('id'))
   .patch(requireOwnerVerification, venueController.restoreVenue);
 
+import * as availabilityController from '@/controllers/availability.controller';
+import { updateAvailabilitySchema } from '@/dto/availability/update-availability.dto';
+
+router
+  .route('/venues/:id/availability')
+  .all(validateObjectId('id'))
+  .get(availabilityController.getAvailability)
+  .post(
+    requireOwnerVerification,
+    validateInputs(updateAvailabilitySchema),
+    availabilityController.createAvailability
+  )
+  .put(
+    requireOwnerVerification,
+    validateInputs(updateAvailabilitySchema),
+    availabilityController.updateAvailability
+  );
+
 export default router;

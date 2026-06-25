@@ -364,7 +364,9 @@ const AdminVenueDetails = () => {
                   <IndianRupee size={14} /> Pricing
                 </div>
                 <span className="text-sm font-bold text-foreground">
-                  ₹{venue.pricing.amount.toLocaleString()} / {venue.pricing.unit}
+                  {venue.isAvailabilityConfigured && venue.availability
+                    ? `₹${venue.availability.pricePerHour.toLocaleString()} / hour`
+                    : 'N/A'}
                 </span>
               </div>
               <div className="flex items-center justify-between py-2 border-b border-border">

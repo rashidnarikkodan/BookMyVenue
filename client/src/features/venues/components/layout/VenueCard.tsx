@@ -73,7 +73,9 @@ const VenueCard = ({ venue, onEdit }: Props) => {
           <div className="flex items-center gap-1">
             <IndianRupee size={13} className="text-muted" />
             <span className="font-semibold">
-              {venue.pricing.amount.toLocaleString()}/{venue.pricing.unit}
+              {venue.isAvailabilityConfigured && venue.availability
+                ? `₹${venue.availability.pricePerHour}/hr`
+                : 'N/A'}
             </span>
           </div>
         </div>
@@ -114,7 +116,7 @@ const VenueCard = ({ venue, onEdit }: Props) => {
           
           {venue.verificationStatus === 'approved' && (
             <button
-              onClick={() => navigate(`/owner/venues/${venue._id}/slots`)}
+              onClick={() => navigate(`/owner/venues/${venue._id}/availability`)}
               className="
                 flex-1 inline-flex items-center justify-center gap-1.5
                 rounded-lg bg-secondary/10 border border-secondary/20
@@ -123,7 +125,7 @@ const VenueCard = ({ venue, onEdit }: Props) => {
               "
             >
               <Calendar size={14} />
-              Setup Slot
+              Setup
             </button>
           )}
         </div>
