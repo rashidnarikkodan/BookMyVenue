@@ -4,10 +4,9 @@ import { createBooking, getBookingAvailability } from '@/controllers/booking.con
 
 const router = Router();
 
-router.use(authMiddleware)
+router.use(authMiddleware);
 
 router.post('/', createBooking);
-router.get('/availability/:venueId',getBookingAvailability);
-
+router.get('/availability/:venueId', getBookingAvailability);
 
 export default router;
