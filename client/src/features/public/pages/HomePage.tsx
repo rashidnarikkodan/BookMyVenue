@@ -32,7 +32,7 @@ export default function HomePage() {
       <FeaturedSection venues={venues} loading={loading} />
       <CategoriesSection categories={categories} loading={loading} />
       <EliteVenuesSection venues={venues} loading={loading} />
-      <ExploreVenuesSection venues={venues} loading={loading} />
+      <ExploreVenuesSection districts={data?.districts || []} loading={loading} />
       <CTASection />
     </div>
   );

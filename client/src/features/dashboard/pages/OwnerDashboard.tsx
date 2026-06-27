@@ -17,8 +17,8 @@ export default function OwnerDashboard() {
   }, [execute]);
 
   useEffect(() => {
-    console.log(data);
-  }, []);
+    console.log('data recieved in page', data);
+  }, [data]);
 
   if (loading) {
     return <DashboardSkelton />;

@@ -41,40 +41,40 @@ export default function EliteVenuesSection({ venues, loading }: EliteVenuesSecti
   const largeVenue =
     data && data[0]
       ? {
-          name: data[0].name,
-          image: data[0].images?.[0] || travancoreImg,
-          rating: '4.9 (120 reviews)', // Default rating since rating is not in DB schema
-          capacity: data[0].capacity,
-          tag: 'Most Booked',
-        }
+        name: data[0].name,
+        image: data[0].images?.[0] || travancoreImg,
+        rating: '4.9 (120 reviews)', // Default rating since rating is not in DB schema
+        capacity: data[0].capacity,
+        tag: 'Most Booked',
+      }
       : defaultLargeVenue;
 
   const topVenue =
     data && data[1]
       ? {
-          name: data[1].name,
-          image: data[1].images?.[0] || emeraldImg,
-          location: data[1].address
-            ? `${data[1].address.city}, ${data[1].address.state}`
-            : 'Kumarakom, Kerala',
-          price: data[1].pricing
-            ? `₹${data[1].pricing.amount.toLocaleString('en-IN')} / ${data[1].pricing.unit === 'day' ? 'Day' : 'Hour'}`
-            : '₹1,20,000 / Day',
-        }
+        name: data[1].name,
+        image: data[1].images?.[0] || emeraldImg,
+        location: data[1].address
+          ? `${data[1].address.city}, ${data[1].address.state}`
+          : 'Kumarakom, Kerala',
+        price: data[1].pricing
+          ? `₹${data[1].pricing.amount.toLocaleString('en-IN')} / ${data[1].pricing.unit === 'day' ? 'Day' : 'Hour'}`
+          : '₹1,20,000 / Day',
+      }
       : defaultTopVenue;
 
   const bottomVenue =
     data && data[2]
       ? {
-          name: data[2].name,
-          image: data[2].images?.[0] || mistImg,
-          location: data[2].address
-            ? `${data[2].address.city}, ${data[2].address.state}`
-            : 'Munnar, Kerala',
-          price: data[2].pricing
-            ? `₹${data[2].pricing.amount.toLocaleString('en-IN')} / ${data[2].pricing.unit === 'day' ? 'Day' : 'Hour'}`
-            : '₹85,000 / Day',
-        }
+        name: data[2].name,
+        image: data[2].images?.[0] || mistImg,
+        location: data[2].address
+          ? `${data[2].address.city}, ${data[2].address.state}`
+          : 'Munnar, Kerala',
+        price: data[2].pricing
+          ? `₹${data[2].pricing.amount.toLocaleString('en-IN')} / ${data[2].pricing.unit === 'day' ? 'Day' : 'Hour'}`
+          : '₹85,000 / Day',
+      }
       : defaultBottomVenue;
 
   if (loading) {

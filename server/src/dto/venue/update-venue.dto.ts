@@ -29,8 +29,6 @@ export const updateVenueSchema = z.object({
 
   capacity: z.number().positive().optional(),
 
-
-
   images: z.array(z.string()).optional(),
   existingImages: z.string().optional(),
   amenities: z.array(z.string()).optional(),

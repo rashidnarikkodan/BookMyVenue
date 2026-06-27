@@ -45,17 +45,25 @@ export const ownerVenuesApi = {
     return res.data;
   },
 
-  getAvailability: async (venueId: string): Promise<ApiResponse<import('../types/venues.types').AvailabilityConfig>> => {
+  getAvailability: async (
+    venueId: string
+  ): Promise<ApiResponse<import('../types/venues.types').AvailabilityConfig>> => {
     const res = await apiClient.get(`/owners/venues/${venueId}/availability`);
     return res.data;
   },
 
-  createAvailability: async (venueId: string, data: import('../types/venues.types').AvailabilityConfig): Promise<ApiResponse<import('../types/venues.types').AvailabilityConfig>> => {
+  createAvailability: async (
+    venueId: string,
+    data: import('../types/venues.types').AvailabilityConfig
+  ): Promise<ApiResponse<import('../types/venues.types').AvailabilityConfig>> => {
     const res = await apiClient.post(`/owners/venues/${venueId}/availability`, data);
     return res.data;
   },
 
-  updateAvailability: async (venueId: string, data: import('../types/venues.types').AvailabilityConfig): Promise<ApiResponse<import('../types/venues.types').AvailabilityConfig>> => {
+  updateAvailability: async (
+    venueId: string,
+    data: import('../types/venues.types').AvailabilityConfig
+  ): Promise<ApiResponse<import('../types/venues.types').AvailabilityConfig>> => {
     const res = await apiClient.put(`/owners/venues/${venueId}/availability`, data);
     return res.data;
   },

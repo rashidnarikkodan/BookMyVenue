@@ -6,6 +6,11 @@ export interface VenueCardDto {
   images: string[];
   address: {
     city: string;
+    district: string;
+
+  };
+  location: {
+    coordinates: [number, number];
   };
   capacity: number;
   pricing: {
@@ -14,4 +19,12 @@ export interface VenueCardDto {
   };
   isFeatured: boolean;
   isElite: boolean;
+}
+
+export interface DistrictDto {
+  id: string;
+  name: string;
+  coordinates: [number, number];
+  venueCount: number;
+  featuredVenues: VenueCardDto[];
 }

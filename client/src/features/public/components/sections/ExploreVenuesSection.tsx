@@ -12,53 +12,71 @@ import alleppeyImg from '@/features/public/assets/hero-venue-2.png';
 import munnarImg from '@/features/public/assets/hero-venue-4.png';
 import ExploreVenuesSectionSkeleton from '../loaders/ExploreVenuesSectionSkeleton';
 
-type CityInfo = {
+interface District {
   id: string;
   name: string;
-  description: string;
-  image: string;
-  coords: [number, number]; // [lat, lng]
-};
-
-const districts: CityInfo[] = [
-  {
-    id: 'kochi',
-    name: 'Kochi',
-    description: 'Urban luxury and waterfront hubs.',
-    image: kochiImg,
-    coords: [9.9312, 76.2673],
-  },
-  {
-    id: 'trivandrum',
-    name: 'Trivandrum',
-    description: 'Royal heritage and diplomatic centers.',
-    image: trivandrumImg,
-    coords: [8.5241, 76.9366],
-  },
-  {
-    id: 'alleppey',
-    name: 'Alleppey & Kumarakom',
-    description: 'Exquisite backwater tranquility.',
-    image: alleppeyImg,
-    coords: [9.53, 76.38],
-  },
-  {
-    id: 'munnar',
-    name: 'Munnar',
-    description: 'Mist-clad mountains and tea plantations.',
-    image: munnarImg,
-    coords: [10.0889, 77.0595],
-  },
-];
+  coordinates: [number, number];
+  venueCount: number;
+  featuredVenues: Venue[];
+}
 
 interface ExploreVenuesSectionProps {
-  venues: Venue[];
+  districts: District[];
   loading: boolean;
 }
 
-export default function ExploreVenuesSection({ venues, loading }: ExploreVenuesSectionProps) {
-  const [activeId, setActiveId] = useState<string>('kochi');
+const DISTRICT_METADATA: Record<string, { description: string; image: string }> = {
+  kochi: {
+    description: 'The queen of the Arabian Sea, featuring premium waterfront convention centers and heritage banquet halls.',
+    image: kochiImg,
+  },
+  ernakulam: {
+    description: 'The commercial hub of Kerala, featuring premium waterfront convention centers, business hotels, and luxury banquet halls.',
+    image: kochiImg,
+  },
+  trivandrum: {
+    description: 'The capital city, offering majestic royal halls, beachfront resorts, and state-of-the-art conference venues.',
+    image: trivandrumImg,
+  },
+  thiruvananthapuram: {
+    description: 'The capital city, offering majestic royal halls, beachfront resorts, and state-of-the-art conference venues.',
+    image: trivandrumImg,
+  },
+  alleppey: {
+    description: 'The Venice of the East, famous for scenic houseboat venues, lakeside lawns, and backwater resorts.',
+    image: alleppeyImg,
+  },
+  alappuzha: {
+    description: 'The Venice of the East, famous for scenic houseboat venues, lakeside lawns, and backwater resorts.',
+    image: alleppeyImg,
+  },
+  munnar: {
+    description: 'Breathtaking hill station offering mist-covered outdoor lawns, resort pavilions, and cozy tea-garden venues.',
+    image: munnarImg,
+  },
+  idukki: {
+    description: 'Breathtaking hill station offering mist-covered outdoor lawns, resort pavilions, and cozy tea-garden venues.',
+    image: munnarImg,
+  },
+};
+
+const getDistrictMetadata = (districtId: string) => {
+  const key = districtId.toLowerCase();
+  return DISTRICT_METADATA[key] || {
+    description: 'Explore handpicked premium venues, event spaces, and conference halls in this district.',
+    image: kochiImg,
+  };
+};
+
+const getLeafletCoords = (coords?: [number, number]): [number, number] => {
+  if (!coords || coords.length !== 2) return [9.9312, 76.2673]; // Kochi default lat, lng
+  return [coords[1], coords[0]]; // Swap [lng, lat] to [lat, lng]
+};
+
+export default function ExploreVenuesSection({ districts, loading }: ExploreVenuesSectionProps) {
+  const [activeId, setActiveId] = useState<string>('');
   const { themeMode } = useUIStore();
+
 
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<L.Map | null>(null);
@@ -67,160 +85,24 @@ export default function ExploreVenuesSection({ venues, loading }: ExploreVenuesS
   const markersRef = useRef<L.Marker[]>([]);
   const isPanningRef = useRef<boolean>(false);
 
-  const activeDistrict = districts.find((d) => d.id === activeId) || districts[0];
+  useEffect(() => {
+  if (districts.length > 0 && !activeId) {
+    setActiveId(districts[0].id);
+  }
+}, [districts, activeId])
 
-  // Realistic fallback venues matching home showcase structure
-  const fallbackVenues: Venue[] = [
-    {
-      _id: 'fb-trivandrum-1',
-      name: 'The Travancore Heritage Palace',
-      description: 'Experience royal luxury in an authentic heritage palace.',
-      images: [trivandrumImg],
-      address: {
-        city: 'Trivandrum',
-        district: 'Trivandrum',
-        street: 'Palace Road',
-        state: 'Kerala',
-        pincode: '695023',
-      },
-      capacity: 800,
-      pricing: { amount: 150000, unit: 'day' },
-      ownerId: '',
-      categoryId: '',
-      location: { type: 'Point', coordinates: [76.9366, 8.5241] },
-      amenities: [],
-      verificationStatus: 'approved',
-      verifiedAt: null,
-      rejectionReason: null,
-      isActive: true,
-      isDeleted: false,
-      createdAt: '',
-      updatedAt: '',
-    },
-    {
-      _id: 'fb-kumarakom-1',
-      name: 'Emerald Water-Resort',
-      description: 'Lakeside tranquility meets modern hosting facilities.',
-      images: [alleppeyImg],
-      address: {
-        city: 'Kumarakom',
-        district: 'Alleppey',
-        street: 'Resort Road',
-        state: 'Kerala',
-        pincode: '686563',
-      },
-      capacity: 300,
-      pricing: { amount: 120000, unit: 'day' },
-      ownerId: '',
-      categoryId: '',
-      location: { type: 'Point', coordinates: [76.4223, 9.5916] },
-      amenities: [],
-      verificationStatus: 'approved',
-      verifiedAt: null,
-      rejectionReason: null,
-      isActive: true,
-      isDeleted: false,
-      createdAt: '',
-      updatedAt: '',
-    },
-    {
-      _id: 'fb-kochi-1',
-      name: 'The Grand Waterfront Hub',
-      description: 'Stunning harbor views and premium event spaces.',
-      images: [kochiImg],
-      address: {
-        city: 'Kochi',
-        district: 'Kochi',
-        street: 'Marine Drive',
-        state: 'Kerala',
-        pincode: '682031',
-      },
-      capacity: 500,
-      pricing: { amount: 180000, unit: 'day' },
-      ownerId: '',
-      categoryId: '',
-      location: { type: 'Point', coordinates: [76.2673, 9.9312] },
-      amenities: [],
-      verificationStatus: 'approved',
-      verifiedAt: null,
-      rejectionReason: null,
-      isActive: true,
-      isDeleted: false,
-      createdAt: '',
-      updatedAt: '',
-    },
-    {
-      _id: 'fb-kochi-2',
-      name: 'Lakeside Marina Pavilion',
-      description: 'Charming open-air and indoor setups.',
-      images: [kochiImg],
-      address: {
-        city: 'Kochi',
-        district: 'Kochi',
-        street: 'Nettoor',
-        state: 'Kerala',
-        pincode: '682040',
-      },
-      capacity: 250,
-      pricing: { amount: 90000, unit: 'day' },
-      ownerId: '',
-      categoryId: '',
-      location: { type: 'Point', coordinates: [76.2996, 9.9272] },
-      amenities: [],
-      verificationStatus: 'approved',
-      verifiedAt: null,
-      rejectionReason: null,
-      isActive: true,
-      isDeleted: false,
-      createdAt: '',
-      updatedAt: '',
-    },
-    {
-      _id: 'fb-munnar-1',
-      name: 'Mist-Valley Highlands',
-      description: 'Breathtaking mountain views surrounded by tea gardens.',
-      images: [munnarImg],
-      address: {
-        city: 'Munnar',
-        district: 'Munnar',
-        street: 'Chithirapuram',
-        state: 'Kerala',
-        pincode: '685565',
-      },
-      capacity: 150,
-      pricing: { amount: 85000, unit: 'day' },
-      ownerId: '',
-      categoryId: '',
-      location: { type: 'Point', coordinates: [77.0595, 10.0889] },
-      amenities: [],
-      verificationStatus: 'approved',
-      verifiedAt: null,
-      rejectionReason: null,
-      isActive: true,
-      isDeleted: false,
-      createdAt: '',
-      updatedAt: '',
-    },
-  ];
-
-  // Prioritize real venues from API, fallback to mock data if empty
-  const displayVenues = venues.length > 0 ? venues : fallbackVenues;
-
-  // Filter venues in memory for the active district
-  const districtVenues = displayVenues.filter((v) => {
-    const districtName = v.address?.district?.toLowerCase() || '';
-    const cityName = v.address?.city?.toLowerCase() || '';
-    const active = activeId.toLowerCase();
-
-    return districtName.includes(active) || cityName.includes(active);
-  });
+  const activeDistrict = districts.find((d) => d.id === activeId);
+  const districtVenues = activeDistrict?.featuredVenues || [];
+  const activeMetadata = activeDistrict
+    ? getDistrictMetadata(activeDistrict.id)
+    : { description: '', image: kochiImg };
 
   // 1. Initialize Map
   useEffect(() => {
     if (loading || !mapRef.current || mapInstance.current) return;
 
     // Center on Kochi initially with zoom level 8 (covers Kerala region nicely)
-    const initialCoords = districts[0].coords;
+    const initialCoords = districts[0] ? getLeafletCoords(districts[0].coordinates) : [9.9312, 76.2673];
     const map = L.map(mapRef.current, {
       zoomControl: true,
       scrollWheelZoom: true,
@@ -296,13 +178,9 @@ export default function ExploreVenuesSection({ venues, loading }: ExploreVenuesS
     districts.forEach((d) => {
       const isActive = activeId === d.id;
 
-      // Calculate active count of venues
-      const count = displayVenues.filter((v) => {
-        const districtName = v.address?.district?.toLowerCase() || '';
-        const cityName = v.address?.city?.toLowerCase() || '';
-        const matchVal = d.id.toLowerCase();
-        return districtName.includes(matchVal) || cityName.includes(matchVal);
-      }).length;
+      // Calculate active count of venues from backend data
+      const count = d.venueCount || 0;
+      const leafletCoords = getLeafletCoords(d.coordinates);
 
       // Premium pulsing HTML/CSS divIcon
       const markerIcon = L.divIcon({
@@ -323,12 +201,12 @@ export default function ExploreVenuesSection({ venues, loading }: ExploreVenuesS
         iconAnchor: [14, 14],
       });
 
-      const marker = L.marker(d.coords, { icon: markerIcon })
+      const marker = L.marker(leafletCoords, { icon: markerIcon })
         .addTo(map)
         .on('click', () => {
           isPanningRef.current = true;
           setActiveId(d.id);
-          map.flyTo(d.coords, 9, { duration: 1.2 });
+          map.flyTo(leafletCoords, 9, { duration: 1.2 });
           setTimeout(() => {
             isPanningRef.current = false;
           }, 1300);
@@ -360,12 +238,12 @@ export default function ExploreVenuesSection({ venues, loading }: ExploreVenuesS
         });
       }
     };
-  }, [displayVenues, activeId, mapReady]);
+  }, [districts, activeId, mapReady]);
 
   // 4. Pan map when activeId changes via side panel clicks
   useEffect(() => {
-    if (!mapInstance.current || !mapReady || isPanningRef.current) return;
-    const activeCoords = activeDistrict.coords;
+    if (!mapInstance.current || !mapReady || isPanningRef.current || !activeDistrict) return;
+    const activeCoords = getLeafletCoords(activeDistrict.coordinates);
     mapInstance.current.flyTo(activeCoords, 9, { duration: 1.2 });
   }, [activeId, activeDistrict, mapReady]);
 
@@ -440,7 +318,7 @@ export default function ExploreVenuesSection({ venues, loading }: ExploreVenuesS
                   </span>
                   <h3 className="text-2xl md:text-3xl font-extrabold text-black dark:text-white mt-3 flex items-center gap-2">
                     <MapPin className="w-6 h-6 text-[#e21a47]" />
-                    {activeDistrict.name}
+                    {activeDistrict?.name || ''}
                   </h3>
                 </div>
 
@@ -463,7 +341,7 @@ export default function ExploreVenuesSection({ venues, loading }: ExploreVenuesS
               </div>
 
               <p className="text-xs md:text-sm text-zinc-700 dark:text-zinc-400 mt-2 leading-relaxed">
-                {activeDistrict.description}
+                {activeMetadata.description}
               </p>
             </div>
 
@@ -495,7 +373,7 @@ export default function ExploreVenuesSection({ venues, loading }: ExploreVenuesS
                     {/* Left Thumbnail */}
                     <div className="w-20 h-20 rounded-xl overflow-hidden bg-zinc-950 flex-shrink-0 border border-zinc-200/10">
                       <img
-                        src={venue.images?.[0] || activeDistrict.image}
+                        src={venue.images?.[0] || activeMetadata.image}
                         alt={venue.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
@@ -541,7 +419,7 @@ export default function ExploreVenuesSection({ venues, loading }: ExploreVenuesS
                   <Building2 className="w-10 h-10 text-zinc-400 stroke-[1.2] mb-3" />
                   <p className="text-xs font-bold text-foreground">No Venues Listed Yet</p>
                   <p className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1 max-w-[200px] leading-relaxed">
-                    We don't have spaces listed in {activeDistrict.name} right now.
+                    We don't have spaces listed in {activeDistrict?.name || 'this district'} right now.
                   </p>
                   <Link
                     to="/owner/register"

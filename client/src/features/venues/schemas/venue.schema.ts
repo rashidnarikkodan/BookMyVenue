@@ -76,7 +76,6 @@ export const venueSchema = z
         message: 'Location coordinates appear invalid',
       });
     }
-
   });
 
 export type FormValues = z.infer<typeof venueSchema>;
