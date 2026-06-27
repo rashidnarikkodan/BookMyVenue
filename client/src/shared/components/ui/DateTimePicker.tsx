@@ -157,6 +157,19 @@ export default function DateTimePicker({
       }
     }
 
+    // Ensure selected date & time is not before minDate
+    if (minDate && baseDate < minDate) {
+      const baseDateOnly = new Date(baseDate.getTime());
+      baseDateOnly.setHours(0, 0, 0, 0);
+      const minDateOnly = new Date(minDate.getTime());
+      minDateOnly.setHours(0, 0, 0, 0);
+      if (baseDateOnly.getTime() === minDateOnly.getTime()) {
+        baseDate.setHours(minDate.getHours(), minDate.getMinutes(), 0, 0);
+      } else {
+        baseDate = new Date(minDate.getTime());
+      }
+    }
+
     onChange(baseDate.toISOString());
   };
 
@@ -306,6 +319,20 @@ export default function DateTimePicker({
                       parsedValue.getHours() === h &&
                       parsedValue.getMinutes() === m;
 
+                    const isTimeDisabled = (() => {
+                      if (!minDate || !isDateValid) return false;
+                      const selectedDateOnly = new Date(parsedValue.getTime());
+                      selectedDateOnly.setHours(0, 0, 0, 0);
+                      const minDateOnly = new Date(minDate.getTime());
+                      minDateOnly.setHours(0, 0, 0, 0);
+                      if (selectedDateOnly.getTime() === minDateOnly.getTime()) {
+                        const slotMinutes = h * 60 + m;
+                        const minMinutes = minDate.getHours() * 60 + minDate.getMinutes();
+                        return slotMinutes < minMinutes;
+                      }
+                      return false;
+                    })();
+
                     // Display formats e.g. "09:30 AM"
                     const displayTime = (() => {
                       const suffix = h >= 12 ? "PM" : "AM";
@@ -318,12 +345,15 @@ export default function DateTimePicker({
                       <button
                         key={time}
                         type="button"
+                        disabled={isTimeDisabled}
                         onClick={() => handleTimeSelect(time)}
                         className={`
-                          w-full py-1.5 px-3 rounded-lg text-xs font-bold text-center border transition-all cursor-pointer
+                          w-full py-1.5 px-3 rounded-lg text-xs font-bold text-center border transition-all cursor-pointer disabled:cursor-not-allowed
                           ${
                             isSelected
                               ? "bg-primary border-primary text-white shadow-sm"
+                              : isTimeDisabled
+                              ? "bg-zinc-50 dark:bg-zinc-800/10 border-border text-muted/30 line-through"
                               : "bg-background border-border text-foreground hover:bg-primary/10 hover:text-primary hover:border-primary/30"
                           }
                         `}

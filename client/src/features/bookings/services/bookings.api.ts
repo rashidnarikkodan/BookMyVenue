@@ -4,11 +4,13 @@ import type { BookingDetails } from '../types/bookings.types';
 export const bookingsApi = {
   createBooking: async (bookingData: BookingDetails): Promise<any> => {
     try {
+      console.log(bookingData)
       const res = await apiClient.post('/bookings', bookingData);
+      console.log("Booking Confirmed", res.data);
       return res.data;
     } catch (err: any) {
       console.warn("Backend /bookings post failed, falling back to mock response", err);
-      
+
       // Simulate network latency
       await new Promise((resolve) => setTimeout(resolve, 1500));
       

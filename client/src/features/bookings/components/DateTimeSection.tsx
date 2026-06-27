@@ -54,19 +54,20 @@ const DateTimeSection: React.FC<Props> = ({
     const diffMs = end - start;
 
     if (pricingUnit === "hour") {
-      const hours = Math.ceil(diffMs / (1000 * 60 * 60));
-      
+      const hours = diffMs / (1000 * 60 * 60);
+
       // Check constraints
       if (availability) {
         const { minBookingDuration, maxBookingDuration } = availability;
         if (hours < minBookingDuration) {
-          setError(`Minimum booking duration is ${minBookingDuration} hours.`);
+          setError(`Minimum booking duration is ${minBookingDuration} hour${minBookingDuration > 1 ? "s" : ""}.`);
         } else if (maxBookingDuration && hours > maxBookingDuration) {
-          setError(`Maximum booking duration is ${maxBookingDuration} hours.`);
+          setError(`Maximum booking duration is ${maxBookingDuration} hour${maxBookingDuration > 1 ? "s" : ""}.`);
         }
       }
-      
-      setDurationText(`${hours} hour${hours > 1 ? "s" : ""}`);
+
+      const formattedHours = hours % 1 === 0 ? hours.toFixed(0) : hours.toFixed(1);
+      setDurationText(`${formattedHours} hour${hours !== 1 ? "s" : ""}`);
     } else {
       const days = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
       setDurationText(`${days} day${days > 1 ? "s" : ""}`);
@@ -79,25 +80,25 @@ const DateTimeSection: React.FC<Props> = ({
   };
 
   return (
-    <div className="bg-card border border-border rounded-2xl p-6 shadow-sm space-y-5 transition-all hover:shadow-md">
-      <div className="flex items-center gap-3 border-b border-border pb-4">
-        <div className="bg-primary/10 text-primary p-2 rounded-xl">
-          <Calendar size={20} />
+    <div className="bg-card border border-border rounded-2xl p-4 sm:p-6 shadow-sm space-y-4 sm:space-y-5 transition-all hover:shadow-md">
+      <div className="flex items-center gap-2.5 sm:gap-3 border-b border-border pb-3 sm:pb-4">
+        <div className="bg-primary/10 text-primary p-1.5 sm:p-2 rounded-xl shrink-0">
+          <Calendar size={18} className="sm:w-5 sm:h-5" />
         </div>
         <div>
-          <h3 className="text-lg font-bold text-foreground">Select Date & Time</h3>
+          <h3 className="text-base sm:text-lg font-bold text-foreground">Select Date & Time</h3>
           <p className="text-xs text-muted">Choose your event timeline</p>
         </div>
       </div>
 
       {availability && (
-        <div className="bg-primary/5 border border-primary/20 text-foreground text-xs p-3.5 rounded-xl flex items-start gap-2.5">
-          <Info size={16} className="text-primary shrink-0 mt-0.5" />
-          <div className="space-y-1">
+        <div className="bg-primary/5 border border-primary/20 text-foreground text-xs p-3 sm:p-3.5 rounded-xl flex items-start gap-2 sm:gap-2.5">
+          <Info size={15} className="text-primary shrink-0 mt-0.5" />
+          <div className="space-y-1 min-w-0">
             <span className="font-semibold text-primary block">Venue Operating Rules:</span>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-muted">
+            <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 gap-x-4 gap-y-1 text-muted">
               <span className="flex items-center gap-1">
-                <Clock size={12} /> Hours: {availability.openingTime} - {availability.closingTime}
+                <Clock size={11} className="shrink-0" /> Hours: {availability.openingTime} - {availability.closingTime}
               </span>
               <span>
                 Days: {availability.availableDays.map(formatDayOfWeek).join(", ")}
@@ -113,7 +114,7 @@ const DateTimeSection: React.FC<Props> = ({
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         <DateTimePicker
           label="Start Date & Time"
           value={startDateTime}
@@ -132,20 +133,25 @@ const DateTimeSection: React.FC<Props> = ({
           openingTime={availability?.openingTime}
           closingTime={availability?.closingTime}
           placeholder="Choose end date & time"
+          minDate={(() => {
+            if (!startDateTime) return new Date();
+            const minBookingDuration = availability?.minBookingDuration || 1;
+            return new Date(new Date(startDateTime).getTime() + minBookingDuration * 60 * 60 * 1000);
+          })()}
         />
       </div>
 
       {error && (
-        <div className="bg-red-500/10 border border-red-500/20 text-red-500 text-xs p-3 rounded-xl flex items-center gap-2">
-          <span>⚠️</span>
+        <div className="bg-red-500/10 border border-red-500/20 text-red-500 text-xs p-3 rounded-xl flex items-start gap-2">
+          <span className="shrink-0">⚠️</span>
           <span className="font-medium">{error}</span>
         </div>
       )}
 
       {durationText && !error && (
-        <div className="bg-green-500/10 border border-green-500/20 text-green-600 text-xs p-3 rounded-xl flex justify-between items-center">
+        <div className="bg-green-500/10 border border-green-500/20 text-green-600 text-xs p-3 rounded-xl flex justify-between items-center gap-2">
           <span className="font-medium">Selected Duration:</span>
-          <span className="font-bold text-sm bg-green-500 text-white px-2.5 py-0.5 rounded-full">
+          <span className="font-bold text-xs sm:text-sm bg-green-500 text-white px-2.5 py-0.5 rounded-full shrink-0">
             {durationText}
           </span>
         </div>
