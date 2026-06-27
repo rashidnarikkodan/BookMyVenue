@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Calendar, Clock, Info } from "lucide-react";
 import type { AvailabilityConfig } from "@/features/venues/types/venues.types";
+import { DateTimePicker } from "@/shared/components/ui";
 
 type Props = {
   startDateTime: string | null;
@@ -113,47 +114,25 @@ const DateTimeSection: React.FC<Props> = ({
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-xs font-semibold text-foreground uppercase tracking-wider mb-2">
-            Start Date & Time
-          </label>
-          <div className="relative">
-            <input
-              type="datetime-local"
-              className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all cursor-pointer"
-              value={startDateTime || ""}
-              onChange={(e) => onChange(e.target.value || null, endDateTime)}
-              onClick={(e) => {
-                try {
-                  e.currentTarget.showPicker();
-                } catch (err) {
-                  console.warn("showPicker is not supported in this browser", err);
-                }
-              }}
-            />
-          </div>
-        </div>
+        <DateTimePicker
+          label="Start Date & Time"
+          value={startDateTime}
+          onChange={(val) => onChange(val, endDateTime)}
+          disabledDays={availability?.availableDays}
+          openingTime={availability?.openingTime}
+          closingTime={availability?.closingTime}
+          placeholder="Choose start date & time"
+        />
 
-        <div>
-          <label className="block text-xs font-semibold text-foreground uppercase tracking-wider mb-2">
-            End Date & Time
-          </label>
-          <div className="relative">
-            <input
-              type="datetime-local"
-              className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all cursor-pointer"
-              value={endDateTime || ""}
-              onChange={(e) => onChange(startDateTime, e.target.value || null)}
-              onClick={(e) => {
-                try {
-                  e.currentTarget.showPicker();
-                } catch (err) {
-                  console.warn("showPicker is not supported in this browser", err);
-                }
-              }}
-            />
-          </div>
-        </div>
+        <DateTimePicker
+          label="End Date & Time"
+          value={endDateTime}
+          onChange={(val) => onChange(startDateTime, val)}
+          disabledDays={availability?.availableDays}
+          openingTime={availability?.openingTime}
+          closingTime={availability?.closingTime}
+          placeholder="Choose end date & time"
+        />
       </div>
 
       {error && (

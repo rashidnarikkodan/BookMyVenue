@@ -8,11 +8,11 @@ import { bookingsApi } from "../services/bookings.api";
 import type { Addon, BookingDetails } from "../types/bookings.types";
 import DateTimeSection from "../components/DateTimeSection";
 import GuestSection from "../components/GuestSection";
-import AddonsSection from "../components/AddonsSection";
 import PricingSection from "../components/PricingSection";
 import BookingHeader from "../components/BookingHeader";
 import SelectedVenueSummary from "../components/SelectedVenueSummary";
 import BookingSuccessModal from "../components/BookingSuccessModal";
+import { Loading } from "@/shared/components/ui";
 
 const BookingPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -26,7 +26,7 @@ const BookingPage = () => {
   const [startDateTime, setStartDateTime] = useState<string | null>(null);
   const [endDateTime, setEndDateTime] = useState<string | null>(null);
   const [guests, setGuests] = useState<number>(1);
-  const [selectedAddons, setSelectedAddons] = useState<Addon[]>([]);
+  const [selectedAddons] = useState<Addon[]>([]);
   
   // Contact details
   const [contactName, setContactName] = useState("");
@@ -76,10 +76,6 @@ const BookingPage = () => {
     };
     fetchSelected();
   }, [id]);
-
-  const handleAddonsChange = (addons: Addon[]) => {
-    setSelectedAddons(addons);
-  };
 
   const handleContactDetailsChange = (data: any) => {
     if (data.guests !== undefined) setGuests(data.guests);
@@ -134,47 +130,44 @@ const BookingPage = () => {
 
   if (venueLoading && !selectedVenue) {
     return (
-      <div className="flex h-[500px] items-center justify-center bg-background">
-        <div className="flex flex-col items-center gap-4">
-          <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-          <p className="text-sm font-medium text-muted">Loading booking details...</p>
-        </div>
-      </div>
+      <Loading text="Retrieving checkout session…" fullPage={true} />
     );
   }
 
   if (!selectedVenue) {
     return (
-      <div className="flex h-[500px] flex-col items-center justify-center bg-background gap-4">
-        <p className="text-lg font-semibold text-foreground">Venue not found.</p>
-        <Link to="/venues" className="text-sm text-primary hover:underline">
-          Browse venues
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 text-center space-y-4 text-card-foreground">
+        <h2 className="text-xl font-bold text-foreground">Booking Session Expired</h2>
+        <p className="text-sm text-muted max-w-sm">
+          No valid venue details were loaded. Please return to the venue search page and select a venue.
+        </p>
+        <Link
+          to="/venues"
+          className="bg-primary text-white font-bold text-sm px-6 py-2.5 rounded-xl hover:bg-primary/95 transition-all"
+        >
+          Explore Venues
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background py-10 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto space-y-8">
-        
-        {/* Header Block */}
-        <BookingHeader venueId={selectedVenue._id} />
+    <div className="min-h-screen bg-background pb-20 text-card-foreground">
+      {/* 1. Header Banner */}
+      <BookingHeader />
 
-        {/* main grid content */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          
-          {/* LEFT COLUMN: Form controls */}
-          <div className="lg:col-span-7 xl:col-span-8 space-y-6">
-            
-            {/* Venue Selector / Selected info */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* LEFT COLUMN: Venue Details and Forms */}
+          <div className="lg:col-span-7 xl:col-span-8 space-y-8">
+            {/* Venue Brief Summary Header */}
             <SelectedVenueSummary venue={selectedVenue} />
 
-            {/* 2. Date Time picker */}
+            {/* 2. Date and Time Configuration slots picker */}
             <DateTimeSection
               startDateTime={startDateTime}
               endDateTime={endDateTime}
-              pricingUnit={selectedVenue.isAvailabilityConfigured ? "hour" : "day"}
+              pricingUnit="hour"
               availability={selectedVenue.availability}
               onChange={(start, end) => {
                 setStartDateTime(start);
@@ -191,13 +184,6 @@ const BookingPage = () => {
               contactPhone={contactPhone}
               specialRequests={specialRequests}
               onChange={handleContactDetailsChange}
-            />
-
-            {/* 4. Addons checklist */}
-            <AddonsSection
-              guests={guests}
-              selectedAddons={selectedAddons}
-              onChange={handleAddonsChange}
             />
           </div>
 
@@ -220,7 +206,7 @@ const BookingPage = () => {
         </div>
       </div>
 
-      {/* SUCCESS MODAL OVERLAY */}
+      {/* SUCCESS POPUP DRAWER MODAL */}
       {successData && (
         <BookingSuccessModal
           successData={successData}

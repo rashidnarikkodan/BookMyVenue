@@ -32,6 +32,18 @@ const GuestSection: React.FC<Props> = ({
 
   const isExceeded = maxCapacity > 0 && guests > maxCapacity;
 
+  const presets: number[] = [];
+  if (maxCapacity > 5) {
+    presets.push(Math.round(maxCapacity * 0.25));
+    presets.push(Math.round(maxCapacity * 0.5));
+    presets.push(Math.round(maxCapacity * 0.75));
+    presets.push(maxCapacity);
+  }
+  const uniquePresets = Array.from(new Set(presets))
+    .filter(val => val > 0 && val <= maxCapacity);
+
+
+
   const downloadTemplate = () => {
     const headers = "Full Name,Email,Phone,Special Notes\n";
     const sample1 = "Aarav Sharma,aarav@example.com,+919876543210,Vegetarian\n";
@@ -169,7 +181,18 @@ const GuestSection: React.FC<Props> = ({
             >
               -
             </button>
-            <span className="w-12 text-center font-bold text-lg text-foreground">{guests}</span>
+            <input
+              type="number"
+              min={1}
+              max={maxCapacity || undefined}
+              disabled={!!csvFileName}
+              value={guests}
+              onChange={(e) => {
+                const val = parseInt(e.target.value, 10);
+                handleGuestChange(isNaN(val) ? 1 : val);
+              }}
+              className="w-16 text-center font-bold text-lg text-foreground bg-background border border-border rounded-xl py-1.5 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            />
             <button
               type="button"
               disabled={!!csvFileName}
@@ -180,6 +203,27 @@ const GuestSection: React.FC<Props> = ({
             </button>
           </div>
         </div>
+
+        {uniquePresets.length > 0 && (
+          <div className="flex flex-wrap items-center gap-2 p-1">
+            <span className="text-[10px] font-bold text-muted uppercase tracking-wider">Quick Presets:</span>
+            {uniquePresets.map((preset) => (
+              <button
+                key={preset}
+                type="button"
+                disabled={!!csvFileName}
+                onClick={() => handleGuestChange(preset)}
+                className={`px-2.5 py-1 text-[10px] font-bold border rounded-lg transition-all hover:bg-primary hover:text-white hover:border-primary cursor-pointer active:scale-95 ${
+                  guests === preset
+                    ? 'bg-primary text-white border-primary'
+                    : 'bg-background text-muted border-border'
+                }`}
+              >
+                {preset === maxCapacity ? 'Max' : preset} ({preset === maxCapacity ? '100%' : `${Math.round((preset / maxCapacity) * 100)}%`})
+              </button>
+            ))}
+          </div>
+        )}
 
         {isExceeded && (
           <div className="bg-amber-500/10 border border-amber-500/20 text-amber-600 text-xs p-3 rounded-xl flex items-center gap-2">
