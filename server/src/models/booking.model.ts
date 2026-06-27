@@ -1,21 +1,17 @@
-import mongoose, { Schema } from "mongoose";
-import {
-  BookingStatus,
-  PaymentMethod,
-  PaymentStatus,
-} from "../constants/booking";
+import mongoose, { Schema } from 'mongoose';
+import { BookingStatus, PaymentMethod, PaymentStatus } from '../constants/booking';
 
 const bookingSchema = new Schema(
   {
     venue: {
       type: Schema.Types.ObjectId,
-      ref: "Venue",
+      ref: 'Venue',
       required: true,
     },
 
     user: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
     },
 
@@ -56,7 +52,7 @@ const bookingSchema = new Schema(
 
     specialRequests: {
       type: String,
-      default: "",
+      default: '',
       trim: true,
     },
 
@@ -90,7 +86,7 @@ const bookingSchema = new Schema(
 
     cancellationReason: {
       type: String,
-      default: "",
+      default: '',
     },
   },
   {
@@ -98,4 +94,4 @@ const bookingSchema = new Schema(
   }
 );
 
-export default mongoose.model("Booking", bookingSchema);
+export default mongoose.model('Booking', bookingSchema);

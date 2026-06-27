@@ -11,13 +11,11 @@ export const createBooking = async (
   totalAmount: number
 ): Promise<IBooking> => {
   const paymentStatus =
-    payload.paymentMethod === PaymentMethod.CASH
-      ? PaymentStatus.PENDING
-      : PaymentStatus.PAID;
+    payload.paymentMethod === PaymentMethod.CASH ? PaymentStatus.PENDING : PaymentStatus.PAID;
 
   const bookingStatus =
     payload.paymentMethod === PaymentMethod.CASH
-      ? BookingStatus.CONFIRMED        // cash bookings are immediately confirmed
+      ? BookingStatus.CONFIRMED // cash bookings are immediately confirmed
       : BookingStatus.CONFIRMED;
 
   const doc = await Booking.create({
@@ -157,7 +155,11 @@ export const updateBookingStatus = async (
   id: string,
   bookingStatus: BookingStatus
 ): Promise<IBooking | null> => {
-  return Booking.findByIdAndUpdate(id, { bookingStatus }, { new: true }) as Promise<IBooking | null>;
+  return Booking.findByIdAndUpdate(
+    id,
+    { bookingStatus },
+    { new: true }
+  ) as Promise<IBooking | null>;
 };
 
 export const cancelBooking = async (
