@@ -13,6 +13,7 @@ import BookingHeader from "../components/BookingHeader";
 import SelectedVenueSummary from "../components/SelectedVenueSummary";
 import BookingSuccessModal from "../components/BookingSuccessModal";
 import { Loading } from "@/shared/components/ui";
+import { useAsyncFetch } from "@/shared/hooks/useAsyncFetch";
 
 const BookingPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -21,6 +22,9 @@ const BookingPage = () => {
   // Venue state
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
   const [venueLoading, setVenueLoading] = useState(false);
+
+  //existing booking state
+  const {data:existingBookings,execute} = useAsyncFetch()
 
   // Form fields state
   const [startDateTime, setStartDateTime] = useState<string | null>(null);
@@ -52,6 +56,8 @@ const BookingPage = () => {
     const fetchSelected = async () => {
       if (!id) return;
       try {
+        await execute(()=> bookingsApi.getByVenueId(id))
+        console.log("existingBookings",existingBookings)
         setVenueLoading(true);
         const res = await publicVenuesApi.getById(id);
         if (res.success && res.data) {

@@ -85,7 +85,7 @@ export const signin = async (req: Request, res: Response, next: NextFunction): P
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 1 * 60 * 1000, // 15 minutes
+      maxAge: 15 * 60 * 1000, // 15 minutes
     });
 
     success(res, HTTP_STATUS.OK, result, 'Sign In Successful');

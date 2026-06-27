@@ -4,10 +4,12 @@ import { createBooking, getBookingAvailability } from '@/controllers/booking.con
 
 const router = Router();
 
-router.use(authMiddleware)
+// Public route: anyone can check venue availability
+router.get('/venues/:venueId', getBookingAvailability);
+
+// Protected routes require authentication
+router.use(authMiddleware);
 
 router.post('/', createBooking);
-router.get('/availability/:venueId',getBookingAvailability);
-
 
 export default router;

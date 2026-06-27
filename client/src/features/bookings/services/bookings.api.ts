@@ -5,7 +5,7 @@ export const bookingsApi = {
   createBooking: async (bookingData: BookingDetails): Promise<any> => {
     try {
       console.log(bookingData)
-      const res = await apiClient.post('/bookings', bookingData);
+      const res = await apiClient.post('/bookings/', bookingData);
       console.log("Booking Confirmed", res.data);
       return res.data;
     } catch (err: any) {
@@ -40,5 +40,17 @@ export const bookingsApi = {
   
   getMockBookings: (): any[] => {
     return JSON.parse(localStorage.getItem('mock_bookings') || '[]');
+  },
+    
+  getByVenueId : async (id: string): Promise<any> => {
+      try{
+
+      const res = await apiClient.get(`/bookings/venues/${id}`);
+      return res.data;
+      }
+      catch(err:any){
+        console.log(err);
+        return null;
+      }
   }
 };
