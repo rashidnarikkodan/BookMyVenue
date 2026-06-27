@@ -54,7 +54,7 @@ export const getBookingByVenueId = async (
     const today = new Date();
 
     const filter = {
-        venue: id,
+        venue: new mongoose.Types.ObjectId(id),
         startDateTime: {
             $gte: today,
         },

@@ -13,8 +13,6 @@ interface BookingSuccessModalProps {
 export default function BookingSuccessModal({
   successData,
   venue,
-  startDateTime,
-  endDateTime,
   onClose,
 }: BookingSuccessModalProps) {
   const navigate = useNavigate();
@@ -32,16 +30,6 @@ export default function BookingSuccessModal({
       minute: "2-digit",
     });
   };
-
-  const basePrice = venue.availability?.pricePerHour || 0;
-
-  const duration = startDateTime && endDateTime
-    ? Math.ceil((new Date(endDateTime).getTime() - new Date(startDateTime).getTime()) / 3600000)
-    : 0;
-
-  const subtotal = basePrice * duration;
-  const tax = Math.round(subtotal * 0.07);
-  const grandTotal = subtotal + tax;
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto">
@@ -114,7 +102,7 @@ export default function BookingSuccessModal({
           <div className="flex justify-between items-center border-t border-border/80 pt-2.5 text-sm font-bold text-foreground">
             <span>Total Calculated</span>
             <span className="text-primary text-base font-extrabold">
-              ₹{grandTotal.toLocaleString("en-IN")}
+              ₹{successData.totalAmount}
             </span>
           </div>
         </div>

@@ -8,8 +8,8 @@ import * as bookingRepo from "@/repositories/booking.repository"
 
 
 export const getBookingByVenueId = async (id: string) => {
-   const bookings = await bookingRepo.getBookingByVenueId(id)
-   return bookings
+  const bookings = await bookingRepo.getBookingByVenueId(id)
+  return bookings
 }
 
 export const createBookingService = async (userId: string, payload: CreateBookingPayload) => {
@@ -39,7 +39,12 @@ export const createBookingService = async (userId: string, payload: CreateBookin
   const venuePricePerHour = availability.pricePerHour;
   const durationInHours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
 
-  const totalAmount = durationInHours * venuePricePerHour;
+  let totalAmount = durationInHours * venuePricePerHour;
+
+  const gst = totalAmount * 0.18;
+  const platformFee = totalAmount * 0.12;
+
+  totalAmount += (gst + platformFee);
 
   const newBooking = await createBooking(userId, payload, totalAmount);
 

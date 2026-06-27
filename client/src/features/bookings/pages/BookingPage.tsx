@@ -24,7 +24,7 @@ const BookingPage = () => {
   const [venueLoading, setVenueLoading] = useState(false);
 
   //existing booking state
-  const {data:existingBookings,execute} = useAsyncFetch()
+  const {data:existingBookings,execute} = useAsyncFetch<any[]>()
 
   // Form fields state
   const [startDateTime, setStartDateTime] = useState<string | null>(null);
@@ -42,7 +42,7 @@ const BookingPage = () => {
   // Action states
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successData, setSuccessData] = useState<any | null>(null);
-
+  console.log(successData)
   // Auto fill logged in user
   useEffect(() => {
     if (user) {
@@ -56,8 +56,7 @@ const BookingPage = () => {
     const fetchSelected = async () => {
       if (!id) return;
       try {
-        await execute(()=> bookingsApi.getByVenueId(id))
-        console.log("existingBookings",existingBookings)
+        execute(()=> bookingsApi.getByVenueId(id))
         setVenueLoading(true);
         const res = await publicVenuesApi.getById(id);
         if (res.success && res.data) {
@@ -156,6 +155,7 @@ const BookingPage = () => {
               endDateTime={endDateTime}
               pricingUnit="hour"
               availability={selectedVenue.availability}
+              existingBookings={existingBookings}
               onChange={(start, end) => {
                 setStartDateTime(start);
                 setEndDateTime(end);
@@ -184,6 +184,7 @@ const BookingPage = () => {
               onPaymentMethodChange={setPaymentMethod}
               onSubmit={handleSubmitBooking}
               isSubmitting={isSubmitting}
+              existingBookings={existingBookings}
             />
           </div>
         </div>

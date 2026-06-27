@@ -8,6 +8,7 @@ type Props = {
   endDateTime: string | null;
   pricingUnit: "hour" | "day";
   availability?: AvailabilityConfig;
+  existingBookings?: any[] | null;
   onChange: (start: string | null, end: string | null) => void;
 };
 
@@ -16,6 +17,7 @@ const DateTimeSection: React.FC<Props> = ({
   endDateTime,
   pricingUnit,
   availability,
+  existingBookings,
   onChange,
 }) => {
   const [error, setError] = useState<string | null>(null);
@@ -50,6 +52,24 @@ const DateTimeSection: React.FC<Props> = ({
       return;
     }
 
+    // Overlap checks
+    if (existingBookings && existingBookings.length > 0) {
+      const hasOverlap = existingBookings.some((booking) => {
+        if (booking.bookingStatus === 'CANCELLED' || booking.bookingStatus === 'REFUNDED') {
+          return false;
+        }
+        const bStart = new Date(booking.startDateTime).getTime();
+        const bEnd = new Date(booking.endDateTime).getTime();
+        return start < bEnd && end > bStart;
+      });
+
+      if (hasOverlap) {
+        setError("The selected timeline overlaps with an existing booking.");
+        setDurationText("");
+        return;
+      }
+    }
+
     setError(null);
     const diffMs = end - start;
 
@@ -72,7 +92,7 @@ const DateTimeSection: React.FC<Props> = ({
       const days = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
       setDurationText(`${days} day${days > 1 ? "s" : ""}`);
     }
-  }, [startDateTime, endDateTime, pricingUnit, availability]);
+  }, [startDateTime, endDateTime, pricingUnit, availability, existingBookings]);
 
   const formatDayOfWeek = (dayNum: number): string => {
     const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -123,6 +143,7 @@ const DateTimeSection: React.FC<Props> = ({
           openingTime={availability?.openingTime}
           closingTime={availability?.closingTime}
           placeholder="Choose start date & time"
+          existingBookings={existingBookings}
         />
 
         <DateTimePicker
@@ -133,6 +154,7 @@ const DateTimeSection: React.FC<Props> = ({
           openingTime={availability?.openingTime}
           closingTime={availability?.closingTime}
           placeholder="Choose end date & time"
+          existingBookings={existingBookings}
           minDate={(() => {
             if (!startDateTime) return new Date();
             const minBookingDuration = availability?.minBookingDuration || 1;
