@@ -61,7 +61,7 @@ const PricingSection: React.FC<Props> = ({
 
     const diffMs = end - start;
     if (pricingUnit === "hour") {
-      const hrs = Math.ceil(diffMs / (1000 * 60 * 60));
+      const hrs = diffMs / (1000 * 60 * 60);
       setDuration(hrs);
     } else {
       const days = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
@@ -94,6 +94,17 @@ const PricingSection: React.FC<Props> = ({
     if (!startDateTime || !endDateTime) {
       alert("Please select dates first.");
       return;
+    }
+    if (venue.availability) {
+      const { minBookingDuration, maxBookingDuration } = venue.availability;
+      if (duration < minBookingDuration) {
+        alert(`Minimum booking duration is ${minBookingDuration} hour${minBookingDuration > 1 ? "s" : ""}.`);
+        return;
+      }
+      if (maxBookingDuration && duration > maxBookingDuration) {
+        alert(`Maximum booking duration is ${maxBookingDuration} hour${maxBookingDuration > 1 ? "s" : ""}.`);
+        return;
+      }
     }
     onSubmit();
   };
@@ -159,7 +170,7 @@ const PricingSection: React.FC<Props> = ({
               <div className="border-t border-border/60 pt-2 flex justify-between items-center">
                 <span className="text-muted font-medium">Total Duration:</span>
                 <span className="font-bold text-primary">
-                  {duration > 0 ? `${duration} ${durationUnit}${duration > 1 ? "s" : ""}` : "—"}
+                  {duration > 0 ? `${duration % 1 === 0 ? duration.toFixed(0) : duration.toFixed(1)} ${durationUnit}${duration !== 1 ? "s" : ""}` : "—"}
                 </span>
               </div>
             </div>
@@ -209,7 +220,20 @@ const PricingSection: React.FC<Props> = ({
             {duration > 0 && (
               <button
                 type="button"
-                onClick={() => setIsPaymentModalOpen(true)}
+                onClick={() => {
+                  if (venue.availability) {
+                    const { minBookingDuration, maxBookingDuration } = venue.availability;
+                    if (duration < minBookingDuration) {
+                      alert(`Minimum booking duration is ${minBookingDuration} hour${minBookingDuration > 1 ? "s" : ""}.`);
+                      return;
+                    }
+                    if (maxBookingDuration && duration > maxBookingDuration) {
+                      alert(`Maximum booking duration is ${maxBookingDuration} hour${maxBookingDuration > 1 ? "s" : ""}.`);
+                      return;
+                    }
+                  }
+                  setIsPaymentModalOpen(true);
+                }}
                 className="w-full bg-primary hover:bg-primary/90 text-white font-extrabold text-sm py-3.5 rounded-xl shadow-lg shadow-primary/20 flex items-center justify-center transition-all select-none hover:scale-[1.01] active:scale-[0.99] cursor-pointer uppercase tracking-wider"
               >
                 Confirm & Proceed to Pay (₹{grandTotal.toLocaleString("en-IN")})
