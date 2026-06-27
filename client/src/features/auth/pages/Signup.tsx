@@ -66,7 +66,7 @@ const Signup = () => {
         role,
       });
 
-      setRegistrationData(data.data.email, data.data.registrationToken);
+      setRegistrationData(data.data.email, data.data.verificationToken);
     } catch (err: any) {
       let msg = 'Something went wrong';
       if (err.response?.data?.message) {
@@ -101,14 +101,8 @@ const Signup = () => {
     }
   };
 
-  // OTP verified
-  const handleOtpSuccess = () => {
-    resetSignupFlow();
-    navigate('/signin');
-  };
-
   if (signupStep === 'otp') {
-    return <OtpVerification onSuccess={handleOtpSuccess} />;
+    return <OtpVerification mode="signup" />;
   }
 
   return (

@@ -122,7 +122,12 @@ const Signin = () => {
 
         {/* Password */}
         <div className="flex flex-col gap-1">
-          <label className="text-[10px] font-medium text-slate-400 tracking-wide">PASSWORD</label>
+          <div className="flex justify-between items-center">
+            <label className="text-[10px] font-medium text-slate-400 tracking-wide">PASSWORD</label>
+            <Link to="/forgot-password" className="text-[10px] font-medium text-primary-500 hover:text-primary-400 transition-colors">
+              Forgot password?
+            </Link>
+          </div>
           <div className="relative">
             <input
               type={showPassword ? 'text' : 'password'}
