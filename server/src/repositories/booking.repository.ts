@@ -172,7 +172,7 @@ export const updateBookingStatus = async (
     id: string,
     bookingStatus: BookingStatus
 ): Promise<IBooking | null> => {
-    return Booking.findByIdAndUpdate(id, { bookingStatus }, { new: true }) as Promise<IBooking | null>;
+  return Booking.findByIdAndUpdate(id, { bookingStatus }, { new: true }) as Promise<IBooking | null>;
 };
 
 export const cancelBooking = async (

@@ -12,4 +12,5 @@ router.use(authMiddleware);
 
 router.post('/', createBooking);
 
+
 export default router;
