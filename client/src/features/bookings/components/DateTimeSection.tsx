@@ -54,19 +54,20 @@ const DateTimeSection: React.FC<Props> = ({
     const diffMs = end - start;
 
     if (pricingUnit === "hour") {
-      const hours = Math.ceil(diffMs / (1000 * 60 * 60));
+      const hours = diffMs / (1000 * 60 * 60);
       
       // Check constraints
       if (availability) {
         const { minBookingDuration, maxBookingDuration } = availability;
         if (hours < minBookingDuration) {
-          setError(`Minimum booking duration is ${minBookingDuration} hours.`);
+          setError(`Minimum booking duration is ${minBookingDuration} hour${minBookingDuration > 1 ? "s" : ""}.`);
         } else if (maxBookingDuration && hours > maxBookingDuration) {
-          setError(`Maximum booking duration is ${maxBookingDuration} hours.`);
+          setError(`Maximum booking duration is ${maxBookingDuration} hour${maxBookingDuration > 1 ? "s" : ""}.`);
         }
       }
       
-      setDurationText(`${hours} hour${hours > 1 ? "s" : ""}`);
+      const formattedHours = hours % 1 === 0 ? hours.toFixed(0) : hours.toFixed(1);
+      setDurationText(`${formattedHours} hour${hours !== 1 ? "s" : ""}`);
     } else {
       const days = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
       setDurationText(`${days} day${days > 1 ? "s" : ""}`);
@@ -132,6 +133,11 @@ const DateTimeSection: React.FC<Props> = ({
           openingTime={availability?.openingTime}
           closingTime={availability?.closingTime}
           placeholder="Choose end date & time"
+          minDate={(() => {
+            if (!startDateTime) return new Date();
+            const minBookingDuration = availability?.minBookingDuration || 1;
+            return new Date(new Date(startDateTime).getTime() + minBookingDuration * 60 * 60 * 1000);
+          })()}
         />
       </div>
 
