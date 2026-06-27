@@ -59,8 +59,6 @@ export default function VenueCard({ venue }: VenueCardProps) {
           </div>
           <div className="flex items-center gap-0.5 text-sm font-bold text-primary">
             <IndianRupee size={14} />
-            {venue.pricing.amount.toLocaleString()}
-            <span className="text-[10px] font-medium text-muted ml-0.5">/{venue.pricing.unit}</span>
           </div>
         </div>
       </div>
