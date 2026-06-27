@@ -17,11 +17,7 @@ const AvatarUpload: React.FC<AvatarUploadProps> = ({
       <div className="relative group">
         <div className="w-28 h-28 rounded-full overflow-hidden border-2 border-border bg-muted/20 flex items-center justify-center">
           {avatarPreview ? (
-            <img
-              src={avatarPreview}
-              alt="Avatar"
-              className="w-full h-full object-cover"
-            />
+            <img src={avatarPreview} alt="Avatar" className="w-full h-full object-cover" />
           ) : (
             <UserIcon className="w-12 h-12 text-foreground/30" />
           )}
@@ -43,9 +39,7 @@ const AvatarUpload: React.FC<AvatarUploadProps> = ({
         />
       </div>
       <div>
-        <h4 className="text-base sm:text-lg font-semibold text-foreground">
-          Profile Picture
-        </h4>
+        <h4 className="text-base sm:text-lg font-semibold text-foreground">Profile Picture</h4>
         <p className="text-sm text-foreground/50 mt-1">JPG, PNG or GIF. Max 5MB.</p>
       </div>
     </div>

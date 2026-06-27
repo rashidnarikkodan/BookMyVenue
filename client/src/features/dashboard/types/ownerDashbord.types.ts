@@ -11,10 +11,16 @@ export type RevenueDistributionItem = {
   revenue: number;
 };
 
-export type StatCardItem = {
-  title: string;
-  value: string | number;
-  icon?: React.ReactNode;
+export type StatCardProps = {
+  data:
+    | [
+        {
+          title: string;
+          value: string | number;
+          icon?: React.ReactNode;
+        },
+      ]
+    | [];
 };
 
 export type UpcomingBookingItem = {
@@ -54,9 +60,9 @@ export type RevenueDistributionProps = {
   data: RevenueDistributionItem[];
 };
 
-export type StatCardProps = {
-  data: StatCardItem[];
-};
+// export type StatCardProps = {
+//   data: StatCardItem[];
+// };
 
 export type UpcomingBookingProps = {
   data: UpcomingBookingItem[];

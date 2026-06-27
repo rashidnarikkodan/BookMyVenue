@@ -71,15 +71,15 @@ function getColorScheme(title: string, index: number) {
 }
 
 export default function StatCards({ data }: StatCardProps) {
-  const displayData =
-    data && data.length > 0
-      ? data
-      : [
-          { title: 'Total Revenue', value: '--' },
-          { title: 'Total Bookings', value: '--' },
-          { title: 'Active Venues', value: '--' },
-          { title: 'Avg Rating', value: '--' },
-        ];
+  console.log('stats data', data);
+  const displayData = data
+    ? data
+    : [
+        { title: 'Total Revenue', value: '--' },
+        { title: 'Total Bookings', value: '--' },
+        { title: 'Active Venues', value: '--' },
+        { title: 'Avg Rating', value: '--' },
+      ];
 
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -88,7 +88,7 @@ export default function StatCards({ data }: StatCardProps) {
           key={stat.title}
           title={stat.title}
           value={stat.value}
-          icon={stat.icon}
+          icon={getIconForTitle(stat.title)}
           index={index}
         />
       ))}

@@ -42,8 +42,6 @@ const OwnerVenueDetails = () => {
 
   const venue = fetchResponse?.data;
 
-
-
   const loadVenue = () => {
     if (id) {
       fetchVenue(() => ownerVenuesApi.getById(id));

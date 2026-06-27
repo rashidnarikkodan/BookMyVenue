@@ -36,10 +36,10 @@ export default function VenueDetailsPage() {
 
   const formattedDate = venue.createdAt
     ? new Date(venue.createdAt).toLocaleString('en-IN', {
-        month: 'long',
-        day: 'numeric',
-        year: 'numeric',
-      })
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+    })
     : 'N/A';
 
   return (

@@ -50,9 +50,7 @@ const OwnerInfoSection: React.FC<OwnerInfoSectionProps> = ({
   return (
     <div className="space-y-8 border-t border-border pt-10">
       <div>
-        <h3 className="text-xl sm:text-2xl font-bold text-foreground">
-          Venue Owner Information
-        </h3>
+        <h3 className="text-xl sm:text-2xl font-bold text-foreground">Venue Owner Information</h3>
         <p className="text-sm text-foreground/50 mt-1.5">
           Submit documents, business address and bank details for revenue payouts.
         </p>

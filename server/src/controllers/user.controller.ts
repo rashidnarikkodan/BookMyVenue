@@ -98,7 +98,7 @@ export const getProfile = async (req: Request, res: Response, next: NextFunction
 
     const user = await User.findById(userId).select('-password -googleId');
     if (!user) {
-      throw new AppError('User not found', HTTP_STATUS.NOT_FOUND)
+      throw new AppError('User not found', HTTP_STATUS.NOT_FOUND);
     }
 
     let owner = null;
