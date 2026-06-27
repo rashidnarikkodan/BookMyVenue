@@ -62,8 +62,8 @@ export default function FeaturedSection({ venues, loading }: FeaturedSectionProp
           ? `${v.address.city}, ${v.address.state}`
           : fallbackFeatured[idx % 3].location,
         capacity: `${v.capacity} Guests`,
-        price: v.pricing
-          ? `₹${v.pricing.amount.toLocaleString('en-IN')} / ${v.pricing.unit === 'day' ? 'Day' : 'Hour'}`
+        price: v.availability?.pricePerHour !== undefined
+          ? `₹${v.availability.pricePerHour.toLocaleString('en-IN')} / Hour`
           : fallbackFeatured[idx % 3].price,
         rating: '4.9',
         tag: v.isElite ? 'Elite Choice' : 'Featured Space',

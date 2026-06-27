@@ -113,7 +113,7 @@ const OwnerVenueDetails = () => {
   }
 
   const categoryName =
-    typeof venue.categoryId === 'object' ? venue.categoryId.name : venue.categoryId;
+    venue.categoryId && typeof venue.categoryId === 'object' ? venue.categoryId.name : (venue.categoryId || 'Uncategorized');
   const statusClass = statusStyles[venue.verificationStatus] || statusStyles.pending;
 
   const formattedCreated = venue.createdAt

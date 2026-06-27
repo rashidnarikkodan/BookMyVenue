@@ -18,6 +18,6 @@ export const mainRoutes = {
     { path: 'venues/:id', element: <VenueDetailsPage /> },
     { path: 'account/profile', element: <UserProfile /> },
     { path: 'account/bookings', element: <>MyBookingsPage</> },
-    { path: '/booking', element: <BookingPage/>}
+    { path: '/bookings/:id', element: <BookingPage/>}
   ],
 };

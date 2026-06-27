@@ -14,6 +14,7 @@ import VenueDescription from '../components/Venue/details/VenueDescription';
 import VenueAmenities from '../components/Venue/details/VenueAmenities';
 import VenueLocation from '../components/Venue/details/VenueLocation';
 import VenuePricingCard from '../components/Venue/details/VenuePricingCard';
+import VenueAvailability from '../components/Venue/details/VenueAvailability';
 
 export default function VenueDetailsPage() {
   const { id } = useParams<{ id: string }>();
@@ -32,7 +33,7 @@ export default function VenueDetailsPage() {
   if (!venue) return <VenueNotFound />;
 
   const categoryName =
-    typeof venue.categoryId === 'object' ? venue.categoryId.name : venue.categoryId;
+    venue.categoryId && typeof venue.categoryId === 'object' ? venue.categoryId.name : (venue.categoryId || 'Uncategorized');
 
   const formattedDate = venue.createdAt
     ? new Date(venue.createdAt).toLocaleString('en-IN', {
@@ -63,7 +64,15 @@ export default function VenueDetailsPage() {
 
           <VenueDescription description={venue.description} />
           <VenueAmenities amenities={venue.amenities} />
-          <VenueLocation address={venue.address} />
+          <VenueAvailability
+            isAvailabilityConfigured={venue.isAvailabilityConfigured}
+            availability={venue.availability}
+          />
+          <VenueLocation 
+            address={venue.address}
+            coordinates={venue.location?.coordinates || []}
+            venueName={venue.name}
+          />
         </div>
 
         {/* Right Column — Sticky Sidebar */}
@@ -79,7 +88,8 @@ export default function VenueDetailsPage() {
           </div>
 
           <VenuePricingCard
-            pricing={venue.pricing}
+            venueId={venue._id}
+            pricePerHour={venue.availability?.pricePerHour || 0}
             capacity={venue.capacity}
             categoryName={categoryName}
             formattedDate={formattedDate}

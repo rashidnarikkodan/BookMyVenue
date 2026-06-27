@@ -15,6 +15,15 @@ export const createCategory = async (req: Request, res: Response, next: NextFunc
       throw new Error('Name is required');
     }
 
+    if (!req.file) {
+      throw new Error('Category image is required');
+    }
+
+    const maxSizeBytes = 2 * 1024 * 1024; // 2MB
+    if (req.file.size > maxSizeBytes) {
+      throw new Error('Image size must be less than 2MB');
+    }
+
     let image_public_id, imageUrl;
 
     if (tempFilePath) {
@@ -46,6 +55,13 @@ export const updateCategory = async (req: Request, res: Response, next: NextFunc
   let tempFilePath = req.file?.path;
   try {
     const { name, description } = req.body;
+
+    if (req.file) {
+      const maxSizeBytes = 2 * 1024 * 1024; // 2MB
+      if (req.file.size > maxSizeBytes) {
+        throw new Error('Image size must be less than 2MB');
+      }
+    }
 
     let image_public_id, imageUrl;
 

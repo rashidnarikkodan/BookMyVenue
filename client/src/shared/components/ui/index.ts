@@ -5,3 +5,4 @@ export { default as Notification } from './Notification';
 export { default as DashboardNavbar } from './DashboardNavbar';
 export { default as UserNavbar } from './UserNavbar';
 export { default as Pagination } from './Pagination';
+export { default as DateTimePicker } from './DateTimePicker';

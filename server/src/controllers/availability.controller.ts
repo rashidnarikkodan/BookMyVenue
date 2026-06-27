@@ -8,7 +8,7 @@ import success from '@/utils/response';
 // GET /owner/venues/:id/availability
 export const getAvailability = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { id: venueId } = req.params;
+    const venueId = req.params.id as string;
     const ownerId = req.user?.id;
 
     if (!ownerId) throw new AppError(MESSAGES.UNAUTHORIZED, HTTP_STATUS.UNAUTHORIZED);
@@ -24,7 +24,7 @@ export const getAvailability = async (req: Request, res: Response, next: NextFun
 // POST /owner/venues/:id/availability
 export const createAvailability = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { id: venueId } = req.params;
+    const venueId = req.params.id as string;
     const ownerId = req.user?.id;
     const data = req.body;
 
@@ -41,7 +41,7 @@ export const createAvailability = async (req: Request, res: Response, next: Next
 // PUT /owner/venues/:id/availability
 export const updateAvailability = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { id: venueId } = req.params;
+    const venueId = req.params.id as string;
     const ownerId = req.user?.id;
     const data = req.body;
 

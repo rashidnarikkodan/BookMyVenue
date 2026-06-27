@@ -57,8 +57,8 @@ export default function EliteVenuesSection({ venues, loading }: EliteVenuesSecti
         location: data[1].address
           ? `${data[1].address.city}, ${data[1].address.state}`
           : 'Kumarakom, Kerala',
-        price: data[1].pricing
-          ? `₹${data[1].pricing.amount.toLocaleString('en-IN')} / ${data[1].pricing.unit === 'day' ? 'Day' : 'Hour'}`
+        price: data[1].availability?.pricePerHour !== undefined
+          ? `₹${data[1].availability.pricePerHour.toLocaleString('en-IN')} / Hour`
           : '₹1,20,000 / Day',
       }
       : defaultTopVenue;
@@ -71,8 +71,8 @@ export default function EliteVenuesSection({ venues, loading }: EliteVenuesSecti
         location: data[2].address
           ? `${data[2].address.city}, ${data[2].address.state}`
           : 'Munnar, Kerala',
-        price: data[2].pricing
-          ? `₹${data[2].pricing.amount.toLocaleString('en-IN')} / ${data[2].pricing.unit === 'day' ? 'Day' : 'Hour'}`
+        price: data[2].availability?.pricePerHour !== undefined
+          ? `₹${data[2].availability.pricePerHour.toLocaleString('en-IN')} / Hour`
           : '₹85,000 / Day',
       }
       : defaultBottomVenue;

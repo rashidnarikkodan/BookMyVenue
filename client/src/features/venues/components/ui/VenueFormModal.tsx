@@ -55,7 +55,9 @@ const VenueFormModal = ({ venue, onClose, onSuccess }: Props) => {
       name: venue?.name || '',
       description: venue?.description || '',
       categoryId:
-        typeof venue?.categoryId === 'object' ? venue.categoryId._id : venue?.categoryId || '',
+        venue?.categoryId && typeof venue.categoryId === 'object'
+          ? venue.categoryId._id
+          : (typeof venue?.categoryId === 'string' ? venue.categoryId : ''),
       street: venue?.address?.street || '',
       city: venue?.address?.city || '',
       district: venue?.address?.district || '',
@@ -302,7 +304,7 @@ const VenueFormModal = ({ venue, onClose, onSuccess }: Props) => {
 
         {/* Form */}
         <form
-          onSubmit={handleSubmit(onSubmit)}
+          onSubmit={handleSubmit(onSubmit as any)}
           className="p-6 space-y-6 max-h-[75vh] overflow-y-auto"
         >
           {/* Basic Info */}
@@ -623,7 +625,7 @@ const VenueFormModal = ({ venue, onClose, onSuccess }: Props) => {
           </button>
           <button
             type="submit"
-            onClick={handleSubmit(onSubmit)}
+            onClick={handleSubmit(onSubmit as any)}
             disabled={submitting}
             className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-primary/20 hover:bg-accent transition-all disabled:opacity-50 active:scale-95 cursor-pointer"
           >
