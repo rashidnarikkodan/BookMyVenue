@@ -45,6 +45,10 @@ const envSchema = z.object({
   RESEND_COOLDOWN_SECONDS: z.coerce.number().default(60),
   MAX_VERIFY_ATTEMPTS: z.coerce.number().default(5),
   MAX_RESEND_COUNT: z.coerce.number().default(3),
+
+  // Razorpay
+  RAZORPAY_KEY_ID: z.string().min(1),
+  RAZORPAY_KEY_SECRET: z.string().min(1),
 });
 
 const env = envSchema.parse(process.env);

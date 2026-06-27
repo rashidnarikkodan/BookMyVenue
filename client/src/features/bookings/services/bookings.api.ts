@@ -37,6 +37,21 @@ export const bookingsApi = {
       };
     }
   },
+
+  cancelPendingBooking: async (bookingId: string): Promise<any> => {
+    const res = await apiClient.delete(`/bookings/pending/${bookingId}`);
+    return res.data;
+  },
+
+  verifyPayment: async (paymentData: {
+    razorpay_payment_id: string;
+    razorpay_order_id: string;
+    razorpay_signature: string;
+    bookingId: string;
+  }): Promise<any> => {
+    const res = await apiClient.post('/bookings/verify-payment', paymentData);
+    return res.data;
+  },
   
   getMockBookings: (): any[] => {
     return JSON.parse(localStorage.getItem('mock_bookings') || '[]');

@@ -220,7 +220,7 @@ const PricingSection: React.FC<Props> = ({
                   }
                 `}
               >
-                {hasOverlap ? "Time Slot Overlapped" : `Confirm & Proceed to Pay (₹${grandTotal.toLocaleString("en-IN")})`}
+                {hasOverlap ? "Time Slot Overlapped" : `Confirm & Proceed to Pay`}
               </button>
             )}
           </div>
