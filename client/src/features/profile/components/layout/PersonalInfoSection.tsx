@@ -28,9 +28,7 @@ const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
   return (
     <div className="space-y-8">
       <div>
-        <h3 className="text-xl sm:text-2xl font-bold text-foreground">
-          Personal Information
-        </h3>
+        <h3 className="text-xl sm:text-2xl font-bold text-foreground">Personal Information</h3>
         <p className="text-sm text-foreground/50 mt-1.5">
           Configure your primary contact and identification data.
         </p>
@@ -96,9 +94,7 @@ const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
               className="w-full pl-11 pr-4 py-3 rounded-xl border border-border bg-muted/20 text-sm sm:text-base text-foreground/60 cursor-not-allowed"
             />
           </div>
-          <span className="text-xs text-foreground/40">
-            Registered email cannot be modified.
-          </span>
+          <span className="text-xs text-foreground/40">Registered email cannot be modified.</span>
         </div>
 
         {/* Role (Read Only) */}

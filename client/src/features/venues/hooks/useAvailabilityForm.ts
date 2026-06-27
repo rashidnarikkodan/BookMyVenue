@@ -12,7 +12,7 @@ import { availabilitySchema, type AvailabilityFormValues } from '../schemas/avai
 export const useAvailabilityForm = (venueId?: string) => {
   const navigate = useNavigate();
   const owner = useAppStore((state) => state.owner);
-  
+
   const [venue, setVenue] = useState<Venue | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -40,7 +40,7 @@ export const useAvailabilityForm = (venueId?: string) => {
         // Fetch venue details first
         const venueRes = await ownerVenuesApi.getById(venueId);
         const venueData = venueRes.data;
-        
+
         if (venueData.ownerId !== owner?.userId) {
           toast.error('Unauthorized access');
           navigate('/owner/venues');
@@ -86,7 +86,7 @@ export const useAvailabilityForm = (venueId?: string) => {
     if (!venueId) return;
     try {
       setSaving(true);
-      
+
       const payload: AvailabilityConfig = {
         openingTime: data.openingTime,
         closingTime: data.closingTime,
@@ -103,12 +103,11 @@ export const useAvailabilityForm = (venueId?: string) => {
       } else {
         await ownerVenuesApi.createAvailability(venueId, payload);
         toast.success('Availability configured successfully');
-        setVenue((prev) => prev ? { ...prev, isAvailabilityConfigured: true } : prev);
+        setVenue((prev) => (prev ? { ...prev, isAvailabilityConfigured: true } : prev));
       }
-      
+
       // Navigate to owner venues listing page on success
       navigate('/owner/venues');
-      
     } catch (err: any) {
       toast.error(err?.response?.data?.message || 'Failed to save configuration');
     } finally {

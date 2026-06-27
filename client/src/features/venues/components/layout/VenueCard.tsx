@@ -113,7 +113,7 @@ const VenueCard = ({ venue, onEdit }: Props) => {
             <Pencil size={14} />
             Edit
           </button>
-          
+
           {venue.verificationStatus === 'approved' && (
             <button
               onClick={() => navigate(`/owner/venues/${venue._id}/availability`)}

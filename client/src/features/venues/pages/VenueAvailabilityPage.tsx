@@ -8,7 +8,7 @@ import { useAvailabilityForm } from '../hooks/useAvailabilityForm';
 const VenueAvailabilityPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  
+
   const {
     venue,
     loading,
@@ -52,32 +52,39 @@ const VenueAvailabilityPage = () => {
         {/* Form Container */}
         <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
           <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-8">
-            
             {/* Operating Hours Section */}
             <section className="space-y-4">
               <div className="flex items-center gap-2 border-b border-border pb-2">
                 <Clock className="text-primary" size={18} />
                 <h2 className="text-lg font-semibold text-foreground">Operating Hours</h2>
               </div>
-              
+
               <div className="grid gap-6 sm:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1.5">Opening Time</label>
+                  <label className="block text-sm font-medium text-foreground mb-1.5">
+                    Opening Time
+                  </label>
                   <input
                     type="time"
                     {...register('openingTime')}
                     className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                   />
-                  {errors.openingTime && <p className="text-xs text-error mt-1">{errors.openingTime.message}</p>}
+                  {errors.openingTime && (
+                    <p className="text-xs text-error mt-1">{errors.openingTime.message}</p>
+                  )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1.5">Closing Time</label>
+                  <label className="block text-sm font-medium text-foreground mb-1.5">
+                    Closing Time
+                  </label>
                   <input
                     type="time"
                     {...register('closingTime')}
                     className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                   />
-                  {errors.closingTime && <p className="text-xs text-error mt-1">{errors.closingTime.message}</p>}
+                  {errors.closingTime && (
+                    <p className="text-xs text-error mt-1">{errors.closingTime.message}</p>
+                  )}
                 </div>
               </div>
             </section>
@@ -88,7 +95,7 @@ const VenueAvailabilityPage = () => {
                 <CalendarDays className="text-primary" size={18} />
                 <h2 className="text-lg font-semibold text-foreground">Available Days</h2>
               </div>
-              
+
               <div>
                 <Controller
                   name="availableDays"
@@ -109,9 +116,11 @@ const VenueAvailabilityPage = () => {
                             }}
                             className={`
                               px-4 py-2 rounded-xl text-sm font-medium transition-all cursor-pointer
-                              ${isSelected 
-                                ? 'bg-primary text-white shadow-md shadow-primary/20' 
-                                : 'bg-background border border-border text-muted hover:border-primary/50 hover:text-foreground'}
+                              ${
+                                isSelected
+                                  ? 'bg-primary text-white shadow-md shadow-primary/20'
+                                  : 'bg-background border border-border text-muted hover:border-primary/50 hover:text-foreground'
+                              }
                             `}
                           >
                             {day.label}
@@ -121,7 +130,9 @@ const VenueAvailabilityPage = () => {
                     </div>
                   )}
                 />
-                {errors.availableDays && <p className="text-xs text-error mt-1.5">{errors.availableDays.message}</p>}
+                {errors.availableDays && (
+                  <p className="text-xs text-error mt-1.5">{errors.availableDays.message}</p>
+                )}
               </div>
             </section>
 
@@ -131,43 +142,57 @@ const VenueAvailabilityPage = () => {
                 <Clock className="text-primary" size={18} />
                 <h2 className="text-lg font-semibold text-foreground">Booking Rules</h2>
               </div>
-              
+
               <div className="grid gap-6 sm:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1.5">Min Duration (Hours)</label>
+                  <label className="block text-sm font-medium text-foreground mb-1.5">
+                    Min Duration (Hours)
+                  </label>
                   <input
                     type="number"
                     {...register('minBookingDuration', { valueAsNumber: true })}
                     className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                     min="1"
                   />
-                  {errors.minBookingDuration && <p className="text-xs text-error mt-1">{errors.minBookingDuration.message}</p>}
+                  {errors.minBookingDuration && (
+                    <p className="text-xs text-error mt-1">{errors.minBookingDuration.message}</p>
+                  )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1.5">Max Duration (Hours) <span className="text-muted font-normal">(Optional)</span></label>
+                  <label className="block text-sm font-medium text-foreground mb-1.5">
+                    Max Duration (Hours) <span className="text-muted font-normal">(Optional)</span>
+                  </label>
                   <input
                     type="number"
-                    {...register('maxBookingDuration', { 
-                      setValueAs: (v) => v === '' ? null : parseInt(v, 10) 
+                    {...register('maxBookingDuration', {
+                      setValueAs: (v) => (v === '' ? null : parseInt(v, 10)),
                     })}
                     className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                     placeholder="No limit"
                     min="1"
                   />
-                  {errors.maxBookingDuration && <p className="text-xs text-error mt-1">{errors.maxBookingDuration.message}</p>}
+                  {errors.maxBookingDuration && (
+                    <p className="text-xs text-error mt-1">{errors.maxBookingDuration.message}</p>
+                  )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1.5">Price Per Hour (₹)</label>
+                  <label className="block text-sm font-medium text-foreground mb-1.5">
+                    Price Per Hour (₹)
+                  </label>
                   <input
                     type="number"
                     {...register('pricePerHour', { valueAsNumber: true })}
                     className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                     min="1"
                   />
-                  {errors.pricePerHour && <p className="text-xs text-error mt-1">{errors.pricePerHour.message}</p>}
+                  {errors.pricePerHour && (
+                    <p className="text-xs text-error mt-1">{errors.pricePerHour.message}</p>
+                  )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1.5">Buffer Time (Minutes)</label>
+                  <label className="block text-sm font-medium text-foreground mb-1.5">
+                    Buffer Time (Minutes)
+                  </label>
                   <input
                     type="number"
                     {...register('bufferTime', { valueAsNumber: true })}
@@ -175,8 +200,12 @@ const VenueAvailabilityPage = () => {
                     placeholder="Time between bookings"
                     min="0"
                   />
-                  <p className="text-[10px] text-muted mt-1">Cleaning/setup time required between bookings</p>
-                  {errors.bufferTime && <p className="text-xs text-error mt-1">{errors.bufferTime.message}</p>}
+                  <p className="text-[10px] text-muted mt-1">
+                    Cleaning/setup time required between bookings
+                  </p>
+                  {errors.bufferTime && (
+                    <p className="text-xs text-error mt-1">{errors.bufferTime.message}</p>
+                  )}
                 </div>
               </div>
             </section>

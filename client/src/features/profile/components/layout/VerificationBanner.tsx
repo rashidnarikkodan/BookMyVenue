@@ -18,9 +18,9 @@ const VerificationBanner: React.FC<VerificationBannerProps> = ({ role, owner }) 
           <div>
             <h4 className="font-semibold text-base">Onboarding Required</h4>
             <p className="mt-1.5 text-sm sm:text-base text-foreground/75 leading-relaxed">
-              You are registered as a Venue Owner. Please complete the **Venue Owner Info**
-              section below to submit your details for verification. Once approved, you can
-              start listing venues.
+              You are registered as a Venue Owner. Please complete the **Venue Owner Info** section
+              below to submit your details for verification. Once approved, you can start listing
+              venues.
             </p>
           </div>
         </div>
@@ -52,8 +52,8 @@ const VerificationBanner: React.FC<VerificationBannerProps> = ({ role, owner }) 
           <div>
             <h4 className="font-semibold text-base">Verification Rejected</h4>
             <p className="mt-1.5 text-sm sm:text-base text-foreground/75 leading-relaxed">
-              Your verification details were rejected. Please review the reason below, update
-              your details, and resubmit for approval.
+              Your verification details were rejected. Please review the reason below, update your
+              details, and resubmit for approval.
             </p>
             {owner.rejectionReason && (
               <div className="mt-4 p-4 rounded-xl bg-error/10 border border-error/20 text-xs sm:text-sm font-semibold text-error">

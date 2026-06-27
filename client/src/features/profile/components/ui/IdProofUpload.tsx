@@ -32,9 +32,7 @@ const IdProofUpload: React.FC<IdProofUploadProps> = ({
 
   return (
     <div className="space-y-2.5">
-      <label className="text-sm font-semibold text-foreground/80">
-        ID Proof (PDF, JPG, PNG)
-      </label>
+      <label className="text-sm font-semibold text-foreground/80">ID Proof (PDF, JPG, PNG)</label>
       <div className="flex flex-wrap items-center gap-4">
         <button
           type="button"
@@ -55,7 +53,7 @@ const IdProofUpload: React.FC<IdProofUploadProps> = ({
         {idProofName ? (
           <div className="flex items-center gap-3 p-2 border border-border rounded-xl bg-muted/10 max-w-xs sm:max-w-md">
             {/* Preview Thumbnail */}
-            <div 
+            <div
               onClick={handlePreviewClick}
               className="relative w-12 h-12 rounded-lg overflow-hidden border border-border bg-muted/20 flex items-center justify-center cursor-pointer group shrink-0"
             >
@@ -92,11 +90,7 @@ const IdProofUpload: React.FC<IdProofUploadProps> = ({
 
             {/* Modal for viewing image */}
             {idProofOpen && !isPdf && idProofPreview && (
-              <ViewImage
-                url={idProofPreview}
-                title="Id Proof of user"
-                setOpen={setIdProofOpen}
-              />
+              <ViewImage url={idProofPreview} title="Id Proof of user" setOpen={setIdProofOpen} />
             )}
           </div>
         ) : (

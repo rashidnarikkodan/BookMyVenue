@@ -19,13 +19,14 @@ function formatTimeAgo(date: Date): string {
 // OWNER DASHBOARD SERVICE
 export async function ownerDashboardService(ownerId: string): Promise<OwnerDashboard> {
   const approvedVenues = await getApprovedVenues(ownerId);
+  console.log('active venues', approvedVenues);
 
   return {
     statCardData: [
-      {
-        title: 'Approved Venues',
-        value: approvedVenues,
-      },
+      { title: 'Total Revenue', value: 0 },
+      { title: 'Total Bookings', value: 0 },
+      { title: 'Active Venues', value: approvedVenues },
+      { title: 'Avg Rating', value: 0 },
     ],
 
     revenueChartData: [],

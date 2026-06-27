@@ -34,16 +34,25 @@ export const createAvailability = async (
   }
 
   if (venue.verificationStatus !== 'approved') {
-    throw new AppError('Venue must be approved before configuring availability', HTTP_STATUS.BAD_REQUEST);
+    throw new AppError(
+      'Venue must be approved before configuring availability',
+      HTTP_STATUS.BAD_REQUEST
+    );
   }
 
   if (venue.isDeleted) {
-    throw new AppError('Cannot configure availability for a deleted venue', HTTP_STATUS.BAD_REQUEST);
+    throw new AppError(
+      'Cannot configure availability for a deleted venue',
+      HTTP_STATUS.BAD_REQUEST
+    );
   }
 
   const existingAvailability = await availabilityRepository.getAvailabilityByVenueId(venueId);
   if (existingAvailability) {
-    throw new AppError('Availability configuration already exists for this venue', HTTP_STATUS.BAD_REQUEST);
+    throw new AppError(
+      'Availability configuration already exists for this venue',
+      HTTP_STATUS.BAD_REQUEST
+    );
   }
 
   return await availabilityRepository.createAvailability(venueId, data);
@@ -65,11 +74,17 @@ export const updateAvailability = async (
   }
 
   if (venue.verificationStatus !== 'approved') {
-    throw new AppError('Venue must be approved before configuring availability', HTTP_STATUS.BAD_REQUEST);
+    throw new AppError(
+      'Venue must be approved before configuring availability',
+      HTTP_STATUS.BAD_REQUEST
+    );
   }
 
   if (venue.isDeleted) {
-    throw new AppError('Cannot configure availability for a deleted venue', HTTP_STATUS.BAD_REQUEST);
+    throw new AppError(
+      'Cannot configure availability for a deleted venue',
+      HTTP_STATUS.BAD_REQUEST
+    );
   }
 
   const availability = await availabilityRepository.updateAvailability(venueId, data);

@@ -1,6 +1,5 @@
 import { Users, Building2, CalendarDays, IndianRupee, ArrowUpRight } from 'lucide-react';
 
-
 function getColorScheme(index: number) {
   if (index === 0) {
     return {
