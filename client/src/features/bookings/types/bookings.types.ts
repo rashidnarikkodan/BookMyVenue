@@ -1,4 +1,3 @@
-import type { Venue } from '@/features/venues/types/venues.types';
 
 export interface Addon {
   id: string;

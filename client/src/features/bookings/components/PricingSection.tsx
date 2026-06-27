@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { CreditCard, QrCode, Landmark, ShieldCheck, HelpCircle } from "lucide-react";
+import { CreditCard, QrCode, Landmark, ShieldCheck } from "lucide-react";
 import type { Venue } from "@/features/venues/types/venues.types";
 import type { Addon } from "../types/bookings.types";
 
@@ -34,10 +34,8 @@ const PricingSection: React.FC<Props> = ({
   const [durationUnit, setDurationUnit] = useState<"hour" | "day">("day");
   const [cardError, setCardError] = useState<string | null>(null);
 
-  const pricingUnit = venue?.isAvailabilityConfigured ? "hour" : (venue?.pricing?.unit === "hour" ? "hour" : "day");
-  const priceRate = venue?.isAvailabilityConfigured 
-    ? (venue.availability?.pricePerHour || 1000) 
-    : (venue?.pricing?.amount || 5000);
+  const pricingUnit = "hour";
+  const priceRate = venue?.availability?.pricePerHour || 0;
 
   useEffect(() => {
     setDurationUnit(pricingUnit);
@@ -189,7 +187,7 @@ const PricingSection: React.FC<Props> = ({
               )}
               <div className="space-y-0.5">
                 <span className="text-xs font-semibold text-primary block uppercase tracking-wide">
-                  {typeof venue.categoryId === "object" ? venue.categoryId.name : "Venue"}
+                  {venue.categoryId && typeof venue.categoryId === "object" ? venue.categoryId.name : "Venue"}
                 </span>
                 <span className="text-sm font-bold text-foreground block line-clamp-1">{venue.name}</span>
                 <span className="text-xs text-muted block line-clamp-1">

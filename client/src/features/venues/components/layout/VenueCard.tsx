@@ -20,7 +20,7 @@ const VenueCard = ({ venue, onEdit }: Props) => {
   const isApproved = owner?.verificationStatus === 'approved';
 
   const categoryName =
-    typeof venue.categoryId === 'object' ? venue.categoryId.name : 'Uncategorized';
+    venue.categoryId && typeof venue.categoryId === 'object' ? venue.categoryId.name : 'Uncategorized';
 
   const statusClass = statusStyles[venue.verificationStatus] || statusStyles.pending;
 

@@ -17,6 +17,8 @@ import {
   Users,
   IndianRupee,
   SlidersHorizontal,
+  Crown,
+  Star,
 } from 'lucide-react';
 
 const statusStyles: Record<string, string> = {
@@ -210,7 +212,7 @@ const AdminVenuesList = () => {
           <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {venues.map((venue) => {
               const categoryName =
-                typeof venue.categoryId === 'object' ? venue.categoryId.name : 'Uncategorized';
+                venue.categoryId && typeof venue.categoryId === 'object' ? venue.categoryId.name : 'Uncategorized';
               const statusClass = statusStyles[venue.verificationStatus] || statusStyles.pending;
 
               // Owner info from populated field
@@ -236,6 +238,31 @@ const AdminVenuesList = () => {
                         <MapPin size={32} className="stroke-[1.2]" />
                       </div>
                     )}
+
+                    {/* Elite/Featured Badges */}
+                    <div className="absolute top-3 left-3 flex flex-col gap-1 z-10">
+                      {venue.isElite && (
+                        <span className="inline-flex items-center gap-0.5 rounded-lg bg-amber-500 text-white px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wide shadow-sm border border-amber-400">
+                          <Crown size={9} className="fill-current" /> Elite
+                        </span>
+                      )}
+                      {venue.isFeatured && (
+                        <span className="inline-flex items-center gap-0.5 rounded-lg bg-blue-500 text-white px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wide shadow-sm border border-blue-400">
+                          <Star size={9} className="fill-current" /> Featured
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Active/Inactive Badge */}
+                    <div className="absolute bottom-3 left-3 z-10">
+                      <span className={`inline-flex items-center rounded-lg px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wide border shadow-sm ${
+                        venue.isActive 
+                          ? 'bg-emerald-500 border-emerald-400 text-white' 
+                          : 'bg-zinc-500 border-zinc-400 text-white'
+                      }`}>
+                        {venue.isActive ? 'Active' : 'Inactive'}
+                      </span>
+                    </div>
 
                     <span
                       className={`absolute top-3 right-3 inline-flex items-center rounded-lg border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${statusClass}`}

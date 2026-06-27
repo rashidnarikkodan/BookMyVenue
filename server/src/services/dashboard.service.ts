@@ -4,6 +4,7 @@ import User from '@/models/user.model';
 import Venue from '@/models/venue.model';
 import Category from '@/models/category.model';
 import Owner from '@/models/owner.model';
+import Availability from '@/models/availability.model';
 
 function formatTimeAgo(date: Date): string {
   const seconds = Math.floor((new Date().getTime() - new Date(date).getTime()) / 1000);
@@ -82,13 +83,21 @@ export async function adminDashboardService() {
 
   // 3. Platform Leaders
   const platformLeaders: any[] = [];
-  const topRevenueVenue = await Venue.findOne().sort({ 'pricing.amount': -1 });
+  const topAvailability = await Availability.findOne().sort({ pricePerHour: -1 });
+  let topRevenueVenue = null;
+  if (topAvailability) {
+    topRevenueVenue = await Venue.findById(topAvailability.venueId).populate('availability');
+  } else {
+    topRevenueVenue = await Venue.findOne().populate('availability');
+  }
+
   if (topRevenueVenue) {
+    const price = (topRevenueVenue as any).availability?.pricePerHour || 0;
     platformLeaders.push({
       rank: 1,
       title: 'Top Revenue Venue',
       name: topRevenueVenue.name,
-      metric: `₹${topRevenueVenue.pricing.amount.toLocaleString()} / ${topRevenueVenue.pricing.unit}`,
+      metric: `₹${price.toLocaleString()} / Hour`,
     });
   }
 

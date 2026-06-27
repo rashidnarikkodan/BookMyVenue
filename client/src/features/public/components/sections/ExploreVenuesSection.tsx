@@ -102,7 +102,7 @@ export default function ExploreVenuesSection({ districts, loading }: ExploreVenu
     if (loading || !mapRef.current || mapInstance.current) return;
 
     // Center on Kochi initially with zoom level 8 (covers Kerala region nicely)
-    const initialCoords = districts[0] ? getLeafletCoords(districts[0].coordinates) : [9.9312, 76.2673];
+    const initialCoords = districts[0] ? (getLeafletCoords(districts[0].coordinates) as L.LatLngExpression) : ([9.9312, 76.2673] as L.LatLngExpression);
     const map = L.map(mapRef.current, {
       zoomControl: true,
       scrollWheelZoom: true,
@@ -387,7 +387,7 @@ export default function ExploreVenuesSection({ districts, loading }: ExploreVenu
                         </h4>
                         <div className="flex items-center gap-1 text-[10px] text-zinc-500 dark:text-zinc-400 mt-1">
                           <MapPin className="w-3 h-3 text-[#e21a47]" />
-                          <span>{venue.address?.city || activeDistrict.name}</span>
+                          <span>{venue.address?.city || activeDistrict?.name}</span>
                         </div>
                       </div>
 
@@ -399,8 +399,7 @@ export default function ExploreVenuesSection({ districts, loading }: ExploreVenu
                           </span>
                           <span className="text-zinc-300 dark:text-zinc-700">|</span>
                           <span className="text-[#e21a47] font-bold">
-                            ₹{venue.pricing?.amount.toLocaleString('en-IN')} /{' '}
-                            {venue.pricing?.unit === 'day' ? 'Day' : 'Hr'}
+                            ₹{(venue.availability?.pricePerHour || 0).toLocaleString('en-IN')} / Hr
                           </span>
                         </div>
                         <Link

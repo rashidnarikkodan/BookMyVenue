@@ -2,13 +2,29 @@ import React, { useEffect, useState } from 'react';
 import { categoriesApi } from '../../services/categories.api';
 import type { Category } from '../../types';
 import { useAsyncFetch } from '@/shared/hooks/useAsyncFetch';
-import { X, Upload } from 'lucide-react';
+import { X, Upload, Info } from 'lucide-react';
 import { toast } from 'sonner';
 
 type Props = {
   category?: Category | null;
   onClose: () => void;
   onSuccess: () => void;
+};
+
+// Helper function to read image dimensions
+const checkImageDimensions = (file: File): Promise<{ width: number; height: number }> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.src = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(img.src);
+      resolve({ width: img.width, height: img.height });
+    };
+    img.onerror = (err) => {
+      URL.revokeObjectURL(img.src);
+      reject(err);
+    };
+  });
 };
 
 const AddEditModal = ({ category, onClose, onSuccess }: Props) => {
@@ -46,10 +62,30 @@ const AddEditModal = ({ category, onClose, onSuccess }: Props) => {
     return () => URL.revokeObjectURL(url);
   }, [imageFile]);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0] ?? null;
     if (file) {
-      setImageFile(file);
+      // 1. Check size (max 2MB)
+      const maxSizeBytes = 2 * 1024 * 1024;
+      if (file.size > maxSizeBytes) {
+        toast.error('Image size must be less than 2MB');
+        event.target.value = '';
+        return;
+      }
+
+      // 2. Check orientation
+      try {
+        const dimensions = await checkImageDimensions(file);
+        if (dimensions.height <= dimensions.width) {
+          toast.error('Image must be vertical (height must be greater than width)');
+          event.target.value = '';
+          return;
+        }
+        setImageFile(file);
+      } catch (err) {
+        toast.error('Could not verify image dimensions');
+        event.target.value = '';
+      }
     }
   };
 
@@ -63,7 +99,7 @@ const AddEditModal = ({ category, onClose, onSuccess }: Props) => {
     }
   };
 
-  const handleDrop = (e: React.DragEvent) => {
+  const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
@@ -71,7 +107,24 @@ const AddEditModal = ({ category, onClose, onSuccess }: Props) => {
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const file = e.dataTransfer.files[0];
       if (file.type.startsWith('image/')) {
-        setImageFile(file);
+        // 1. Check size (max 2MB)
+        const maxSizeBytes = 2 * 1024 * 1024;
+        if (file.size > maxSizeBytes) {
+          toast.error('Image size must be less than 2MB');
+          return;
+        }
+
+        // 2. Check orientation
+        try {
+          const dimensions = await checkImageDimensions(file);
+          if (dimensions.height <= dimensions.width) {
+            toast.error('Image must be vertical (height must be greater than width)');
+            return;
+          }
+          setImageFile(file);
+        } catch (err) {
+          toast.error('Could not verify image dimensions');
+        }
       } else {
         toast.error('Please upload an image file');
       }
@@ -83,6 +136,12 @@ const AddEditModal = ({ category, onClose, onSuccess }: Props) => {
 
     if (!name.trim()) {
       toast.error('Category name is required');
+      return;
+    }
+
+    // Enforce that image is required for new categories
+    if (!isEdit && !imageFile) {
+      toast.error('Category image is required when creating a new category');
       return;
     }
 
@@ -114,7 +173,7 @@ const AddEditModal = ({ category, onClose, onSuccess }: Props) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 overflow-y-auto animate-in fade-in duration-200">
       <div className="w-full max-w-4xl rounded-3xl border border-border bg-card p-6 shadow-2xl animate-in zoom-in-95 duration-200">
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">
@@ -140,32 +199,44 @@ const AddEditModal = ({ category, onClose, onSuccess }: Props) => {
         {/* Form */}
         <form onSubmit={handleSubmit} className="grid gap-6 md:grid-cols-[1.2fr_1fr]">
           {/* Left Panel: Fields */}
-          <div className="space-y-5">
-            <div>
-              <label className="mb-2 block text-xs font-bold text-foreground uppercase tracking-wider">
-                Category Name <span className="text-primary">*</span>
-              </label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="e.g. Banquet Halls"
-                maxLength={100}
-                className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted/65 outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
-              />
-            </div>
+          <div className="space-y-5 flex flex-col justify-between">
+            <div className="space-y-5">
+              <div>
+                <label className="mb-2 block text-xs font-bold text-foreground uppercase tracking-wider">
+                  Category Name <span className="text-primary">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="e.g. Banquet Halls"
+                  maxLength={100}
+                  className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted/65 outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                />
+              </div>
 
-            <div>
-              <label className="mb-2 block text-xs font-bold text-foreground uppercase tracking-wider">
-                Description
-              </label>
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Provide a detailed description of the category..."
-                maxLength={500}
-                className="min-h-[140px] w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted/65 outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 resize-y"
-              />
+              <div>
+                <label className="mb-2 block text-xs font-bold text-foreground uppercase tracking-wider">
+                  Description
+                </label>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Provide a detailed description of the category..."
+                  maxLength={500}
+                  className="min-h-[140px] w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted/65 outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 resize-y"
+                />
+              </div>
+
+              {/* Requirement Alert Banner */}
+              <div className="bg-primary/5 border border-primary/20 rounded-xl p-3.5 flex items-start gap-2.5">
+                <Info size={16} className="text-primary shrink-0 mt-0.5" />
+                <div className="text-xs text-muted space-y-1">
+                  <span className="font-bold text-primary block">Image Guidelines:</span>
+                  <p>1. Maximum allowed image file size is <span className="font-semibold text-foreground">2MB</span>.</p>
+                  <p>2. Image orientation must be <span className="font-semibold text-foreground">Vertical (Portrait)</span> where height is greater than width.</p>
+                </div>
+              </div>
             </div>
 
             {/* Actions */}
@@ -195,23 +266,23 @@ const AddEditModal = ({ category, onClose, onSuccess }: Props) => {
           </div>
 
           {/* Right Panel: Image Upload & Preview */}
-          <div className="flex flex-col rounded-2xl border border-border bg-surface p-4">
-            <h3 className="mb-3 text-xs font-bold text-foreground uppercase tracking-wider">
-              Category Image
+          <div className="flex flex-col rounded-2xl border border-border bg-surface p-5 items-center justify-center">
+            <h3 className="mb-4 text-xs font-bold text-foreground uppercase tracking-wider self-start">
+              Category Image {!isEdit && <span className="text-primary">*</span>}
             </h3>
 
-            {/* Drag & Drop Zone */}
+            {/* Drag & Drop Zone - Strictly 3:4 aspect ratio box */}
             <div
               onDragEnter={handleDrag}
               onDragOver={handleDrag}
               onDragLeave={handleDrag}
               onDrop={handleDrop}
               className={`
-                relative flex flex-1 flex-col items-center justify-center rounded-xl border-2 border-dashed p-6 text-center transition-all cursor-pointer min-h-[260px]
+                relative flex flex-col items-center justify-center rounded-2xl border-2 border-dashed text-center transition-all cursor-pointer h-[360px] w-[270px] overflow-hidden shadow-inner
                 ${
                   dragActive
-                    ? 'border-primary bg-primary/5'
-                    : 'border-border hover:bg-background/40'
+                    ? 'border-primary bg-primary/5 scale-[1.02]'
+                    : 'border-border bg-background/30 hover:bg-background/60 hover:border-primary/50'
                 }
               `}
             >
@@ -220,7 +291,7 @@ const AddEditModal = ({ category, onClose, onSuccess }: Props) => {
                 accept="image/*"
                 id="file-upload"
                 onChange={handleFileChange}
-                className="absolute inset-0 opacity-0 cursor-pointer"
+                className="absolute inset-0 opacity-0 cursor-pointer z-10"
               />
 
               {previewUrl ? (
@@ -228,23 +299,24 @@ const AddEditModal = ({ category, onClose, onSuccess }: Props) => {
                   <img
                     src={previewUrl}
                     alt="Preview"
-                    className="h-[220px] w-full rounded-lg object-cover shadow-sm"
+                    className="h-full w-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-black/40 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Upload className="h-8 w-8 text-white animate-bounce" />
-                    <span className="text-white text-xs font-semibold ml-2">Change Image</span>
+                  <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <Upload className="h-8 w-8 text-white animate-bounce mb-2" />
+                    <span className="text-white text-xs font-bold">Replace Image</span>
+                    <span className="text-white/60 text-[10px] mt-1">Drag new file or click</span>
                   </div>
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center gap-3">
-                  <div className="rounded-full bg-background p-3 text-muted border border-border">
-                    <Upload size={22} />
+                <div className="flex flex-col items-center justify-center p-6 gap-3">
+                  <div className="rounded-full bg-background p-3.5 text-muted border border-border shadow-sm">
+                    <Upload size={22} className="text-muted/80" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-foreground">Upload an image</p>
-                    <p className="text-xs text-muted mt-1">Drag and drop, or click to browse</p>
-                    <p className="text-[10px] text-muted/65 mt-2">
-                      Supports JPG, PNG, GIF up to 5MB
+                    <p className="text-sm font-semibold text-foreground">Upload category cover</p>
+                    <p className="text-xs text-muted mt-1 leading-relaxed">Drag & drop or click to browse</p>
+                    <p className="text-[10px] text-muted/60 mt-3 font-medium px-2">
+                      Vertical JPEG/PNG up to 2MB
                     </p>
                   </div>
                 </div>

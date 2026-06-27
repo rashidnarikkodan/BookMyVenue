@@ -120,9 +120,16 @@ const DateTimeSection: React.FC<Props> = ({
           <div className="relative">
             <input
               type="datetime-local"
-              className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+              className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all cursor-pointer"
               value={startDateTime || ""}
               onChange={(e) => onChange(e.target.value || null, endDateTime)}
+              onClick={(e) => {
+                try {
+                  e.currentTarget.showPicker();
+                } catch (err) {
+                  console.warn("showPicker is not supported in this browser", err);
+                }
+              }}
             />
           </div>
         </div>
@@ -134,9 +141,16 @@ const DateTimeSection: React.FC<Props> = ({
           <div className="relative">
             <input
               type="datetime-local"
-              className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+              className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all cursor-pointer"
               value={endDateTime || ""}
               onChange={(e) => onChange(startDateTime, e.target.value || null)}
+              onClick={(e) => {
+                try {
+                  e.currentTarget.showPicker();
+                } catch (err) {
+                  console.warn("showPicker is not supported in this browser", err);
+                }
+              }}
             />
           </div>
         </div>
