@@ -13,19 +13,11 @@ export interface BookingDetails {
   startDateTime: string | null;
   endDateTime: string | null;
   guests: number;
-  addOns: Addon[];
   contactName: string;
   contactEmail: string;
   contactPhone: string;
   specialRequests: string;
-  paymentMethod: 'card' | 'upi' | 'cash';
-  paymentDetails?: {
-    cardNumber?: string;
-    cardExpiry?: string;
-    cardCvv?: string;
-    cardHolder?: string;
-    upiId?: string;
-  };
+  paymentMethod: 'razorpay' | 'wallet' | 'cash';
   guestList?: any[];
   guestFileName?: string;
 }

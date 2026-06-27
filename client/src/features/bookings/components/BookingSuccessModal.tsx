@@ -1,15 +1,12 @@
 import { Link, useNavigate } from "react-router-dom";
 import { CheckCircle2, Printer, ExternalLink } from "lucide-react";
 import type { Venue } from "@/features/venues/types/venues.types";
-import type { Addon } from "../types/bookings.types";
 
 interface BookingSuccessModalProps {
   successData: any;
   venue: Venue;
   startDateTime: string | null;
   endDateTime: string | null;
-  guests: number;
-  selectedAddons: Addon[];
   onClose: () => void;
 }
 
@@ -18,8 +15,6 @@ export default function BookingSuccessModal({
   venue,
   startDateTime,
   endDateTime,
-  guests,
-  selectedAddons,
   onClose,
 }: BookingSuccessModalProps) {
   const navigate = useNavigate();
@@ -38,33 +33,32 @@ export default function BookingSuccessModal({
     });
   };
 
-  // Pricing calculation logic
-  const addonsTotal = selectedAddons.reduce((sum, a) => {
-    const addonCost = a.priceType === "perHead" ? a.price * guests : a.price;
-    return sum + addonCost;
-  }, 0);
-
   const basePrice = venue.availability?.pricePerHour || 0;
 
   const duration = startDateTime && endDateTime
     ? Math.ceil((new Date(endDateTime).getTime() - new Date(startDateTime).getTime()) / 3600000)
     : 0;
 
-  const subtotal = addonsTotal + basePrice * duration;
+  const subtotal = basePrice * duration;
   const tax = Math.round(subtotal * 0.07);
   const grandTotal = subtotal + tax;
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-card border border-border max-w-lg w-full rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 relative overflow-hidden my-8 animate-in fade-in zoom-in-95 duration-300">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto">
+      <div className="bg-card border border-border w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 lg:p-8 shadow-2xl space-y-5 sm:space-y-6 relative overflow-hidden sm:my-8 animate-in fade-in slide-in-from-bottom-4 sm:zoom-in-95 duration-300">
         {/* Glowing top line */}
-        <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-green-500 to-emerald-400" />
-        
-        <div className="text-center space-y-3 pt-2">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-500/10 text-green-500 mb-2">
-            <CheckCircle2 size={40} className="animate-bounce" />
+        <div className="absolute top-0 inset-x-0 h-1.5 sm:h-2 bg-gradient-to-r from-green-500 to-emerald-400" />
+
+        {/* Drag handle on mobile */}
+        <div className="flex justify-center sm:hidden pt-1">
+          <div className="w-10 h-1 rounded-full bg-border" />
+        </div>
+
+        <div className="text-center space-y-2 sm:space-y-3 pt-1 sm:pt-2">
+          <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-green-500/10 text-green-500 mb-1 sm:mb-2">
+            <CheckCircle2 size={36} className="sm:w-10 sm:h-10 animate-bounce" />
           </div>
-          <h2 className="text-2xl font-extrabold text-foreground tracking-tight">
+          <h2 className="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">
             Reservation Confirmed!
           </h2>
           <p className="text-xs text-muted max-w-sm mx-auto">
@@ -73,10 +67,10 @@ export default function BookingSuccessModal({
         </div>
 
         {/* Receipt Summary Card */}
-        <div className="bg-background border border-border rounded-2xl p-4 text-xs space-y-3">
-          <div className="flex justify-between border-b border-border/80 pb-2.5">
-            <span className="text-muted font-semibold">CONFIRMATION ID</span>
-            <span className="font-mono font-bold text-foreground text-sm tracking-wider">
+        <div className="bg-background border border-border rounded-xl sm:rounded-2xl p-3.5 sm:p-4 text-xs space-y-3">
+          <div className="flex justify-between items-start border-b border-border/80 pb-2.5 gap-2">
+            <span className="text-muted font-semibold shrink-0">CONFIRMATION ID</span>
+            <span className="font-mono font-bold text-foreground text-xs sm:text-sm tracking-wider text-right break-all">
               {successData._id}
             </span>
           </div>
@@ -91,7 +85,7 @@ export default function BookingSuccessModal({
             </span>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 border-t border-border/80 pt-2.5">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 border-t border-border/80 pt-2.5">
             <div>
               <span className="text-[9px] font-bold text-muted block uppercase">Check In</span>
               <span className="font-semibold text-foreground block mt-0.5">
@@ -106,18 +100,18 @@ export default function BookingSuccessModal({
             </div>
           </div>
 
-          <div className="flex justify-between border-t border-border/80 pt-2.5">
+          <div className="flex justify-between items-center border-t border-border/80 pt-2.5 gap-2">
             <span className="text-muted">Payment Type</span>
-            <span className="font-bold text-foreground capitalize">
-              {successData.paymentMethod === "card" 
-                ? "Credit Card" 
-                : successData.paymentMethod === "upi" 
-                ? "UPI Transfer" 
+            <span className="font-bold text-foreground capitalize text-right">
+              {successData.paymentMethod === "razorpay"
+                ? "Razorpay"
+                : successData.paymentMethod === "wallet"
+                ? "BMV Wallet"
                 : "Pay At Venue"}
             </span>
           </div>
 
-          <div className="flex justify-between border-t border-border/80 pt-2.5 text-sm font-bold text-foreground">
+          <div className="flex justify-between items-center border-t border-border/80 pt-2.5 text-sm font-bold text-foreground">
             <span>Total Calculated</span>
             <span className="text-primary text-base font-extrabold">
               ₹{grandTotal.toLocaleString("en-IN")}
@@ -126,7 +120,7 @@ export default function BookingSuccessModal({
         </div>
 
         {/* Actions Grid */}
-        <div className="flex flex-col sm:flex-row gap-3 pt-2">
+        <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 pt-1 sm:pt-2">
           <button
             type="button"
             onClick={handlePrint}
@@ -146,8 +140,8 @@ export default function BookingSuccessModal({
             Return Home
           </button>
         </div>
-        
-        <div className="text-center pt-1.5">
+
+        <div className="text-center pt-0.5">
           <Link
             to="/account/bookings"
             className="text-[11px] font-semibold text-primary hover:underline inline-flex items-center gap-1"

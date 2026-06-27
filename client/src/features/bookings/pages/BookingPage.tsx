@@ -5,7 +5,7 @@ import { useAppStore } from "@/store/app.store";
 import { publicVenuesApi } from "@/features/public/services/public-venues.api";
 import type { Venue } from "@/features/venues/types/venues.types";
 import { bookingsApi } from "../services/bookings.api";
-import type { Addon, BookingDetails } from "../types/bookings.types";
+import type { BookingDetails } from "../types/bookings.types";
 import DateTimeSection from "../components/DateTimeSection";
 import GuestSection from "../components/GuestSection";
 import PricingSection from "../components/PricingSection";
@@ -26,8 +26,6 @@ const BookingPage = () => {
   const [startDateTime, setStartDateTime] = useState<string | null>(null);
   const [endDateTime, setEndDateTime] = useState<string | null>(null);
   const [guests, setGuests] = useState<number>(1);
-  const [selectedAddons] = useState<Addon[]>([]);
-  
   // Contact details
   const [contactName, setContactName] = useState("");
   const [contactEmail, setContactEmail] = useState("");
@@ -35,14 +33,7 @@ const BookingPage = () => {
   const [specialRequests, setSpecialRequests] = useState("");
 
   // Payment details
-  const [paymentMethod, setPaymentMethod] = useState<"card" | "upi" | "cash">("card");
-  const [paymentDetails, setPaymentDetails] = useState<any>({
-    cardNumber: "",
-    cardExpiry: "",
-    cardCvv: "",
-    cardHolder: "",
-    upiId: "",
-  });
+  const [paymentMethod, setPaymentMethod] = useState<"razorpay" | "wallet" | "cash">("razorpay");
 
   // Action states
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -85,10 +76,6 @@ const BookingPage = () => {
     if (data.specialRequests !== undefined) setSpecialRequests(data.specialRequests);
   };
 
-  const handlePaymentDetailsChange = (details: any) => {
-    setPaymentDetails(details);
-  };
-
   const handleSubmitBooking = async () => {
     if (!selectedVenue) return;
     setIsSubmitting(true);
@@ -98,19 +85,11 @@ const BookingPage = () => {
       startDateTime,
       endDateTime,
       guests,
-      addOns: selectedAddons,
       contactName,
       contactEmail,
       contactPhone,
       specialRequests,
       paymentMethod,
-      paymentDetails: {
-        cardNumber: paymentDetails.cardNumber,
-        cardExpiry: paymentDetails.cardExpiry,
-        cardCvv: paymentDetails.cardCvv,
-        cardHolder: paymentDetails.cardHolder,
-        upiId: paymentDetails.upiId,
-      },
     };
 
     try {
@@ -154,12 +133,14 @@ const BookingPage = () => {
   return (
     <div className="min-h-screen bg-background pb-20 text-card-foreground">
       {/* 1. Header Banner */}
-      <BookingHeader />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8">
+        <BookingHeader />
+      </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 sm:mt-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
           {/* LEFT COLUMN: Venue Details and Forms */}
-          <div className="lg:col-span-7 xl:col-span-8 space-y-8">
+          <div className="lg:col-span-7 xl:col-span-8 space-y-5 sm:space-y-8">
             {/* Venue Brief Summary Header */}
             <SelectedVenueSummary venue={selectedVenue} />
 
@@ -193,12 +174,8 @@ const BookingPage = () => {
               venue={selectedVenue}
               startDateTime={startDateTime}
               endDateTime={endDateTime}
-              guests={guests}
-              selectedAddons={selectedAddons}
               paymentMethod={paymentMethod}
-              paymentDetails={paymentDetails}
               onPaymentMethodChange={setPaymentMethod}
-              onPaymentDetailsChange={handlePaymentDetailsChange}
               onSubmit={handleSubmitBooking}
               isSubmitting={isSubmitting}
             />
@@ -213,8 +190,6 @@ const BookingPage = () => {
           venue={selectedVenue}
           startDateTime={startDateTime}
           endDateTime={endDateTime}
-          guests={guests}
-          selectedAddons={selectedAddons}
           onClose={() => setSuccessData(null)}
         />
       )}
