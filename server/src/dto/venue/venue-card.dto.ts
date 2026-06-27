@@ -7,7 +7,6 @@ export interface VenueCardDto {
   address: {
     city: string;
     district: string;
-
   };
   location: {
     coordinates: [number, number];

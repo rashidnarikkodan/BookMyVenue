@@ -15,7 +15,9 @@ const getHomeData = async (): Promise<HomeDataDto> => {
       isActive: true,
       verificationStatus: 'approved',
     })
-      .select('name images address.city address.district capacity pricing isElite isFeatured location')
+      .select(
+        'name images address.city address.district capacity pricing isElite isFeatured location'
+      )
       .lean<VenueCardDto[]>(),
     Category.find({
       isActive: true,
@@ -23,7 +25,6 @@ const getHomeData = async (): Promise<HomeDataDto> => {
   ]);
 
   const districtMap = new Map<string, DistrictDto>();
-
 
   for (const venue of venues) {
     const district = venue.address?.district;
@@ -56,7 +57,7 @@ const getHomeData = async (): Promise<HomeDataDto> => {
   return {
     venues,
     categories,
-    districts
+    districts,
   };
 };
 
