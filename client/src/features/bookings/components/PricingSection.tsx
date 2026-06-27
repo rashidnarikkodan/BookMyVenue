@@ -10,6 +10,7 @@ type Props = {
   onPaymentMethodChange: (method: "razorpay" | "wallet" | "cash") => void;
   onSubmit: () => void;
   isSubmitting: boolean;
+  existingBookings?: any[] | null;
 };
 
 const PricingSection: React.FC<Props> = ({
@@ -20,6 +21,7 @@ const PricingSection: React.FC<Props> = ({
   onPaymentMethodChange,
   onSubmit,
   isSubmitting,
+  existingBookings,
 }) => {
   const [duration, setDuration] = useState<number>(0);
   const [durationUnit, setDurationUnit] = useState<"hour" | "day">("day");
@@ -58,15 +60,33 @@ const PricingSection: React.FC<Props> = ({
   const basePrice = duration * priceRate;
 
   const subtotal = basePrice;
-  const gstTax = Math.round(subtotal * 0.05); // 5% GST
-  const serviceFee = Math.round(subtotal * 0.02); // 2% Service Fee
+  const gstTax = Math.round(subtotal * 0.18); // 5% GST
+  const serviceFee = Math.round(subtotal * 0.12); // 2% Service Fee
   const grandTotal = subtotal + gstTax + serviceFee;
+
+  const hasOverlap = (() => {
+    if (!startDateTime || !endDateTime || !existingBookings) return false;
+    const start = new Date(startDateTime).getTime();
+    const end = new Date(endDateTime).getTime();
+    return existingBookings.some((booking) => {
+      if (booking.bookingStatus === 'CANCELLED' || booking.bookingStatus === 'REFUNDED') {
+        return false;
+      }
+      const bStart = new Date(booking.startDateTime).getTime();
+      const bEnd = new Date(booking.endDateTime).getTime();
+      return start < bEnd && end > bStart;
+    });
+  })();
 
   // Validation before submit
   const handleBookingSubmit = () => {
     if (!venue) return;
     if (!startDateTime || !endDateTime) {
       alert("Please select dates first.");
+      return;
+    }
+    if (hasOverlap) {
+      alert("The selected timeline overlaps with an existing booking. Please pick another date/time.");
       return;
     }
     if (venue.availability) {
@@ -178,6 +198,7 @@ const PricingSection: React.FC<Props> = ({
             {duration > 0 && (
               <button
                 type="button"
+                disabled={hasOverlap}
                 onClick={() => {
                   if (venue.availability) {
                     const { minBookingDuration, maxBookingDuration } = venue.availability;
@@ -192,9 +213,14 @@ const PricingSection: React.FC<Props> = ({
                   }
                   setIsPaymentModalOpen(true);
                 }}
-                className="w-full bg-primary hover:bg-primary/90 text-white font-extrabold text-xs sm:text-sm py-3 sm:py-3.5 rounded-xl shadow-lg shadow-primary/20 flex items-center justify-center transition-all select-none hover:scale-[1.01] active:scale-[0.99] cursor-pointer uppercase tracking-wider"
+                className={`w-full font-extrabold text-xs sm:text-sm py-3 sm:py-3.5 rounded-xl shadow-lg flex items-center justify-center transition-all select-none uppercase tracking-wider
+                  ${hasOverlap 
+                    ? "bg-red-500/10 text-red-500 border border-red-500/20 cursor-not-allowed shadow-none" 
+                    : "bg-primary hover:bg-primary/90 text-white shadow-primary/20 hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+                  }
+                `}
               >
-                Confirm & Proceed to Pay (₹{grandTotal.toLocaleString("en-IN")})
+                {hasOverlap ? "Time Slot Overlapped" : `Confirm & Proceed to Pay (₹${grandTotal.toLocaleString("en-IN")})`}
               </button>
             )}
           </div>

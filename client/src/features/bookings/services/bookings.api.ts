@@ -40,5 +40,17 @@ export const bookingsApi = {
   
   getMockBookings: (): any[] => {
     return JSON.parse(localStorage.getItem('mock_bookings') || '[]');
+  },
+    
+  getByVenueId : async (id: string): Promise<any> => {
+      try{
+
+      const res = await apiClient.get(`/bookings/venues/${id}`);
+      return res.data.data;
+      }
+      catch(err:any){
+        console.log(err);
+        return null;
+      }
   }
 };

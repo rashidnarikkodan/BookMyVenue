@@ -13,6 +13,7 @@ import BookingHeader from "../components/BookingHeader";
 import SelectedVenueSummary from "../components/SelectedVenueSummary";
 import BookingSuccessModal from "../components/BookingSuccessModal";
 import { Loading } from "@/shared/components/ui";
+import { useAsyncFetch } from "@/shared/hooks/useAsyncFetch";
 
 const BookingPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -21,6 +22,9 @@ const BookingPage = () => {
   // Venue state
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
   const [venueLoading, setVenueLoading] = useState(false);
+
+  //existing booking state
+  const {data:existingBookings,execute} = useAsyncFetch<any[]>()
 
   // Form fields state
   const [startDateTime, setStartDateTime] = useState<string | null>(null);
@@ -38,7 +42,7 @@ const BookingPage = () => {
   // Action states
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successData, setSuccessData] = useState<any | null>(null);
-
+  console.log(successData)
   // Auto fill logged in user
   useEffect(() => {
     if (user) {
@@ -52,6 +56,7 @@ const BookingPage = () => {
     const fetchSelected = async () => {
       if (!id) return;
       try {
+        execute(()=> bookingsApi.getByVenueId(id))
         setVenueLoading(true);
         const res = await publicVenuesApi.getById(id);
         if (res.success && res.data) {
@@ -150,6 +155,7 @@ const BookingPage = () => {
               endDateTime={endDateTime}
               pricingUnit="hour"
               availability={selectedVenue.availability}
+              existingBookings={existingBookings}
               onChange={(start, end) => {
                 setStartDateTime(start);
                 setEndDateTime(end);
@@ -178,6 +184,7 @@ const BookingPage = () => {
               onPaymentMethodChange={setPaymentMethod}
               onSubmit={handleSubmitBooking}
               isSubmitting={isSubmitting}
+              existingBookings={existingBookings}
             />
           </div>
         </div>
