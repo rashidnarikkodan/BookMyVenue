@@ -11,13 +11,15 @@ export const createBooking = async (
     totalAmount: number
 ): Promise<IBooking> => {
     const paymentStatus =
-        payload.paymentMethod === PaymentMethod.CASH
+        payload.paymentMethod === PaymentMethod.RAZORPAY || payload.paymentMethod === PaymentMethod.CASH
             ? PaymentStatus.PENDING
             : PaymentStatus.PAID;
 
     const bookingStatus =
         payload.paymentMethod === PaymentMethod.CASH
-            ? BookingStatus.CONFIRMED        // cash bookings are immediately confirmed
+            ? BookingStatus.CONFIRMED
+            : payload.paymentMethod === PaymentMethod.RAZORPAY
+            ? BookingStatus.PENDING_PAYMENT
             : BookingStatus.CONFIRMED;
 
     const doc = await Booking.create({
@@ -34,7 +36,7 @@ export const createBooking = async (
         bookingStatus,
         paymentStatus,
         totalAmount,
-        amountPaid: payload.paymentMethod === PaymentMethod.CASH ? 0 : totalAmount,
+        amountPaid: paymentStatus === PaymentStatus.PAID ? totalAmount : 0,
     });
 
     return doc as IBooking;
@@ -198,4 +200,26 @@ export const updatePaymentStatus = async (
     const update: Record<string, any> = { paymentStatus };
     if (amountPaid !== undefined) update.amountPaid = amountPaid;
     return Booking.findByIdAndUpdate(id, update, { new: true }) as Promise<IBooking | null>;
+};
+
+export const confirmPaidBooking = async (
+    bookingId: string,
+    amountPaid: number
+): Promise<IBooking | null> => {
+    return Booking.findByIdAndUpdate(
+        bookingId,
+        {
+            bookingStatus: BookingStatus.CONFIRMED,
+            paymentStatus: PaymentStatus.PAID,
+            amountPaid,
+        },
+        { new: true }
+    )
+        .populate('venue', 'name address images')
+        .populate('user', 'fullName email') as Promise<IBooking | null>;
+};
+
+export const deleteBookingById = async (id: string): Promise<boolean> => {
+    const res = await Booking.findByIdAndDelete(id);
+    return res !== null;
 };

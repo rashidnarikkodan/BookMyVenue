@@ -12,6 +12,8 @@ export const getBookingByVenueId = async (id: string) => {
   return bookings
 }
 
+
+
 export const createBookingService = async (userId: string, payload: CreateBookingPayload) => {
   //validate dates
   const start = new Date(payload.startDateTime);
@@ -49,4 +51,57 @@ export const createBookingService = async (userId: string, payload: CreateBookin
   const newBooking = await createBooking(userId, payload, totalAmount);
 
   return newBooking;
+};
+
+import { verifyPaymentSignature } from './razorpay.service';
+
+export const verifyAndConfirmBookingService = async (
+  userId: string,
+  bookingId: string,
+  orderId: string,
+  paymentId: string,
+  signature: string
+) => {
+  const isValid = verifyPaymentSignature(orderId, paymentId, signature);
+  if (!isValid) {
+    throw new AppError('Payment signature verification failed', HTTP_STATUS.BAD_REQUEST);
+  }
+
+  const booking = await bookingRepo.findBookingById(bookingId);
+  if (!booking) {
+    throw new AppError('Booking not found', HTTP_STATUS.NOT_FOUND);
+  }
+
+  // Check ownership
+  if (booking.user._id.toString() !== userId) {
+    throw new AppError('Unauthorized access to booking', HTTP_STATUS.UNAUTHORIZED);
+  }
+
+  const updatedBooking = await bookingRepo.confirmPaidBooking(bookingId, booking.totalAmount);
+  if (!updatedBooking) {
+    throw new AppError('Failed to confirm booking', HTTP_STATUS.SERVER_ERROR);
+  }
+
+  return updatedBooking;
+};
+
+import { BookingStatus } from '@/constants/booking';
+
+export const cancelPendingBookingService = async (userId: string, bookingId: string) => {
+  const booking = await bookingRepo.findBookingById(bookingId);
+  if (!booking) {
+    throw new AppError('Booking not found', HTTP_STATUS.NOT_FOUND);
+  }
+
+  // Check ownership
+  if (booking.user._id.toString() !== userId) {
+    throw new AppError('Unauthorized access to booking', HTTP_STATUS.UNAUTHORIZED);
+  }
+
+  // Only allow deleting bookings that are PENDING_PAYMENT
+  if (booking.bookingStatus !== BookingStatus.PENDING_PAYMENT) {
+    throw new AppError('Only pending bookings can be cancelled', HTTP_STATUS.BAD_REQUEST);
+  }
+
+  await bookingRepo.deleteBookingById(bookingId);
 };
