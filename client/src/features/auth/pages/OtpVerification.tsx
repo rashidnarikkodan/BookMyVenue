@@ -3,18 +3,18 @@ import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, RefreshCw, ShieldCheck, Mail } from 'lucide-react';
 import { useAuthStore } from '../store/auth.store';
-import { resendOtpApi, verifyOtpApi } from '../services/auth.api';
+import { resendOtpApi, verifyOtpApi, verifyForgotPasswordOtpApi } from '../services/auth.api';
 
 interface OtpVerificationProps {
-  onSuccess: () => void;
+  mode?: 'signup' | 'forgot-password';
 }
 
 const OTP_LENGTH = 6;
 
-const OtpVerification: React.FC<OtpVerificationProps> = () => {
+const OtpVerification: React.FC<OtpVerificationProps> = ({ mode = 'signup' }) => {
   const {
     pendingEmail,
-    registrationToken,
+    verificationToken,
     resendTimer,
     resendCount,
     maxResends,
@@ -23,6 +23,8 @@ const OtpVerification: React.FC<OtpVerificationProps> = () => {
     incrementResendCount,
     resetSignupFlow,
     setSignupStep,
+    setForgotPasswordStep,
+    setResetToken,
   } = useAuthStore();
 
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''));
@@ -87,9 +89,17 @@ const OtpVerification: React.FC<OtpVerificationProps> = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await verifyOtpApi(registrationToken as string, otpString);
-      toast.success(res?.data?.message || 'User verified successfully!');
-      navigate('/signin');
+      if (mode === 'signup') {
+        const res = await verifyOtpApi(verificationToken as string, otpString);
+        toast.success(res?.data?.message || 'User verified successfully!');
+        resetSignupFlow();
+        navigate('/signin');
+      } else {
+        const res = await verifyForgotPasswordOtpApi(verificationToken as string, otpString);
+        toast.success(res?.data?.message || 'OTP verified successfully!');
+        setResetToken(res.data.data.resetToken);
+        setForgotPasswordStep('reset');
+      }
     } catch (err: any) {
       let msg = 'Verification failed. Please try again.';
       if (err.response?.data?.message) {
@@ -104,7 +114,7 @@ const OtpVerification: React.FC<OtpVerificationProps> = () => {
     } finally {
       setLoading(false);
     }
-  }, [otp, registrationToken, navigate]);
+  }, [otp, verificationToken, navigate]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -119,7 +129,7 @@ const OtpVerification: React.FC<OtpVerificationProps> = () => {
     setResending(true);
     setError(null);
     try {
-      await resendOtpApi(registrationToken as string);
+      await resendOtpApi(verificationToken as string);
       incrementResendCount();
       startResendTimer();
       setOtp(Array(OTP_LENGTH).fill(''));
@@ -253,7 +263,10 @@ const OtpVerification: React.FC<OtpVerificationProps> = () => {
           <p className="text-[11px] text-slate-500">
             Max resends reached. Please{' '}
             <button
-              onClick={resetSignupFlow}
+              onClick={() => {
+                if (mode === 'signup') resetSignupFlow();
+                else setForgotPasswordStep('details');
+              }}
               className="text-primary-400 hover:text-primary-300 transition-colors underline"
             >
               start over
@@ -264,7 +277,10 @@ const OtpVerification: React.FC<OtpVerificationProps> = () => {
 
         {/* Back button */}
         <button
-          onClick={() => setSignupStep('details')}
+          onClick={() => {
+            if (mode === 'signup') setSignupStep('details');
+            else setForgotPasswordStep('details');
+          }}
           className="mt-3 text-[11px] text-slate-500 hover:text-slate-300 flex items-center gap-1 mx-auto transition-colors"
         >
           <ArrowLeft className="w-3 h-3" />

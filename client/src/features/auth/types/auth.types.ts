@@ -11,3 +11,9 @@ export interface ISigninData {
   email: string;
   password?: string;
 }
+
+export interface IResetPasswordData {
+  resetToken: string;
+  password?: string;
+  confirmPassword?: string;
+}
