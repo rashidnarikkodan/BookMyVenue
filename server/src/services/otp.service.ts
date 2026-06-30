@@ -1,7 +1,6 @@
 import crypto from 'crypto';
 import argon2 from 'argon2';
 import { redisService } from './redis.service';
-import { emailService } from './email.service';
 import { AppError } from '../utils/AppError';
 import { MESSAGES } from '../constants/messages';
 import { HTTP_STATUS } from '../constants/http';
@@ -16,7 +15,7 @@ const keys = {
 };
 
 export const otpService = {
-  async generateAndSendOtp(emailAddr: string, purpose: string = 'email-verification'): Promise<void> {
+  async generateAndSendOtp(emailAddr: string, purpose: string = 'email-verification'): Promise<{ otp: string }> {
     const otp = crypto.randomInt(100000, 999999).toString();
     logger.info(`OTP: ${otp}`);
 
@@ -35,12 +34,7 @@ export const otpService = {
       env.OTP_EXPIRY_SECONDS + env.RESEND_COOLDOWN_SECONDS
     );
 
-    try {
-      await emailService.sendOtpEmail(emailAddr, otp);
-    } catch {
-      await redisService.del(keys.otp(emailAddr, purpose));
-      throw new AppError(MESSAGES.OTP_EMAIL_FAIL, HTTP_STATUS.SERVER_ERROR);
-    }
+    return { otp }
   },
 
   async verifyOtp(emailAddr: string, otp: string, purpose: string = 'email-verification'): Promise<void> {

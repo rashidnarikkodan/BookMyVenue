@@ -28,8 +28,8 @@ export const verifyOtp = async (
 
   try {
     const data = req.body;
-    const result = await authService.verifyOtp(data);
-    success(res, HTTP_STATUS.OK, result, MESSAGES.USER_VERIFIED);
+    await authService.verifyOtp(data);
+    success(res, HTTP_STATUS.OK, null, MESSAGES.USER_VERIFIED);
   } catch (error: unknown) {
     next(error);
   }
@@ -108,7 +108,7 @@ export const signin = async (
       maxAge: 15 * 60 * 1000, // 15 minutes
     });
 
-    success(res, HTTP_STATUS.OK, result, 'Sign In Successful');
+    success(res, HTTP_STATUS.OK, result.user, 'Sign In Successful');
   } catch (error: unknown) {
     next(error);
   }
@@ -179,11 +179,11 @@ export const forgotPassword = async (
   try {
     const { email } = req.body;
     const result = await authService.forgotPassword(req.body);
-    
+
     success(
-      res, 
-      HTTP_STATUS.OK, 
-      result, 
+      res,
+      HTTP_STATUS.OK,
+      result,
       'If an account exists, an OTP has been sent to the registered email.'
     );
   } catch (error) {
@@ -199,11 +199,11 @@ export const verifyForgotPasswordOtp = async (
   try {
     const data = req.body;
     const result = await authService.verifyForgotPasswordOtp(data);
-    
+
     if (!result.resetToken) {
       throw new AppError('Invalid operation', HTTP_STATUS.BAD_REQUEST);
     }
-    
+
     success(res, HTTP_STATUS.OK, { resetToken: result.resetToken }, 'OTP verified successfully');
   } catch (error: unknown) {
     next(error);

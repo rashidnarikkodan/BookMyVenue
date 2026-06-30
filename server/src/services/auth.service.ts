@@ -15,6 +15,9 @@ import jwt from 'jsonwebtoken';
 import { generateAccessToken, generateRefreshToken, jwtVerify } from '@/utils/jwtUtils';
 import { redisService } from './redis.service';
 import { ForgotPasswordDto } from '@/dto/auth/forgot-password.dto';
+import { emailService } from './email.service';
+import { otpEmail } from '@/template/otp.layout';
+import { UserDto } from '@/dto/user/user.dto';
 
 type AuthTokenPayload = {
   email: string;
@@ -23,8 +26,8 @@ type AuthTokenPayload = {
 
 const signup = async (
   userData: RegisterDto
-): Promise<{ email: string; verificationToken: string }> => {
-  const email = userData.email!.toLowerCase().trim();
+): Promise<{ verificationToken: string }> => {
+  const email = userData.email.toLowerCase().trim();
 
   const existingUser = await userRepository.findByEmail(email);
 
@@ -45,7 +48,17 @@ const signup = async (
     isVerified: false,
   });
 
-  await otpService.generateAndSendOtp(email);
+  const { otp } = await otpService.generateAndSendOtp(email);
+
+  // Create the email
+  const mail = otpEmail(otp);
+
+  // Send the email
+  await emailService.sendEmail({
+    to: email,
+    subject: mail.subject,
+    html: mail.html,
+  });
 
   const verificationToken = jwt.sign(
     {
@@ -57,7 +70,6 @@ const signup = async (
   );
 
   return {
-    email,
     verificationToken,
   };
 };
@@ -90,7 +102,7 @@ const validateOtpToken = async (verificationToken: string, otp: string, expected
   return payload.email;
 };
 
-const verifyOtp = async (data: VerifyOtpDto): Promise<{ user: Partial<IUser> }> => {
+const verifyOtp = async (data: VerifyOtpDto): Promise<void> => {
   const email = await validateOtpToken(data.verificationToken, data.otp, 'email-verification');
 
   const user = await userRepository.findByEmail(email);
@@ -109,8 +121,6 @@ const verifyOtp = async (data: VerifyOtpDto): Promise<{ user: Partial<IUser> }> 
 
   const userObj = user.toObject();
   delete userObj.password;
-
-  return { user: userObj };
 };
 
 const verifyForgotPasswordOtp = async (data: VerifyOtpDto): Promise<{ resetToken: string }> => {
@@ -148,7 +158,7 @@ const resendOtp = async (verificationToken: string): Promise<void> => {
 const signin = async (
   data: LoginDto
 ): Promise<{
-  user: Partial<IUser>;
+  user: UserDto;
   accessToken: string;
   refreshToken: string;
 }> => {
@@ -193,7 +203,19 @@ const signin = async (
   delete userObj.password;
 
   return {
-    user: userObj,
+    user: {
+      fullName: user.fullName,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      role: user.role,
+      isBlocked: user.isBlocked,
+      isVerified: user.isVerified,
+      authProvider: user.authProvider,
+      googleId: user.googleId,
+      avatar: user.avatar,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt
+    },
     accessToken,
     refreshToken,
   };
