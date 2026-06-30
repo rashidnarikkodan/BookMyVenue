@@ -15,6 +15,8 @@ import jwt from 'jsonwebtoken';
 import { generateAccessToken, generateRefreshToken, jwtVerify } from '@/utils/jwtUtils';
 import { redisService } from './redis.service';
 import { ForgotPasswordDto } from '@/dto/auth/forgot-password.dto';
+import { emailService } from './email.service';
+import { otpEmail } from '@/template/otp.layout';
 
 type AuthTokenPayload = {
   email: string;
@@ -24,7 +26,7 @@ type AuthTokenPayload = {
 const signup = async (
   userData: RegisterDto
 ): Promise<{ email: string; verificationToken: string }> => {
-  const email = userData.email!.toLowerCase().trim();
+  const email = userData.email.toLowerCase().trim();
 
   const existingUser = await userRepository.findByEmail(email);
 
@@ -45,7 +47,17 @@ const signup = async (
     isVerified: false,
   });
 
-  await otpService.generateAndSendOtp(email);
+  const { otp } = await otpService.generateAndSendOtp(email);
+
+  // Create the email
+  const mail = otpEmail(otp);
+
+  // Send the email
+  await emailService.sendEmail({
+    to: email,
+    subject: mail.subject,
+    html: mail.html,
+  });
 
   const verificationToken = jwt.sign(
     {
