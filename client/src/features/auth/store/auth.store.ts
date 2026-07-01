@@ -7,7 +7,7 @@ interface AuthState {
   signupStep: SignupStep;
   verificationToken: string | null;
   pendingEmail: string | null;
-  
+
   forgotPasswordStep: ForgotPasswordStep;
   resetToken: string | null;
 
@@ -32,7 +32,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   signupStep: 'details',
   verificationToken: null,
   pendingEmail: null,
-  
+
   forgotPasswordStep: 'details',
   resetToken: null,
   resendTimer: 60,

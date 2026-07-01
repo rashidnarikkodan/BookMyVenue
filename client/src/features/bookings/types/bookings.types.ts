@@ -1,4 +1,3 @@
-
 export interface BookingDetails {
   venueId: string;
   startDateTime: string | null;

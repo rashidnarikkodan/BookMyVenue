@@ -20,6 +20,6 @@ export const mainRoutes = {
     { path: 'account/profile', element: <UserProfile /> },
     { path: 'account/bookings', element: <UserBookingsPage /> },
     { path: '/bookings/:id', element: <BookingPage /> },
-    { path: 'account/wallet', element: <UserWallet/>}
+    { path: 'account/wallet', element: <UserWallet /> },
   ],
 };

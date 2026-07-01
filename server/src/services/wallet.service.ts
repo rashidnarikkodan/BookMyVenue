@@ -9,7 +9,7 @@ export const getOrCreateUserWallet = async (
   userId: string
 ): Promise<{ wallet: IWallet; transactions: IWalletTransaction[] }> => {
   let wallet = await walletRepository.findByUserId(userId);
-  
+
   if (!wallet) {
     wallet = await walletRepository.create({
       userId: userId as any,

@@ -1,5 +1,10 @@
 import { HTTP_STATUS } from '@/constants/http';
-import { BookingScenario, BookingStatus, PaymentStatus, RESERVATION_POLICY } from '@/constants/booking';
+import {
+  BookingScenario,
+  BookingStatus,
+  PaymentStatus,
+  RESERVATION_POLICY,
+} from '@/constants/booking';
 import { CreateBookingPayload } from '@/types/booking.types';
 import { AppError } from '@/utils/AppError';
 import { getAvailabilityByVenueId } from '@/repositories/availability.repository';
@@ -60,7 +65,7 @@ export const calculateRemainingDueDate = (
     // CASE 1: Normal Booking
     isImmediatePaymentRequired = false;
     const daysToSubtract = leadTimeDays * cancellationFactor;
-    const dueTime = eventTime - (daysToSubtract * 24 * 60 * 60 * 1000);
+    const dueTime = eventTime - daysToSubtract * 24 * 60 * 60 * 1000;
     // Clamp to ensure it doesn't fall before bookingDate or after eventDate
     const clampedTime = Math.max(bookingTime, Math.min(eventTime, dueTime));
     remainingPaymentDueDate = new Date(clampedTime);
@@ -160,19 +165,12 @@ export const calculateQuoteService = async (
  * Returns the saved booking document along with the amount that
  * should be charged via Razorpay right now (deposit or full).
  */
-export const createBookingService = async (
-  userId: string,
-  payload: CreateBookingPayload
-) => {
+export const createBookingService = async (userId: string, payload: CreateBookingPayload) => {
   const start = new Date(payload.startDateTime);
   const end = new Date(payload.endDateTime);
 
   // Overlap check
-  const hasOverlapping = await bookingRepo.hasOverlappingBooking(
-    payload.venueId,
-    start,
-    end
-  );
+  const hasOverlapping = await bookingRepo.hasOverlappingBooking(payload.venueId, start, end);
   if (hasOverlapping) {
     throw new AppError('Venue unavailable at the selected time', HTTP_STATUS.CONFLICT);
   }
@@ -208,10 +206,7 @@ export const verifyAndConfirmDepositService = async (
   // ── 1. Verify Razorpay signature ───────────────────────
   const isValid = verifyPaymentSignature(orderId, paymentId, signature);
   if (!isValid) {
-    throw new AppError(
-      'Payment signature verification failed',
-      HTTP_STATUS.BAD_REQUEST
-    );
+    throw new AppError('Payment signature verification failed', HTTP_STATUS.BAD_REQUEST);
   }
 
   // ── 2. Find the booking ────────────────────────────────
@@ -253,28 +248,20 @@ export const payBalanceService = async (userId: string, bookingId: string) => {
 
   // ── 3. Status check ────────────────────────────────────
   if (booking.bookingStatus !== BookingStatus.RESERVED) {
-    throw new AppError(
-      'Only reserved bookings can have balance paid',
-      HTTP_STATUS.BAD_REQUEST
-    );
+    throw new AppError('Only reserved bookings can have balance paid', HTTP_STATUS.BAD_REQUEST);
   }
-  const allowedStatuses = [PaymentStatus.PARTIAL, PaymentStatus.DEPOSIT_PAID, PaymentStatus.OVERDUE];
+  const allowedStatuses = [
+    PaymentStatus.PARTIAL,
+    PaymentStatus.DEPOSIT_PAID,
+    PaymentStatus.OVERDUE,
+  ];
   if (!allowedStatuses.includes(booking.paymentStatus as PaymentStatus)) {
-    throw new AppError(
-      'Deposit must be paid before balance payment',
-      HTTP_STATUS.BAD_REQUEST
-    );
+    throw new AppError('Deposit must be paid before balance payment', HTTP_STATUS.BAD_REQUEST);
   }
 
   // ── 4. Check deadline hasn't expired ───────────────────
-  if (
-    booking.remainingPaymentDueDate &&
-    new Date() > booking.remainingPaymentDueDate
-  ) {
-    throw new AppError(
-      'Balance payment deadline has passed',
-      HTTP_STATUS.BAD_REQUEST
-    );
+  if (booking.remainingPaymentDueDate && new Date() > booking.remainingPaymentDueDate) {
+    throw new AppError('Balance payment deadline has passed', HTTP_STATUS.BAD_REQUEST);
   }
 
   // ── 5. Return the remaining balance for Razorpay order ─
@@ -298,10 +285,7 @@ export const verifyBalancePaymentService = async (
   // ── 1. Verify Razorpay signature ───────────────────────
   const isValid = verifyPaymentSignature(orderId, paymentId, signature);
   if (!isValid) {
-    throw new AppError(
-      'Payment signature verification failed',
-      HTTP_STATUS.BAD_REQUEST
-    );
+    throw new AppError('Payment signature verification failed', HTTP_STATUS.BAD_REQUEST);
   }
 
   // ── 2. Find the booking ────────────────────────────────
@@ -323,10 +307,7 @@ export const verifyBalancePaymentService = async (
  * Cancels a booking that is still in PENDING payment status
  * (before Razorpay deposit is confirmed).
  */
-export const cancelPendingBookingService = async (
-  userId: string,
-  bookingId: string
-) => {
+export const cancelPendingBookingService = async (userId: string, bookingId: string) => {
   const booking = await bookingRepo.findBookingById(bookingId);
   if (!booking) {
     throw new AppError('Booking not found', HTTP_STATUS.NOT_FOUND);
@@ -337,10 +318,7 @@ export const cancelPendingBookingService = async (
   }
 
   if (booking.paymentStatus !== PaymentStatus.PENDING) {
-    throw new AppError(
-      'Only pending bookings can be cancelled',
-      HTTP_STATUS.BAD_REQUEST
-    );
+    throw new AppError('Only pending bookings can be cancelled', HTTP_STATUS.BAD_REQUEST);
   }
 
   await bookingRepo.deleteBookingById(bookingId);

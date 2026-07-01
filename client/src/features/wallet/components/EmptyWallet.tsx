@@ -1,5 +1,5 @@
-import React from "react";
-import { Wallet } from "lucide-react";
+import React from 'react';
+import { Wallet } from 'lucide-react';
 
 const EmptyWallet: React.FC = () => {
   return (
@@ -9,7 +9,8 @@ const EmptyWallet: React.FC = () => {
       </div>
       <h3 className="text-base font-bold text-foreground">No Transactions Yet</h3>
       <p className="text-sm text-foreground/60 mt-2 max-w-xs leading-relaxed">
-        Your booking payments, refunds, and wallet activity will appear here once you start using BookMyVenue.
+        Your booking payments, refunds, and wallet activity will appear here once you start using
+        BookMyVenue.
       </p>
     </div>
   );

@@ -1,11 +1,11 @@
-import { emailLayout } from "./email.layout";
+import { emailLayout } from './email.layout';
 
 export const otpEmail = (otp: string) => ({
-  subject: "Your BookMyVenue OTP Code",
+  subject: 'Your BookMyVenue OTP Code',
 
   html: emailLayout(
-    "OTP",
-    "Email Verification",
+    'OTP',
+    'Email Verification',
 
     `
       <p style="margin:0 0 8px;color:#94a3b8;font-size:14px;">

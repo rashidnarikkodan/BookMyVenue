@@ -12,8 +12,6 @@ export const walletRepository = {
   },
 
   async findTransactionsByWalletId(walletId: string, limit = 50): Promise<IWalletTransaction[]> {
-    return await WalletTransaction.find({ walletId })
-      .sort({ createdAt: -1 })
-      .limit(limit);
+    return await WalletTransaction.find({ walletId }).sort({ createdAt: -1 }).limit(limit);
   },
 };
