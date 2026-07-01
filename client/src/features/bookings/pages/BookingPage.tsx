@@ -200,10 +200,8 @@ const BookingPage = () => {
             });
             if (verifyRes.success) {
               toast.success(verifyRes.message || 'Payment verified!');
-              toast.success(verifyRes.message || 'Payment verified!');
               setSuccessData(verifyRes.data);
             } else {
-              toast.error(verifyRes.message || 'Signature verification failed.');
               toast.error(verifyRes.message || 'Signature verification failed.');
             }
           } catch (err: any) {
