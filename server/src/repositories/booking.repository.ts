@@ -229,16 +229,17 @@ export const updateBookingStatus = async (
 
 export const cancelBooking = async (
   id: string,
-  cancellationReason: string
+  cancellationReason: string,
+  session: mongoose.ClientSession
 ): Promise<IBooking | null> => {
   return Booking.findByIdAndUpdate(
     id,
     {
       bookingStatus: BookingStatus.CANCELLED,
-      paymentStatus: PaymentStatus.REFUNDED,
       cancellationReason,
+      cancelledAt: new Date(),
     },
-    { new: true }
+    { new: true, session }
   ) as Promise<IBooking | null>;
 };
 

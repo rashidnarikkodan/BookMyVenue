@@ -15,14 +15,25 @@ interface BookingCardProps {
 const BookingCard = ({ booking, onCancelSuccess }: BookingCardProps) => {
   const [cancelling, setCancelling] = useState(false);
   const [payingBalance, setPayingBalance] = useState(false);
+  
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [cancelReason, setCancelReason] = useState('');
+
+  const isCancellable = booking.isCancellable ?? false;
 
   const handleCancelBooking = async () => {
-    if (!window.confirm('Are you sure you want to cancel this pending booking?')) {
+    if (!cancelReason.trim()) {
+      toast.error('Please provide a reason for cancellation.');
       return;
     }
 
     try {
       setCancelling(true);
+      const res = await bookingsApi.cancelBooking(booking.id, cancelReason);
+      if (res.success) {
+        toast.success('Booking cancelled successfully.');
+        setShowCancelModal(false);
+        setCancelReason('');
       const res = await bookingsApi.deleteBooking(booking.id);
       if (res.success) {
         toast.success('Booking deleted successfully.');
@@ -237,6 +248,8 @@ const BookingCard = ({ booking, onCancelSuccess }: BookingCardProps) => {
               </span>
             )}
 
+            <div className="flex items-center gap-2">
+              {booking.bookingStatus === 'reserved' && (booking.paymentStatus === 'partial' || booking.paymentStatus === 'overdue') && (
             <Link
               to={`/account/bookings/${booking.id}`}
               className="px-3 py-2 border border-border/70 text-foreground/75 hover:bg-muted/10 text-[11px] font-semibold rounded-xl transition-all"
@@ -247,25 +260,6 @@ const BookingCard = ({ booking, onCancelSuccess }: BookingCardProps) => {
             <div>
               {booking.bookingStatus === 'pending' && booking.paymentStatus === 'pending' ? (
                 // Booking was created but payment never completed — let user delete it to free the slot
-                <button
-                  onClick={handleCancelBooking}
-                  disabled={cancelling}
-                  className="px-4 py-2 border border-error/30 text-error hover:bg-error/5 text-xs font-semibold rounded-xl transition-all disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
-                >
-                  {cancelling ? (
-                    <>
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      Deleting...
-                    </>
-                  ) : (
-                    <>
-                      <XCircle className="w-3.5 h-3.5" />
-                      Cancel Booking
-                    </>
-                  )}
-                </button>
-              ) : booking.bookingStatus === 'reserved' &&
-                (booking.paymentStatus === 'partial' || booking.paymentStatus === 'overdue') ? (
                 <button
                   onClick={handlePayBalance}
                   disabled={payingBalance}
@@ -283,15 +277,84 @@ const BookingCard = ({ booking, onCancelSuccess }: BookingCardProps) => {
                     </>
                   )}
                 </button>
-              ) : (
-                booking.amountPaid === 0 && (
-                  <span className="text-[11px] font-medium text-foreground/40">Unpaid</span>
-                )
+              )}
+              {isCancellable && (
+                <button
+                  onClick={() => setShowCancelModal(true)}
+                  disabled={cancelling}
+                  className="px-4 py-2 border border-error/30 text-error hover:bg-error/5 text-xs font-semibold rounded-xl transition-all disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
+                >
+                  {cancelling ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      Cancelling...
+                    </>
+                  ) : (
+                    <>
+                      <XCircle className="w-3.5 h-3.5" />
+                      Cancel Booking
+                    </>
+                  )}
+                </button>
+              )}
+              {!isCancellable && booking.bookingStatus !== 'reserved' && booking.amountPaid === 0 && (
+                <span className="text-[11px] font-medium text-foreground/40">Unpaid</span>
               )}
             </div>
           </div>
         </div>
       </div>
+
+      {/* Cancellation Modal */}
+      {showCancelModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-surface border border-border w-full max-w-md rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-6 border-b border-border/60">
+              <h3 className="text-lg font-bold text-foreground">Cancel Booking</h3>
+              <p className="text-sm text-foreground/60 mt-1">
+                Please provide a reason for cancelling your booking at {booking.venue.name}.
+              </p>
+            </div>
+            <div className="p-6">
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Cancellation Reason
+              </label>
+              <textarea
+                value={cancelReason}
+                onChange={(e) => setCancelReason(e.target.value)}
+                placeholder="E.g., Event was postponed, found another venue..."
+                className="w-full min-h-[100px] p-3 text-sm bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none text-foreground"
+              />
+            </div>
+            <div className="p-6 pt-0 flex items-center justify-end gap-3 bg-muted/10">
+              <button
+                onClick={() => {
+                  setShowCancelModal(false);
+                  setCancelReason('');
+                }}
+                disabled={cancelling}
+                className="px-4 py-2 text-sm font-medium text-foreground/70 hover:text-foreground transition-colors disabled:opacity-50"
+              >
+                Keep Booking
+              </button>
+              <button
+                onClick={handleCancelBooking}
+                disabled={cancelling || !cancelReason.trim()}
+                className="px-4 py-2 bg-error hover:bg-error/90 text-white text-sm font-medium rounded-xl transition-all disabled:opacity-50 flex items-center gap-1.5"
+              >
+                {cancelling ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Cancelling...
+                  </>
+                ) : (
+                  'Confirm Cancel'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

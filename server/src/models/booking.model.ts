@@ -123,6 +123,11 @@ const bookingSchema = new Schema(
       type: String,
       default: '',
     },
+
+    cancelledAt: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,
