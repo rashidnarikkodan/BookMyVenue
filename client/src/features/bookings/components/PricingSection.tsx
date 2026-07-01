@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo } from "react";
-import { ShieldCheck, Loader2, Clock, CalendarCheck, Zap, Info } from "lucide-react";
+import React from "react";
+import { ShieldCheck, Loader2, CalendarCheck, Zap, Info } from "lucide-react";
 import type { Venue } from "@/features/venues/types/venues.types";
 
 type Props = {
@@ -9,18 +9,21 @@ type Props = {
   onSubmit: () => void;
   isSubmitting: boolean;
   existingBookings?: any[] | null;
+  quote: {
+    durationInHours: number;
+    baseAmount: number;
+    gst: number;
+    platformFee: number;
+    totalAmount: number;
+    bookingScenario: "ADVANCE" | "IMMEDIATE";
+    reservationDeposit: number;
+    remainingBalance: number;
+    remainingPaymentDueDate: string | null;
+    autoCancellationDate: string | null;
+    isImmediatePaymentRequired: boolean;
+  } | null;
+  quoteLoading?: boolean;
 };
-
-// Must match server RESERVATION_POLICY
-const RESERVATION_POLICY = {
-  DEPOSIT_PERCENTAGE: 0.20,
-  GST_PERCENTAGE: 0.18,
-  PLATFORM_FEE_PERCENTAGE: 0.12,
-  ADVANCE_THRESHOLD_DAYS: 7,
-  SHORT_NOTICE_THRESHOLD_DAYS: 3,
-};
-
-type BookingScenario = "ADVANCE" | "SHORT_NOTICE" | "IMMEDIATE";
 
 const PricingSection: React.FC<Props> = ({
   venue,
@@ -29,56 +32,11 @@ const PricingSection: React.FC<Props> = ({
   onSubmit,
   isSubmitting,
   existingBookings,
+  quote,
+  quoteLoading = false,
 }) => {
-  const [duration, setDuration] = useState<number>(0);
-
   const pricingUnit = 'hour';
   const priceRate = venue?.availability?.pricePerHour || 0;
-
-  useEffect(() => {
-    if (!startDateTime || !endDateTime) {
-      setDuration(0);
-      return;
-    }
-
-    const start = new Date(startDateTime).getTime();
-    const end = new Date(endDateTime).getTime();
-
-    if (isNaN(start) || isNaN(end) || end <= start) {
-      setDuration(0);
-      return;
-    }
-
-    const diffMs = end - start;
-    const hrs = diffMs / (1000 * 60 * 60);
-    setDuration(hrs);
-  }, [startDateTime, endDateTime]);
-
-  // ── Price Calculations ────────────────────────────────────
-  const basePrice = duration * priceRate;
-  const gstTax = Math.round(basePrice * RESERVATION_POLICY.GST_PERCENTAGE);
-  const serviceFee = Math.round(basePrice * RESERVATION_POLICY.PLATFORM_FEE_PERCENTAGE);
-  const grandTotal = Math.round(basePrice + gstTax + serviceFee);
-
-  // ── Determine Booking Scenario ────────────────────────────
-  const scenario: BookingScenario | null = useMemo(() => {
-    if (!startDateTime) return null;
-    const now = new Date();
-    const eventStart = new Date(startDateTime);
-    const diffMs = eventStart.getTime() - now.getTime();
-    const diffDays = diffMs / (1000 * 60 * 60 * 24);
-
-    if (diffDays > RESERVATION_POLICY.ADVANCE_THRESHOLD_DAYS) return "ADVANCE";
-    if (diffDays >= RESERVATION_POLICY.SHORT_NOTICE_THRESHOLD_DAYS) return "SHORT_NOTICE";
-    return "IMMEDIATE";
-  }, [startDateTime]);
-
-  // ── Deposit & Balance Calculations ────────────────────────
-  const reservationDeposit =
-    scenario === "IMMEDIATE"
-      ? grandTotal
-      : Math.round(grandTotal * RESERVATION_POLICY.DEPOSIT_PERCENTAGE);
-  const remainingBalance = grandTotal - reservationDeposit;
 
   // ── Overlap Detection ─────────────────────────────────────
   const hasOverlap = (() => {
@@ -97,7 +55,7 @@ const PricingSection: React.FC<Props> = ({
 
   // ── Validation ────────────────────────────────────────────
   const handleBookingSubmit = () => {
-    if (!venue) return;
+    if (!venue || !quote) return;
     if (!startDateTime || !endDateTime) {
       alert('Please select dates first.');
       return;
@@ -110,6 +68,7 @@ const PricingSection: React.FC<Props> = ({
     }
     if (venue.availability) {
       const { minBookingDuration, maxBookingDuration } = venue.availability;
+      const duration = quote.durationInHours;
       if (duration < minBookingDuration) {
         alert(
           `Minimum booking duration is ${minBookingDuration} hour${minBookingDuration > 1 ? 's' : ''}.`
@@ -136,32 +95,38 @@ const PricingSection: React.FC<Props> = ({
     });
   };
 
+  const formatDeadline = (dateStr: string | null) => {
+    if (!dateStr) return '';
+    const dateFormatted = new Date(dateStr).toLocaleDateString('en-IN', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      timeZone: 'UTC',
+    });
+    return `${dateFormatted} (EOD)`;
+  };
+
   // ── Scenario UI Config ────────────────────────────────────
   const scenarioConfig = {
     ADVANCE: {
       icon: <CalendarCheck size={16} className="text-success" />,
       label: "Advance Booking",
       tagColor: "bg-success/10 text-success border-success/20",
-      description: "Pay 20% reservation deposit now. Remaining balance is due 1 day before your event.",
-      ctaText: `PAY ₹${reservationDeposit.toLocaleString("en-IN")} DEPOSIT`,
-    },
-    SHORT_NOTICE: {
-      icon: <Clock size={16} className="text-warning" />,
-      label: "Short Notice Booking",
-      tagColor: "bg-warning/10 text-warning border-warning/20",
-      description: "Pay 20% reservation deposit now. Remaining balance must be paid within 24 hours.",
-      ctaText: `PAY ₹${reservationDeposit.toLocaleString("en-IN")} DEPOSIT`,
+      description: quote
+        ? `Pay reservation deposit now. Remaining balance is due before ${formatDeadline(quote.remainingPaymentDueDate)}.`
+        : "Pay reservation deposit now. Remaining balance is due later.",
+      ctaText: quote ? `PAY ₹${quote.reservationDeposit.toLocaleString("en-IN")} DEPOSIT` : "PAY DEPOSIT",
     },
     IMMEDIATE: {
       icon: <Zap size={16} className="text-primary" />,
       label: "Immediate Booking",
       tagColor: "bg-primary/10 text-primary border-primary/20",
-      description: "Event is less than 3 days away. Full payment is required now to confirm your booking.",
-      ctaText: `PAY ₹${grandTotal.toLocaleString("en-IN")} FULL AMOUNT`,
+      description: "Event is 7 days away or less. Full payment is required now to confirm your booking.",
+      ctaText: quote ? `PAY ₹${quote.totalAmount.toLocaleString("en-IN")} FULL AMOUNT` : "PAY FULL AMOUNT",
     },
   };
 
-  const currentScenario = scenario ? scenarioConfig[scenario] : null;
+  const currentScenario = quote ? scenarioConfig[quote.bookingScenario] : null;
 
   return (
     <div className="space-y-6 lg:sticky lg:top-24 text-card-foreground">
@@ -222,106 +187,119 @@ const PricingSection: React.FC<Props> = ({
               <div className="border-t border-border/60 pt-2 flex justify-between items-center gap-2">
                 <span className="text-muted font-medium">Total Duration:</span>
                 <span className="font-bold text-primary">
-                  {duration > 0 ? `${duration % 1 === 0 ? duration.toFixed(0) : duration.toFixed(1)} ${pricingUnit}${duration !== 1 ? "s" : ""}` : "—"}
+                  {quote ? `${quote.durationInHours % 1 === 0 ? quote.durationInHours.toFixed(0) : quote.durationInHours.toFixed(1)} ${pricingUnit}${quote.durationInHours !== 1 ? "s" : ""}` : "—"}
                 </span>
               </div>
             </div>
 
             {/* Price Calculations */}
-            <div className="space-y-2 text-xs border-b border-border pb-3">
-              <div className="flex justify-between gap-2">
-                <span className="text-muted">
-                  Base Price ({duration > 0 ? `${duration} × ` : ''}₹
-                  {priceRate.toLocaleString('en-IN')}/{pricingUnit})
-                </span>
-                <span className="font-semibold text-foreground shrink-0">
-                  ₹{basePrice.toLocaleString('en-IN')}
-                </span>
+            {quoteLoading ? (
+              <div className="flex flex-col items-center justify-center py-8 gap-2">
+                <Loader2 size={24} className="animate-spin text-primary" />
+                <span className="text-xs text-muted">Calculating quote...</span>
               </div>
-              <div className="flex justify-between text-muted">
-                <span>GST (18%)</span>
-                <span>₹{gstTax.toLocaleString("en-IN")}</span>
-              </div>
-              <div className="flex justify-between text-muted">
-                <span>Platform Fee (12%)</span>
-                <span className="shrink-0">₹{serviceFee.toLocaleString("en-IN")}</span>
-              </div>
-              <div className="border-t border-border pt-3 flex justify-between items-baseline gap-2">
-                <span className="text-sm font-bold text-foreground">Total Amount</span>
-                <span className="text-xl sm:text-2xl font-extrabold text-primary shrink-0">
-                  ₹{grandTotal.toLocaleString('en-IN')}
-                </span>
-              </div>
-            </div>
-
-            {/* ── Reservation Breakdown ──────────────────────── */}
-            {duration > 0 && currentScenario && (
-              <div className="space-y-3">
-                {/* Scenario Tag */}
-                <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold ${currentScenario.tagColor}`}>
-                  {currentScenario.icon}
-                  {currentScenario.label}
+            ) : quote ? (
+              <div className="space-y-4">
+                <div className="space-y-2 text-xs border-b border-border pb-3">
+                  <div className="flex justify-between gap-2">
+                    <span className="text-muted">
+                      Base Price ({quote.durationInHours > 0 ? `${quote.durationInHours} × ` : ''}₹
+                      {priceRate.toLocaleString('en-IN')}/{pricingUnit})
+                    </span>
+                    <span className="font-semibold text-foreground shrink-0">
+                      ₹{quote.baseAmount.toLocaleString('en-IN')}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-muted">
+                    <span>GST (18%)</span>
+                    <span>₹{quote.gst.toLocaleString("en-IN")}</span>
+                  </div>
+                  <div className="flex justify-between text-muted">
+                    <span>Platform Fee (12%)</span>
+                    <span className="shrink-0">₹{quote.platformFee.toLocaleString("en-IN")}</span>
+                  </div>
+                  <div className="border-t border-border pt-3 flex justify-between items-baseline gap-2">
+                    <span className="text-sm font-bold text-foreground">Total Amount</span>
+                    <span className="text-xl sm:text-2xl font-extrabold text-primary shrink-0">
+                      ₹{quote.totalAmount.toLocaleString('en-IN')}
+                    </span>
+                  </div>
                 </div>
 
-                {/* Deposit / Balance Split */}
-                {scenario !== "IMMEDIATE" && (
-                  <div className="bg-background rounded-xl border border-border p-3 sm:p-4 space-y-2.5 text-xs">
-                    <div className="flex justify-between items-center">
-                      <span className="text-muted font-medium">Reservation Deposit (20%)</span>
-                      <span className="font-extrabold text-foreground text-sm">
-                        ₹{reservationDeposit.toLocaleString("en-IN")}
-                      </span>
+                {/* ── Reservation Breakdown ──────────────────────── */}
+                {currentScenario && (
+                  <div className="space-y-3">
+                    {/* Scenario Tag */}
+                    <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold ${currentScenario.tagColor}`}>
+                      {currentScenario.icon}
+                      {currentScenario.label}
                     </div>
-                    <div className="flex justify-between items-center border-t border-border/60 pt-2">
-                      <span className="text-muted font-medium">Remaining Balance (80%)</span>
-                      <span className="font-semibold text-muted">
-                        ₹{remainingBalance.toLocaleString("en-IN")}
+
+                    {/* Deposit / Balance Split */}
+                    {quote.bookingScenario !== "IMMEDIATE" && (
+                      <div className="bg-background rounded-xl border border-border p-3 sm:p-4 space-y-2.5 text-xs">
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted font-medium">Reservation Deposit</span>
+                          <span className="font-extrabold text-foreground text-sm">
+                            ₹{quote.reservationDeposit.toLocaleString("en-IN")}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center border-t border-border/60 pt-2">
+                          <span className="text-muted font-medium">Remaining Balance</span>
+                          <span className="font-semibold text-muted">
+                            ₹{quote.remainingBalance.toLocaleString("en-IN")}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Scenario Info Banner */}
+                    <div className="flex gap-2 bg-surface/60 border border-border/60 rounded-xl p-3 text-[11px] text-muted leading-relaxed">
+                      <Info size={14} className="shrink-0 mt-0.5 text-primary" />
+                      <span>{currentScenario.description}</span>
+                    </div>
+
+                    {/* CTA Button */}
+                    <button
+                      type="button"
+                      disabled={hasOverlap || isSubmitting}
+                      onClick={handleBookingSubmit}
+                      className={`w-full font-extrabold text-xs sm:text-sm py-3.5 rounded-xl shadow-lg flex items-center justify-center transition-all select-none uppercase tracking-wider
+                        ${hasOverlap
+                          ? "bg-red-500/10 text-red-500 border border-red-500/20 cursor-not-allowed shadow-none"
+                          : isSubmitting
+                          ? "bg-primary/70 text-white cursor-wait"
+                          : "bg-primary hover:bg-primary/90 text-white shadow-primary/20 hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+                        }
+                      `}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 size={16} className="animate-spin mr-2" />
+                          PROCESSING…
+                        </>
+                      ) : hasOverlap ? (
+                        "Time Slot Overlapped"
+                      ) : (
+                        currentScenario.ctaText
+                      )}
+                    </button>
+
+                    {/* Trust Seal */}
+                    <div className="flex flex-col items-center gap-1 text-[9px] text-muted font-bold uppercase tracking-wider pt-1">
+                      <span className="flex items-center gap-1">
+                        <ShieldCheck size={12} className="text-green-600 shrink-0" />
+                        256-Bit SSL Secured Checkout
                       </span>
+                      <span>Razorpay Partner Encryption</span>
                     </div>
                   </div>
                 )}
-
-                {/* Scenario Info Banner */}
-                <div className="flex gap-2 bg-surface/60 border border-border/60 rounded-xl p-3 text-[11px] text-muted leading-relaxed">
-                  <Info size={14} className="shrink-0 mt-0.5 text-primary" />
-                  <span>{currentScenario.description}</span>
-                </div>
-
-                {/* CTA Button */}
-                <button
-                  type="button"
-                  disabled={hasOverlap || isSubmitting}
-                  onClick={handleBookingSubmit}
-                  className={`w-full font-extrabold text-xs sm:text-sm py-3.5 rounded-xl shadow-lg flex items-center justify-center transition-all select-none uppercase tracking-wider
-                    ${hasOverlap
-                      ? "bg-red-500/10 text-red-500 border border-red-500/20 cursor-not-allowed shadow-none"
-                      : isSubmitting
-                      ? "bg-primary/70 text-white cursor-wait"
-                      : "bg-primary hover:bg-primary/90 text-white shadow-primary/20 hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
-                    }
-                  `}
-                >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 size={16} className="animate-spin mr-2" />
-                      PROCESSING…
-                    </>
-                  ) : hasOverlap ? (
-                    "Time Slot Overlapped"
-                  ) : (
-                    currentScenario.ctaText
-                  )}
-                </button>
-
-                {/* Trust Seal */}
-                <div className="flex flex-col items-center gap-1 text-[9px] text-muted font-bold uppercase tracking-wider pt-1">
-                  <span className="flex items-center gap-1">
-                    <ShieldCheck size={12} className="text-green-600 shrink-0" />
-                    256-Bit SSL Secured Checkout
-                  </span>
-                  <span>Razorpay Partner Encryption</span>
-                </div>
               </div>
+            ) : (
+              <p className="text-xs text-muted text-center py-6">
+                Please select valid dates and times to view quote.
+              </p>
             )}
           </div>
         )}
