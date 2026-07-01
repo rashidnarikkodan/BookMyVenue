@@ -1,6 +1,7 @@
 
 import React from "react";
 import type { WalletTransaction } from "../types";
+import { ArrowUpRight, ArrowDownLeft } from "lucide-react";
 
 interface TransactionItemProps {
   transaction: WalletTransaction;
@@ -9,46 +10,61 @@ interface TransactionItemProps {
 const TransactionItem: React.FC<TransactionItemProps> = ({ transaction }) => {
   const isCredit = transaction.type === "CREDIT";
 
-  const amountColor = isCredit ? "text-green-500 font-semibold" : "text-red-500 font-semibold";
+  const amountColor = isCredit 
+    ? "text-success font-extrabold" 
+    : "text-error font-extrabold";
   const sign = isCredit ? "+" : "-";
 
   return (
-    <div className="w-full flex items-start justify-between gap-4 p-4 rounded-2xl border border-border/50 bg-surface/50 hover:bg-muted/10 transition-colors">
-      
-      {/* Left side */}
-      <div className="flex flex-col gap-1">
-        <p className="text-sm font-semibold text-foreground">
-          {transaction.title}
-        </p>
+    <div className="w-full flex items-center justify-between gap-4 p-4 rounded-2xl border border-border bg-surface/40 hover:bg-muted/10 transition-all duration-200 hover:border-border/80">
+      {/* Left side: Icon & Title/Details */}
+      <div className="flex items-center gap-4">
+        <div className={`p-2.5 rounded-xl border ${
+          isCredit 
+            ? "bg-success/10 text-success border-success/15" 
+            : "bg-error/10 text-error border-error/15"
+        }`}>
+          {isCredit ? (
+            <ArrowUpRight className="w-4 h-4 stroke-[2.5]" />
+          ) : (
+            <ArrowDownLeft className="w-4 h-4 stroke-[2.5]" />
+          )}
+        </div>
 
-        {transaction.description && (
-          <p className="text-xs text-foreground/60">
-            {transaction.description}
+        <div className="flex flex-col gap-0.5">
+          <p className="text-sm font-bold text-foreground leading-tight">
+            {transaction.title}
           </p>
-        )}
-
-        <p className="text-[11px] text-foreground/40">
-          {new Date(transaction.createdAt).toLocaleDateString("en-IN", {
-            day: "numeric",
-            month: "short",
-            year: "numeric",
-          })}
-        </p>
+          {transaction.description && (
+            <p className="text-xs text-foreground/60 max-w-sm line-clamp-1">
+              {transaction.description}
+            </p>
+          )}
+          <p className="text-[10px] text-foreground/40 font-medium">
+            {new Date(transaction.createdAt).toLocaleDateString("en-IN", {
+              day: "numeric",
+              month: "short",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </p>
+        </div>
       </div>
 
-      {/* Right side */}
+      {/* Right side: Amount & Badge */}
       <div className="flex flex-col items-end gap-1.5">
-        <p className={`text-sm ${amountColor}`}>
+        <p className={`text-sm tracking-tight ${amountColor}`}>
           {sign} ₹{transaction.amount.toLocaleString("en-IN")}
         </p>
 
         <span
-          className={`text-[10px] px-2.5 py-0.5 rounded-full border font-semibold ${
+          className={`text-[9px] px-2.5 py-0.5 rounded-full border font-bold uppercase tracking-wider ${
             transaction.status === "SUCCESS"
-              ? "border-green-500/20 bg-green-500/10 text-green-600 dark:text-green-400"
+              ? "border-success/20 bg-success/10 text-success"
               : transaction.status === "PENDING"
-              ? "border-yellow-500/20 bg-yellow-500/10 text-yellow-600 dark:text-yellow-400"
-              : "border-red-500/20 bg-red-500/10 text-red-600 dark:text-red-400"
+              ? "border-warning/20 bg-warning/10 text-warning"
+              : "border-error/20 bg-error/10 text-error"
           }`}
         >
           {transaction.status}

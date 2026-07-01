@@ -11,14 +11,13 @@ import { useAppStore } from "@/store/app.store";
 
 const UserWallet: React.FC = () => {
   const { data, loading, error, execute } = useAsyncFetch<any>();
-  const user = useAppStore((state) => state.user);
-  const userId = user?._id;
+  const isAuthenticated = useAppStore((state) => state.isAuthenticated);
 
   const fetchWallet = useCallback(() => {
-    if (userId) {
-      execute(() => walletApi.getUserWallet(userId));
+    if (isAuthenticated) {
+      execute(walletApi.getUserWallet);
     }
-  }, [execute, userId]);
+  }, [execute, isAuthenticated]);
 
   useEffect(() => {
     fetchWallet();
@@ -33,16 +32,16 @@ const UserWallet: React.FC = () => {
     );
   }
 
-  if (error || !userId) {
+  if (error || !isAuthenticated) {
     return (
       <div className="w-full max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center justify-center min-h-[40vh] text-center p-8 bg-surface border border-border rounded-3xl shadow-sm">
           <Wallet className="w-12 h-12 text-error mb-4" />
           <p className="text-error font-semibold text-lg mb-2">Failed to load wallet</p>
           <p className="text-foreground/60 text-sm max-w-md mb-6">
-            {!userId ? "You must be logged in to view your wallet." : error}
+            {!isAuthenticated ? "You must be logged in to view your wallet." : error}
           </p>
-          {userId && (
+          {isAuthenticated && (
             <button
               onClick={fetchWallet}
               className="px-6 py-2.5 bg-primary hover:bg-accent text-white font-bold rounded-xl text-sm transition-colors cursor-pointer"
