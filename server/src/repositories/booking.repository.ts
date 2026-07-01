@@ -22,28 +22,28 @@ export const createBooking = async (
   payload: CreateBookingPayload,
   reservation: ReservationDetails
 ): Promise<IBooking> => {
-  const doc = await Booking.create({
-    venue: new mongoose.Types.ObjectId(payload.venueId),
-    user: new mongoose.Types.ObjectId(userId),
-    startDateTime: new Date(payload.startDateTime),
-    endDateTime: new Date(payload.endDateTime),
-    guests: payload.guests,
-    contactName: payload.contactName,
-    contactEmail: payload.contactEmail,
-    contactPhone: payload.contactPhone,
-    specialRequests: payload.specialRequests || '',
-    bookingScenario: reservation.bookingScenario,
-    paymentMethod: PaymentMethod.RAZORPAY,
-    bookingStatus: BookingStatus.RESERVED,
-    paymentStatus: PaymentStatus.PENDING,
-    totalAmount: reservation.totalAmount,
-    reservationDeposit: reservation.reservationDeposit,
-    remainingBalance: reservation.remainingBalance,
-    amountPaid: 0,
-    remainingPaymentDueDate: reservation.remainingPaymentDueDate,
-    autoCancellationDate: reservation.autoCancellationDate,
-    isImmediatePaymentRequired: reservation.isImmediatePaymentRequired,
-  });
+    const doc = await Booking.create({
+        venue: new mongoose.Types.ObjectId(payload.venueId),
+        user: new mongoose.Types.ObjectId(userId),
+        startDateTime: new Date(payload.startDateTime),
+        endDateTime: new Date(payload.endDateTime),
+        guests: payload.guests,
+        contactName: payload.contactName,
+        contactEmail: payload.contactEmail,
+        contactPhone: payload.contactPhone,
+        specialRequests: payload.specialRequests || '',
+        bookingScenario: reservation.bookingScenario,
+        paymentMethod: PaymentMethod.RAZORPAY,
+        bookingStatus: BookingStatus.PENDING,
+        paymentStatus: PaymentStatus.PENDING,
+        totalAmount: reservation.totalAmount,
+        reservationDeposit: reservation.reservationDeposit,
+        remainingBalance: reservation.remainingBalance,
+        amountPaid: 0,
+        remainingPaymentDueDate: reservation.remainingPaymentDueDate,
+        autoCancellationDate: reservation.autoCancellationDate,
+        isImmediatePaymentRequired: reservation.isImmediatePaymentRequired,
+    });
 
   return doc as IBooking;
 };

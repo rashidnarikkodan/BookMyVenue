@@ -22,15 +22,15 @@ const BookingCard = ({ booking, onCancelSuccess }: BookingCardProps) => {
 
     try {
       setCancelling(true);
-      const res = await bookingsApi.cancelPendingBooking(booking.id);
+      const res = await bookingsApi.deleteBooking(booking.id);
       if (res.success) {
-        toast.success('Booking cancelled successfully.');
+        toast.success('Booking deleted successfully.');
         onCancelSuccess();
       } else {
-        toast.error(res.message || 'Failed to cancel booking.');
+        toast.error(res.message || 'Failed to delete booking.');
       }
     } catch (err: any) {
-      toast.error(err.response?.data?.message || err.message || 'Failed to cancel booking.');
+      toast.error(err.response?.data?.message || err.message || 'Failed to delete booking.');
     } finally {
       setCancelling(false);
     }
@@ -57,6 +57,7 @@ const BookingCard = ({ booking, onCancelSuccess }: BookingCardProps) => {
       const isLoaded = await loadRazorpay();
       if (!isLoaded) {
         toast.error('Failed to load Razorpay SDK. Please refresh and try again.');
+        setPayingBalance(false);
         return;
       }
 
@@ -69,6 +70,9 @@ const BookingCard = ({ booking, onCancelSuccess }: BookingCardProps) => {
       const { payment } = res.data;
       const { orderId, amount, currency } = payment;
 
+      // Local flag to prevent ondismiss from interfering after payment.failed or success
+      let localPaymentHandled = false;
+
       // Open Razorpay checkout modal
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
@@ -78,6 +82,8 @@ const BookingCard = ({ booking, onCancelSuccess }: BookingCardProps) => {
         description: `Remaining Balance for ${booking.venue.name}`,
         order_id: orderId,
         handler: async (response: any) => {
+          // Mark handled so ondismiss won't interfere
+          localPaymentHandled = true;
           try {
             setPayingBalance(true);
             const verifyRes = await bookingsApi.verifyBalancePayment({
@@ -109,9 +115,28 @@ const BookingCard = ({ booking, onCancelSuccess }: BookingCardProps) => {
         theme: {
           color: '#4f46e5',
         },
+        modal: {
+          // ondismiss fires on modal close — even after a successful payment.
+          // Only reset state if payment was not already handled.
+          ondismiss: () => {
+            if (localPaymentHandled) return;
+            toast.info('Balance payment cancelled.');
+            setPayingBalance(false);
+          },
+        },
       };
 
       const rzp = new (window as any).Razorpay(options);
+      rzp.on('payment.failed', async (response: any) => {
+        // Mark handled so ondismiss won't fire duplicate cancellation
+        localPaymentHandled = true;
+        toast.error(
+          `Balance payment failed: ${response.error?.description || 'Unknown error'}. Please try again.`
+        );
+        setPayingBalance(false);
+      });
+
+      // Open modal — state is resolved via callbacks above, not in finally
       rzp.open();
     } catch (err: any) {
       toast.error(
@@ -212,7 +237,8 @@ const BookingCard = ({ booking, onCancelSuccess }: BookingCardProps) => {
             )}
 
             <div>
-              {booking.bookingStatus === 'reserved' && booking.paymentStatus === 'pending' ? (
+              {booking.bookingStatus === 'pending' && booking.paymentStatus === 'pending' ? (
+                // Booking was created but payment never completed — let user delete it to free the slot
                 <button
                   onClick={handleCancelBooking}
                   disabled={cancelling}
@@ -221,7 +247,7 @@ const BookingCard = ({ booking, onCancelSuccess }: BookingCardProps) => {
                   {cancelling ? (
                     <>
                       <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      Cancelling...
+                      Deleting...
                     </>
                   ) : (
                     <>

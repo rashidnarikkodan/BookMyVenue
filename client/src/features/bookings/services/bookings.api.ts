@@ -16,8 +16,12 @@ export const bookingsApi = {
     return res.data;
   },
 
-  cancelPendingBooking: async (bookingId: string): Promise<any> => {
-    const res = await apiClient.delete(`/bookings/pending/${bookingId}`);
+  /**
+   * Permanently deletes an unpaid (PENDING) booking.
+   * Call this on: payment.failed event, modal dismiss without paying, or explicit user cancel.
+   */
+  deleteBooking: async (bookingId: string): Promise<any> => {
+    const res = await apiClient.delete(`/bookings/${bookingId}`);
     return res.data;
   },
 
@@ -43,6 +47,11 @@ export const bookingsApi = {
     bookingId: string;
   }): Promise<any> => {
     const res = await apiClient.post('/bookings/verify-balance', paymentData);
+    return res.data;
+  },
+
+  getBookingById: async (bookingId: string): Promise<any> => {
+    const res = await apiClient.get(`/bookings/${bookingId}`);
     return res.data;
   },
 

@@ -304,13 +304,18 @@ export const verifyBalancePaymentService = async (
 };
 
 /**
- * Cancels a booking that is still in PENDING payment status
- * (before Razorpay deposit is confirmed).
+ * Permanently deletes a booking that hasn't been paid yet (PENDING payment status).
+ * Called on payment failure, modal dismiss without paying, or explicit user cancel.
+ * Frees the reserved slot.
  */
-export const cancelPendingBookingService = async (userId: string, bookingId: string) => {
+export const deleteBookingService = async (
+  userId: string,
+  bookingId: string
+) => {
   const booking = await bookingRepo.findBookingById(bookingId);
   if (!booking) {
-    throw new AppError('Booking not found', HTTP_STATUS.NOT_FOUND);
+    // Already deleted — treat as success (idempotent)
+    return;
   }
 
   if (booking.user._id.toString() !== userId) {
@@ -318,7 +323,10 @@ export const cancelPendingBookingService = async (userId: string, bookingId: str
   }
 
   if (booking.paymentStatus !== PaymentStatus.PENDING) {
-    throw new AppError('Only pending bookings can be cancelled', HTTP_STATUS.BAD_REQUEST);
+    throw new AppError(
+      'Only pending bookings can be cancelled',
+      HTTP_STATUS.BAD_REQUEST
+    );
   }
 
   await bookingRepo.deleteBookingById(bookingId);
@@ -331,4 +339,15 @@ export const getUserBookingsService = async (
   status?: string
 ) => {
   return await bookingRepo.findBookingsByUser(userId, page, limit, status);
+};
+
+export const getBookingByIdService = async (userId: string, bookingId: string) => {
+  const booking = await bookingRepo.findBookingById(bookingId);
+  if (!booking) {
+    throw new AppError('Booking not found', HTTP_STATUS.NOT_FOUND);
+  }
+  if (booking.user._id.toString() !== userId) {
+    throw new AppError('Unauthorized access to booking', HTTP_STATUS.UNAUTHORIZED);
+  }
+  return booking;
 };
