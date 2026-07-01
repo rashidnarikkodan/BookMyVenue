@@ -331,7 +331,45 @@ export const getUserBookingsService = async (
   limit: number,
   status?: string
 ) => {
-  return await bookingRepo.findBookingsByUser(userId, page, limit, status);
+  const result = await bookingRepo.findBookingsByUser(userId, page, limit, status);
+
+  const now = new Date();
+
+  const processedBookings = result.bookings.map(doc => {
+    const booking = doc.toObject ? doc.toObject() : doc;
+    let isCancellable = false;
+
+    if (
+      (booking.bookingStatus === BookingStatus.RESERVED || booking.bookingStatus === BookingStatus.CONFIRMED) &&
+      booking.startDateTime && booking.createdAt
+    ) {
+      const eventStartTime = new Date(booking.startDateTime);
+      if (now.getTime() < eventStartTime.getTime()) {
+        const bookingCreatedAt = new Date(booking.createdAt);
+        const diffMs = eventStartTime.getTime() - bookingCreatedAt.getTime();
+        const diffDays = diffMs / (1000 * 60 * 60 * 24);
+
+        const windowHours = diffDays > 2 ? 48 : 2;
+        const windowDeadline = new Date(bookingCreatedAt.getTime() + windowHours * 60 * 60 * 1000);
+
+        const effectiveDeadline = windowDeadline.getTime() < eventStartTime.getTime() ? windowDeadline : eventStartTime;
+
+        if (now.getTime() <= effectiveDeadline.getTime()) {
+          isCancellable = true;
+        }
+      }
+    }
+
+    return {
+      ...booking,
+      isCancellable
+    };
+  });
+
+  return {
+    ...result,
+    bookings: processedBookings
+  };
 };
 
 /**
@@ -360,7 +398,7 @@ export const cancelBookingService = async (userId: string, bookingId: string, ca
   if (booking.bookingStatus === BookingStatus.CANCELLED) {
     throw new AppError('Booking is already cancelled', HTTP_STATUS.BAD_REQUEST);
   }
-  
+
   if (![BookingStatus.RESERVED, BookingStatus.CONFIRMED].includes(booking.bookingStatus as BookingStatus)) {
     throw new AppError(`Cannot cancel booking in ${booking.bookingStatus} state`, HTTP_STATUS.BAD_REQUEST);
   }
@@ -373,7 +411,7 @@ export const cancelBookingService = async (userId: string, bookingId: string, ca
   //Event Already Started 
   const now = new Date();
   const eventStartTime = new Date(booking.startDateTime);
-  
+
   if (now.getTime() >= eventStartTime.getTime()) {
     throw new AppError('Cannot cancel a booking after the event has started', HTTP_STATUS.BAD_REQUEST);
   }
@@ -385,7 +423,7 @@ export const cancelBookingService = async (userId: string, bookingId: string, ca
 
   const windowHours = diffDays > 2 ? 48 : 2;
   const windowDeadline = new Date(bookingCreatedAt.getTime() + windowHours * 60 * 60 * 1000);
-  
+
   const effectiveDeadline = windowDeadline.getTime() < eventStartTime.getTime() ? windowDeadline : eventStartTime;
 
   if (now.getTime() > effectiveDeadline.getTime()) {
@@ -395,7 +433,7 @@ export const cancelBookingService = async (userId: string, bookingId: string, ca
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
-    
+
     // Slot release and booking update
     await bookingRepo.cancelBooking(bookingId, cancellationReason, session);
 
