@@ -1,6 +1,6 @@
-import React from "react";
-import { ShieldCheck, Loader2, CalendarCheck, Zap, Info } from "lucide-react";
-import type { Venue } from "@/features/venues/types/venues.types";
+import React from 'react';
+import { ShieldCheck, Loader2, CalendarCheck, Zap, Info } from 'lucide-react';
+import type { Venue } from '@/features/venues/types/venues.types';
 
 type Props = {
   venue: Venue | null;
@@ -15,7 +15,7 @@ type Props = {
     gst: number;
     platformFee: number;
     totalAmount: number;
-    bookingScenario: "ADVANCE" | "IMMEDIATE";
+    bookingScenario: 'ADVANCE' | 'IMMEDIATE';
     reservationDeposit: number;
     remainingBalance: number;
     remainingPaymentDueDate: string | null;
@@ -44,7 +44,7 @@ const PricingSection: React.FC<Props> = ({
     const start = new Date(startDateTime).getTime();
     const end = new Date(endDateTime).getTime();
     return existingBookings.some((booking) => {
-      if (booking.bookingStatus === "CANCELLED" || booking.bookingStatus === "EXPIRED") {
+      if (booking.bookingStatus === 'CANCELLED' || booking.bookingStatus === 'EXPIRED') {
         return false;
       }
       const bStart = new Date(booking.startDateTime).getTime();
@@ -110,19 +110,24 @@ const PricingSection: React.FC<Props> = ({
   const scenarioConfig = {
     ADVANCE: {
       icon: <CalendarCheck size={16} className="text-success" />,
-      label: "Advance Booking",
-      tagColor: "bg-success/10 text-success border-success/20",
+      label: 'Advance Booking',
+      tagColor: 'bg-success/10 text-success border-success/20',
       description: quote
         ? `Pay reservation deposit now. Remaining balance is due before ${formatDeadline(quote.remainingPaymentDueDate)}.`
-        : "Pay reservation deposit now. Remaining balance is due later.",
-      ctaText: quote ? `PAY ₹${quote.reservationDeposit.toLocaleString("en-IN")} DEPOSIT` : "PAY DEPOSIT",
+        : 'Pay reservation deposit now. Remaining balance is due later.',
+      ctaText: quote
+        ? `PAY ₹${quote.reservationDeposit.toLocaleString('en-IN')} DEPOSIT`
+        : 'PAY DEPOSIT',
     },
     IMMEDIATE: {
       icon: <Zap size={16} className="text-primary" />,
-      label: "Immediate Booking",
-      tagColor: "bg-primary/10 text-primary border-primary/20",
-      description: "Event is 7 days away or less. Full payment is required now to confirm your booking.",
-      ctaText: quote ? `PAY ₹${quote.totalAmount.toLocaleString("en-IN")} FULL AMOUNT` : "PAY FULL AMOUNT",
+      label: 'Immediate Booking',
+      tagColor: 'bg-primary/10 text-primary border-primary/20',
+      description:
+        'Event is 7 days away or less. Full payment is required now to confirm your booking.',
+      ctaText: quote
+        ? `PAY ₹${quote.totalAmount.toLocaleString('en-IN')} FULL AMOUNT`
+        : 'PAY FULL AMOUNT',
     },
   };
 
@@ -187,7 +192,9 @@ const PricingSection: React.FC<Props> = ({
               <div className="border-t border-border/60 pt-2 flex justify-between items-center gap-2">
                 <span className="text-muted font-medium">Total Duration:</span>
                 <span className="font-bold text-primary">
-                  {quote ? `${quote.durationInHours % 1 === 0 ? quote.durationInHours.toFixed(0) : quote.durationInHours.toFixed(1)} ${pricingUnit}${quote.durationInHours !== 1 ? "s" : ""}` : "—"}
+                  {quote
+                    ? `${quote.durationInHours % 1 === 0 ? quote.durationInHours.toFixed(0) : quote.durationInHours.toFixed(1)} ${pricingUnit}${quote.durationInHours !== 1 ? 's' : ''}`
+                    : '—'}
                 </span>
               </div>
             </div>
@@ -212,11 +219,11 @@ const PricingSection: React.FC<Props> = ({
                   </div>
                   <div className="flex justify-between text-muted">
                     <span>GST (18%)</span>
-                    <span>₹{quote.gst.toLocaleString("en-IN")}</span>
+                    <span>₹{quote.gst.toLocaleString('en-IN')}</span>
                   </div>
                   <div className="flex justify-between text-muted">
                     <span>Platform Fee (12%)</span>
-                    <span className="shrink-0">₹{quote.platformFee.toLocaleString("en-IN")}</span>
+                    <span className="shrink-0">₹{quote.platformFee.toLocaleString('en-IN')}</span>
                   </div>
                   <div className="border-t border-border pt-3 flex justify-between items-baseline gap-2">
                     <span className="text-sm font-bold text-foreground">Total Amount</span>
@@ -230,24 +237,26 @@ const PricingSection: React.FC<Props> = ({
                 {currentScenario && (
                   <div className="space-y-3">
                     {/* Scenario Tag */}
-                    <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold ${currentScenario.tagColor}`}>
+                    <div
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold ${currentScenario.tagColor}`}
+                    >
                       {currentScenario.icon}
                       {currentScenario.label}
                     </div>
 
                     {/* Deposit / Balance Split */}
-                    {quote.bookingScenario !== "IMMEDIATE" && (
+                    {quote.bookingScenario !== 'IMMEDIATE' && (
                       <div className="bg-background rounded-xl border border-border p-3 sm:p-4 space-y-2.5 text-xs">
                         <div className="flex justify-between items-center">
                           <span className="text-muted font-medium">Reservation Deposit</span>
                           <span className="font-extrabold text-foreground text-sm">
-                            ₹{quote.reservationDeposit.toLocaleString("en-IN")}
+                            ₹{quote.reservationDeposit.toLocaleString('en-IN')}
                           </span>
                         </div>
                         <div className="flex justify-between items-center border-t border-border/60 pt-2">
                           <span className="text-muted font-medium">Remaining Balance</span>
                           <span className="font-semibold text-muted">
-                            ₹{quote.remainingBalance.toLocaleString("en-IN")}
+                            ₹{quote.remainingBalance.toLocaleString('en-IN')}
                           </span>
                         </div>
                       </div>
@@ -265,11 +274,12 @@ const PricingSection: React.FC<Props> = ({
                       disabled={hasOverlap || isSubmitting}
                       onClick={handleBookingSubmit}
                       className={`w-full font-extrabold text-xs sm:text-sm py-3.5 rounded-xl shadow-lg flex items-center justify-center transition-all select-none uppercase tracking-wider
-                        ${hasOverlap
-                          ? "bg-red-500/10 text-red-500 border border-red-500/20 cursor-not-allowed shadow-none"
-                          : isSubmitting
-                          ? "bg-primary/70 text-white cursor-wait"
-                          : "bg-primary hover:bg-primary/90 text-white shadow-primary/20 hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+                        ${
+                          hasOverlap
+                            ? 'bg-red-500/10 text-red-500 border border-red-500/20 cursor-not-allowed shadow-none'
+                            : isSubmitting
+                              ? 'bg-primary/70 text-white cursor-wait'
+                              : 'bg-primary hover:bg-primary/90 text-white shadow-primary/20 hover:scale-[1.01] active:scale-[0.99] cursor-pointer'
                         }
                       `}
                     >
@@ -279,7 +289,7 @@ const PricingSection: React.FC<Props> = ({
                           PROCESSING…
                         </>
                       ) : hasOverlap ? (
-                        "Time Slot Overlapped"
+                        'Time Slot Overlapped'
                       ) : (
                         currentScenario.ctaText
                       )}

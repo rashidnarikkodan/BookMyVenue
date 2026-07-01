@@ -15,7 +15,10 @@ const keys = {
 };
 
 export const otpService = {
-  async generateAndSendOtp(emailAddr: string, purpose: string = 'email-verification'): Promise<{ otp: string }> {
+  async generateAndSendOtp(
+    emailAddr: string,
+    purpose: string = 'email-verification'
+  ): Promise<{ otp: string }> {
     const otp = crypto.randomInt(100000, 999999).toString();
     logger.info(`OTP: ${otp}`);
 
@@ -34,10 +37,14 @@ export const otpService = {
       env.OTP_EXPIRY_SECONDS + env.RESEND_COOLDOWN_SECONDS
     );
 
-    return { otp }
+    return { otp };
   },
 
-  async verifyOtp(emailAddr: string, otp: string, purpose: string = 'email-verification'): Promise<void> {
+  async verifyOtp(
+    emailAddr: string,
+    otp: string,
+    purpose: string = 'email-verification'
+  ): Promise<void> {
     const hashedOtp = await redisService.get(keys.otp(emailAddr, purpose));
     if (!hashedOtp) {
       throw new AppError(MESSAGES.OTP_NOT_FOUND, HTTP_STATUS.BAD_REQUEST);
@@ -70,20 +77,28 @@ export const otpService = {
     await redisService.del(keys.resendAt(emailAddr, purpose));
   },
 
-  async canResend(emailAddr: string, purpose: string = 'email-verification'):
-    Promise<{
-      allowed: boolean;
-      secondsLeft: number;
-    }> {
+  async canResend(
+    emailAddr: string,
+    purpose: string = 'email-verification'
+  ): Promise<{
+    allowed: boolean;
+    secondsLeft: number;
+  }> {
     const resendedAt = await redisService.get(keys.resendAt(emailAddr, purpose));
     if (resendedAt) {
       const secondsPassed = (Date.now() - parseInt(resendedAt, 10)) / 1000;
       if (secondsPassed < env.RESEND_COOLDOWN_SECONDS) {
-        return { allowed: false, secondsLeft: Math.ceil(env.RESEND_COOLDOWN_SECONDS - secondsPassed) };
+        return {
+          allowed: false,
+          secondsLeft: Math.ceil(env.RESEND_COOLDOWN_SECONDS - secondsPassed),
+        };
       }
     }
 
-    const resendCount = parseInt((await redisService.get(keys.resendCount(emailAddr, purpose))) ?? '0', 10);
+    const resendCount = parseInt(
+      (await redisService.get(keys.resendCount(emailAddr, purpose))) ?? '0',
+      10
+    );
     if (resendCount >= env.MAX_RESEND_COUNT) {
       return { allowed: false, secondsLeft: 0 };
     }

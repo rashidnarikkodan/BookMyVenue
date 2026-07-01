@@ -5,12 +5,7 @@ import { MESSAGES } from '@/constants/messages';
 import { HTTP_STATUS } from '@/constants/http';
 import { authService, refreshTokenService } from '../services/auth.service';
 
-export const signup = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
-
+export const signup = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const validatedData = req.body;
     const result = await authService.signup(validatedData);
@@ -20,12 +15,7 @@ export const signup = async (
   }
 };
 
-export const verifyOtp = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
-
+export const verifyOtp = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const data = req.body;
     await authService.verifyOtp(data);
@@ -35,12 +25,7 @@ export const verifyOtp = async (
   }
 };
 
-export const resendOtp = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
-
+export const resendOtp = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { verificationToken } = req.body;
     await authService.resendOtp(verificationToken);
@@ -83,12 +68,7 @@ export const googleAuth = async (
   }
 };
 
-export const signin = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
-
+export const signin = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const validatedData = req.body;
 
@@ -138,12 +118,7 @@ export const refreshToken = async (
   }
 };
 
-export const logout = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
-
+export const logout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const userId = req.user?.id;
     if (!userId) {
@@ -170,12 +145,7 @@ export const logout = async (
   }
 };
 
-
-export const forgotPassword = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const forgotPassword = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email } = req.body;
     const result = await authService.forgotPassword(req.body);
@@ -187,9 +157,9 @@ export const forgotPassword = async (
       'If an account exists, an OTP has been sent to the registered email.'
     );
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 
 export const verifyForgotPasswordOtp = async (
   req: Request,

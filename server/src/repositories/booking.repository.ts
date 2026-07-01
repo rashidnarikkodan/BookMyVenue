@@ -18,9 +18,9 @@ interface ReservationDetails {
 // ── Create ──────────────────────────────────────────────────
 
 export const createBooking = async (
-    userId: string,
-    payload: CreateBookingPayload,
-    reservation: ReservationDetails
+  userId: string,
+  payload: CreateBookingPayload,
+  reservation: ReservationDetails
 ): Promise<IBooking> => {
     const doc = await Booking.create({
         venue: new mongoose.Types.ObjectId(payload.venueId),
@@ -158,12 +158,12 @@ export const hasOverlappingBooking = async (
   endDateTime: Date,
   excludeBookingId?: string
 ): Promise<boolean> => {
-    const filter: Record<string, any> = {
-        venue: new mongoose.Types.ObjectId(venueId),
-        bookingStatus: { $in: [BookingStatus.CONFIRMED, BookingStatus.RESERVED] },
-        startDateTime: { $lt: endDateTime },
-        endDateTime: { $gt: startDateTime },
-    };
+  const filter: Record<string, any> = {
+    venue: new mongoose.Types.ObjectId(venueId),
+    bookingStatus: { $in: [BookingStatus.CONFIRMED, BookingStatus.RESERVED] },
+    startDateTime: { $lt: endDateTime },
+    endDateTime: { $gt: startDateTime },
+  };
 
   if (excludeBookingId) {
     filter._id = { $ne: new mongoose.Types.ObjectId(excludeBookingId) };
@@ -179,20 +179,20 @@ export const hasOverlappingBooking = async (
  * Sets status to RESERVED + DEPOSIT_PAID.
  */
 export const confirmDepositPayment = async (
-    bookingId: string,
-    depositAmount: number
+  bookingId: string,
+  depositAmount: number
 ): Promise<IBooking | null> => {
-    return Booking.findByIdAndUpdate(
-        bookingId,
-        {
-            bookingStatus: BookingStatus.RESERVED,
-            paymentStatus: PaymentStatus.PARTIAL,
-            amountPaid: depositAmount,
-        },
-        { new: true }
-    )
-        .populate('venue', 'name address images')
-        .populate('user', 'fullName email') as Promise<IBooking | null>;
+  return Booking.findByIdAndUpdate(
+    bookingId,
+    {
+      bookingStatus: BookingStatus.RESERVED,
+      paymentStatus: PaymentStatus.PARTIAL,
+      amountPaid: depositAmount,
+    },
+    { new: true }
+  )
+    .populate('venue', 'name address images')
+    .populate('user', 'fullName email') as Promise<IBooking | null>;
 };
 
 /**
@@ -200,20 +200,20 @@ export const confirmDepositPayment = async (
  * Sets status to CONFIRMED + PAID.
  */
 export const confirmFullPayment = async (
-    bookingId: string,
-    totalAmount: number
+  bookingId: string,
+  totalAmount: number
 ): Promise<IBooking | null> => {
-    return Booking.findByIdAndUpdate(
-        bookingId,
-        {
-            bookingStatus: BookingStatus.CONFIRMED,
-            paymentStatus: PaymentStatus.PAID,
-            amountPaid: totalAmount,
-        },
-        { new: true }
-    )
-        .populate('venue', 'name address images')
-        .populate('user', 'fullName email') as Promise<IBooking | null>;
+  return Booking.findByIdAndUpdate(
+    bookingId,
+    {
+      bookingStatus: BookingStatus.CONFIRMED,
+      paymentStatus: PaymentStatus.PAID,
+      amountPaid: totalAmount,
+    },
+    { new: true }
+  )
+    .populate('venue', 'name address images')
+    .populate('user', 'fullName email') as Promise<IBooking | null>;
 };
 
 export const updateBookingStatus = async (

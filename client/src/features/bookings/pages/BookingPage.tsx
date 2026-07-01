@@ -31,10 +31,10 @@ const BookingPage = () => {
   const [endDateTime, setEndDateTime] = useState<string | null>(null);
   const [guests, setGuests] = useState<number>(1);
   // Contact details
-  const [contactName, setContactName] = useState("");
-  const [contactEmail, setContactEmail] = useState("");
-  const [contactPhone, setContactPhone] = useState("");
-  const [specialRequests, setSpecialRequests] = useState("");
+  const [contactName, setContactName] = useState('');
+  const [contactEmail, setContactEmail] = useState('');
+  const [contactPhone, setContactPhone] = useState('');
+  const [specialRequests, setSpecialRequests] = useState('');
 
   // Quote state calculated by the backend
   const [quote, setQuote] = useState<any | null>(null);
@@ -200,28 +200,41 @@ const BookingPage = () => {
             });
             if (verifyRes.success) {
               toast.success(verifyRes.message || 'Payment verified!');
+              toast.success(verifyRes.message || 'Payment verified!');
               setSuccessData(verifyRes.data);
             } else {
               toast.error(verifyRes.message || 'Signature verification failed.');
+              toast.error(verifyRes.message || 'Signature verification failed.');
             }
           } catch (err: any) {
+            toast.error(
+              err?.response?.data?.message || err?.message || 'Failed to verify payment.'
+            );
             toast.error(err?.response?.data?.message || err?.message || 'Failed to verify payment.');
           } finally {
             setIsSubmitting(false);
           }
         },
-        prefill: { name: contactName, email: contactEmail, contact: contactPhone },
-        theme: { color: '#4f46e5' },
+        prefill: {
+          name: contactName,
+          email: contactEmail,
+          contact: contactPhone,
+        },
+        theme: {
+          color: '#4f46e5',
+        },
         modal: {
           // ondismiss fires on all modal closes (success, failure, and user dismiss).
           // Delete the booking only if no payment was attempted.
           ondismiss: async () => {
             if (localPaymentHandled) return;
             toast.info('Payment cancelled. Freeing reserved slot…');
+            toast.info('Payment cancelled. Releasing reserved slots...');
             try {
               await bookingsApi.deleteBooking(booking._id);
             } catch (err) {
               console.error('Failed to delete booking on dismiss:', err);
+              console.error('Failed to cancel pending booking', err);
             }
             setIsSubmitting(false);
           },

@@ -47,15 +47,12 @@ export default function BookingSuccessModal({
             <CheckCircle2 size={36} className="sm:w-10 sm:h-10 animate-bounce" />
           </div>
           <h2 className="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">
-            {successData.bookingStatus === 'CONFIRMED'
-              ? 'Booking Confirmed!'
-              : 'Venue Reserved!'}
+            {successData.bookingStatus === 'CONFIRMED' ? 'Booking Confirmed!' : 'Venue Reserved!'}
           </h2>
           <p className="text-xs text-muted max-w-sm mx-auto">
             {successData.bookingStatus === 'CONFIRMED'
               ? 'Your booking is confirmed with full payment received. We have sent a copy of the invoice to your registered email.'
-              : `Your venue is reserved! You've paid the 20% deposit of ₹${successData.amountPaid?.toLocaleString('en-IN')}. Your remaining balance of ₹${successData.remainingBalance?.toLocaleString('en-IN')} is due by ${successData.remainingPaymentDueDate ? new Date(successData.remainingPaymentDueDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }) + ' (EOD)' : 'the event date'}.`
-            }
+              : `Your venue is reserved! You've paid the 20% deposit of ₹${successData.amountPaid?.toLocaleString('en-IN')}. Your remaining balance of ₹${successData.remainingBalance?.toLocaleString('en-IN')} is due by ${successData.remainingPaymentDueDate ? new Date(successData.remainingPaymentDueDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }) + ' (EOD)' : 'the event date'}.`}
           </p>
         </div>
 

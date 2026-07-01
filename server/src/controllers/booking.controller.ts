@@ -21,7 +21,10 @@ export const getBookingQuote = async (req: Request, res: Response, next: NextFun
   try {
     const { venueId, startDateTime, endDateTime } = req.body;
     if (!venueId || !startDateTime || !endDateTime) {
-      throw new AppError('venueId, startDateTime, and endDateTime are required', HTTP_STATUS.BAD_REQUEST);
+      throw new AppError(
+        'venueId, startDateTime, and endDateTime are required',
+        HTTP_STATUS.BAD_REQUEST
+      );
     }
 
     const quote = await calculateQuoteService(venueId, startDateTime, endDateTime);
@@ -43,10 +46,7 @@ export const createBooking = async (req: Request, res: Response, next: NextFunct
     const { booking, razorpayChargeAmount } = await createBookingService(userId, payload);
 
     // Create Razorpay order for the charge amount (deposit or full)
-    const orderDetails = await createRazorpayOrder(
-      razorpayChargeAmount,
-      booking._id.toString()
-    );
+    const orderDetails = await createRazorpayOrder(razorpayChargeAmount, booking._id.toString());
 
     success(res, HTTP_STATUS.CREATED, { payment: orderDetails, booking }, 'Booking created');
   } catch (error) {
@@ -99,7 +99,12 @@ export const payBalance = async (req: Request, res: Response, next: NextFunction
       `${booking._id.toString()}-balance`
     );
 
-    success(res, HTTP_STATUS.OK, { payment: orderDetails, booking }, 'Balance payment order created');
+    success(
+      res,
+      HTTP_STATUS.OK,
+      { payment: orderDetails, booking },
+      'Balance payment order created'
+    );
   } catch (error) {
     next(error);
   }

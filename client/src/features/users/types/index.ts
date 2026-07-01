@@ -58,7 +58,14 @@ export type PaymentMethod = 'online' | 'cash';
 
 export type BookingStatus = 'pending' | 'reserved' | 'confirmed' | 'cancelled' | 'completed' | 'expired';
 
-export type PaymentStatus = 'pending' | 'partial' | 'paid' | 'overdue' | 'cancelled' | 'failed' | 'refunded';
+export type PaymentStatus =
+  | 'pending'
+  | 'partial'
+  | 'paid'
+  | 'overdue'
+  | 'cancelled'
+  | 'failed'
+  | 'refunded';
 export interface MyBookingsResponse {
   bookings: Booking[];
   totalBookings: number;

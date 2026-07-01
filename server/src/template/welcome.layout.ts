@@ -1,10 +1,10 @@
-import { emailLayout } from "./email.layout";
+import { emailLayout } from './email.layout';
 
 export const welcomeEmail = (name: string) => ({
-  subject: "Welcome to BookMyVenue",
+  subject: 'Welcome to BookMyVenue',
 
   html: emailLayout(
-    "Welcome",
+    'Welcome',
     "We're happy to have you",
 
     `

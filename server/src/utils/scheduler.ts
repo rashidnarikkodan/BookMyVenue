@@ -14,7 +14,9 @@ export const runOverdueAndCancellationCheck = async () => {
     const overdueResult = await Booking.updateMany(
       {
         bookingStatus: BookingStatus.RESERVED,
-        paymentStatus: { $in: [PaymentStatus.PENDING, PaymentStatus.PARTIAL, PaymentStatus.DEPOSIT_PAID] },
+        paymentStatus: {
+          $in: [PaymentStatus.PENDING, PaymentStatus.PARTIAL, PaymentStatus.DEPOSIT_PAID],
+        },
         remainingPaymentDueDate: { $ne: null, $lt: now },
       },
       {
@@ -33,7 +35,14 @@ export const runOverdueAndCancellationCheck = async () => {
     // - autoCancellationDate is set and past
     const toCancel = await Booking.find({
       bookingStatus: BookingStatus.RESERVED,
-      paymentStatus: { $in: [PaymentStatus.PENDING, PaymentStatus.PARTIAL, PaymentStatus.DEPOSIT_PAID, PaymentStatus.OVERDUE] },
+      paymentStatus: {
+        $in: [
+          PaymentStatus.PENDING,
+          PaymentStatus.PARTIAL,
+          PaymentStatus.DEPOSIT_PAID,
+          PaymentStatus.OVERDUE,
+        ],
+      },
       autoCancellationDate: { $ne: null, $lt: now },
     });
 
@@ -43,7 +52,9 @@ export const runOverdueAndCancellationCheck = async () => {
         booking.paymentStatus = PaymentStatus.CANCELLED;
         booking.cancellationReason = 'Auto-cancelled due to payment deadline expiration.';
         await booking.save();
-        logger.info(`Scheduler: Auto-cancelled booking ${booking._id} due to unpaid balance expiration.`);
+        logger.info(
+          `Scheduler: Auto-cancelled booking ${booking._id} due to unpaid balance expiration.`
+        );
       }
     }
   } catch (error) {

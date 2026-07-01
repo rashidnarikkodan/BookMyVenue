@@ -100,7 +100,9 @@ const BookingCard = ({ booking, onCancelSuccess }: BookingCardProps) => {
               toast.error(verifyRes.message || 'Payment signature verification failed.');
             }
           } catch (err: any) {
-            toast.error(err?.response?.data?.message || err?.message || 'Failed to verify payment.');
+            toast.error(
+              err?.response?.data?.message || err?.message || 'Failed to verify payment.'
+            );
           } finally {
             setPayingBalance(false);
           }
@@ -137,8 +139,10 @@ const BookingCard = ({ booking, onCancelSuccess }: BookingCardProps) => {
       // Open modal — state is resolved via callbacks above, not in finally
       rzp.open();
     } catch (err: any) {
-      // Reached only if order creation failed before opening the modal
-      toast.error(err?.response?.data?.message || err?.message || 'Failed to checkout remaining balance.');
+      toast.error(
+        err?.response?.data?.message || err?.message || 'Failed to checkout remaining balance.'
+      );
+    } finally {
       setPayingBalance(false);
     }
   };
@@ -252,7 +256,8 @@ const BookingCard = ({ booking, onCancelSuccess }: BookingCardProps) => {
                     </>
                   )}
                 </button>
-              ) : booking.bookingStatus === 'reserved' && (booking.paymentStatus === 'partial' || booking.paymentStatus === 'overdue') ? (
+              ) : booking.bookingStatus === 'reserved' &&
+                (booking.paymentStatus === 'partial' || booking.paymentStatus === 'overdue') ? (
                 <button
                   onClick={handlePayBalance}
                   disabled={payingBalance}
@@ -272,9 +277,7 @@ const BookingCard = ({ booking, onCancelSuccess }: BookingCardProps) => {
                 </button>
               ) : (
                 booking.amountPaid === 0 && (
-                  <span className="text-[11px] font-medium text-foreground/40">
-                    Unpaid
-                  </span>
+                  <span className="text-[11px] font-medium text-foreground/40">Unpaid</span>
                 )
               )}
             </div>

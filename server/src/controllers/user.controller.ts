@@ -5,6 +5,7 @@ import success from '@/utils/response';
 import { HTTP_STATUS } from '@/constants/http';
 import Owner from '@/models/owner.model';
 import User from '@/models/user.model';
+
 import { uploadToCloudinary } from '@/libs/cloudinary';
 import fs from 'fs/promises';
 import { AppError } from '@/utils/AppError';
@@ -259,9 +260,6 @@ export const updateProfile = async (req: Request, res: Response, next: NextFunct
   }
 };
 
-/**
- * Get bookings for the logged-in user
- */
 export const getUserBookings = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.user?.id;
