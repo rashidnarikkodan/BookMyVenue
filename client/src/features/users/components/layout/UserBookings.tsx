@@ -60,12 +60,16 @@ export default function UserBookings() {
   // Filter bookings locally
   const filteredBookings = bookings.filter((b) => {
     if (selectedFilter === 'ALL') return true;
-    if (selectedFilter === 'PENDING_PAYMENT') return b.bookingStatus === 'pending_payment';
-    if (selectedFilter === 'CANCELLED') return b.bookingStatus === 'cancelled';
+    if (selectedFilter === 'PENDING_PAYMENT') {
+      return b.bookingStatus === 'reserved' && 
+        (b.paymentStatus === 'pending' || b.paymentStatus === 'partial' || b.paymentStatus === 'overdue');
+    }
+    if (selectedFilter === 'CANCELLED') return b.bookingStatus === 'cancelled' || b.bookingStatus === 'expired';
     if (selectedFilter === 'COMPLETED') return b.bookingStatus === 'completed';
     if (selectedFilter === 'UPCOMING') {
-      // confirmed booking and startDateTime is in the future
-      return b.bookingStatus === 'confirmed' && new Date(b.startDateTime) > new Date();
+      const isSecured = b.bookingStatus === 'confirmed' || 
+        (b.bookingStatus === 'reserved' && (b.paymentStatus === 'partial' || b.paymentStatus === 'overdue'));
+      return isSecured && new Date(b.startDateTime) > new Date();
     }
     return true;
   });

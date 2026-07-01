@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { MapPin, Users, Calendar, Clock, CreditCard, Loader2, XCircle } from 'lucide-react';
+import { CreditCard, Loader2, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { bookingsApi } from '@/features/bookings/services/bookings.api';
 import type { Booking } from '../../types';
+import { BookingDetails } from './BookingDetails';
+import { BookingPaymentInfo } from './BookingPaymentInfo';
 
 interface BookingCardProps {
   booking: Booking;
@@ -11,6 +13,7 @@ interface BookingCardProps {
 
 const BookingCard = ({ booking, onCancelSuccess }: BookingCardProps) => {
   const [cancelling, setCancelling] = useState(false);
+  const [payingBalance, setPayingBalance] = useState(false);
 
   const handleCancelBooking = async () => {
     if (!window.confirm('Are you sure you want to cancel this pending booking?')) {
@@ -33,39 +36,123 @@ const BookingCard = ({ booking, onCancelSuccess }: BookingCardProps) => {
     }
   };
 
-  const getStatusStyle = (status: string) => {
+  const loadRazorpay = () => {
+    return new Promise((resolve) => {
+      if ((window as any).Razorpay) {
+        resolve(true);
+        return;
+      }
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.async = true;
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
+  const handlePayBalance = async () => {
+    try {
+      setPayingBalance(true);
+      const isLoaded = await loadRazorpay();
+      if (!isLoaded) {
+        toast.error('Failed to load Razorpay SDK. Please refresh and try again.');
+        return;
+      }
+
+      // Create balance payment order
+      const res = await bookingsApi.payBalance(booking.id);
+      if (!res.success || !res.data) {
+        throw new Error(res.message || 'Failed to initiate balance payment.');
+      }
+
+      const { payment } = res.data;
+      const { orderId, amount, currency } = payment;
+
+      // Open Razorpay checkout modal
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount,
+        currency,
+        name: 'BookMyVenue',
+        description: `Remaining Balance for ${booking.venue.name}`,
+        order_id: orderId,
+        handler: async (response: any) => {
+          try {
+            setPayingBalance(true);
+            const verifyRes = await bookingsApi.verifyBalancePayment({
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature,
+              bookingId: booking.id,
+            });
+
+            if (verifyRes.success) {
+              toast.success('Remaining balance paid and booking fully confirmed!');
+              onCancelSuccess();
+            } else {
+              toast.error(verifyRes.message || 'Payment signature verification failed.');
+            }
+          } catch (err: any) {
+            toast.error(err?.response?.data?.message || err?.message || 'Failed to verify payment.');
+          } finally {
+            setPayingBalance(false);
+          }
+        },
+        prefill: {
+          name: booking.contactName,
+          email: booking.contactEmail,
+          contact: booking.contactPhone,
+        },
+        theme: {
+          color: '#4f46e5',
+        },
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+      rzp.open();
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || err?.message || 'Failed to checkout remaining balance.');
+    } finally {
+      setPayingBalance(false);
+    }
+  };
+
+  const getStatusStyle = (status: string, paymentStatus: string) => {
+    if (status === 'reserved' && paymentStatus === 'pending') {
+      return 'bg-warning/10 text-warning border-warning/20';
+    }
+    if (status === 'reserved' && paymentStatus === 'partial') {
+      return 'bg-indigo-500/10 text-indigo-500 border-indigo-500/20';
+    }
+    if (paymentStatus === 'overdue') {
+      return 'bg-error/10 text-error border-error/20';
+    }
     switch (status) {
       case 'confirmed':
         return 'bg-success/10 text-success border-success/20';
-      case 'pending_payment':
-        return 'bg-warning/10 text-warning border-warning/20';
       case 'completed':
         return 'bg-info/10 text-info border-info/20';
       case 'cancelled':
+        return 'bg-error/10 text-error border-error/20';
+      case 'expired':
         return 'bg-error/10 text-error border-error/20';
       default:
         return 'bg-muted/10 text-foreground/75 border-border';
     }
   };
 
-  const formatStatus = (status: string) => {
+  const formatStatus = (status: string, paymentStatus: string) => {
+    if (status === 'reserved' && paymentStatus === 'pending') {
+      return 'PENDING PAYMENT';
+    }
+    if (status === 'reserved' && paymentStatus === 'partial') {
+      return 'RESERVED (DEPOSIT PAID)';
+    }
+    if (paymentStatus === 'overdue') {
+      return 'OVERDUE';
+    }
     return status.replace('_', ' ').toUpperCase();
-  };
-
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('en-IN', {
-      weekday: 'short',
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-    });
-  };
-
-  const formatTime = (dateStr: string) => {
-    return new Date(dateStr).toLocaleTimeString('en-IN', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
   };
 
   return (
@@ -85,9 +172,9 @@ const BookingCard = ({ booking, onCancelSuccess }: BookingCardProps) => {
         )}
         <div className="absolute top-4 right-4">
           <span
-            className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold border ${getStatusStyle(booking.bookingStatus)}`}
+            className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold border ${getStatusStyle(booking.bookingStatus, booking.paymentStatus)}`}
           >
-            {formatStatus(booking.bookingStatus)}
+            {formatStatus(booking.bookingStatus, booking.paymentStatus)}
           </span>
         </div>
       </div>
@@ -95,47 +182,11 @@ const BookingCard = ({ booking, onCancelSuccess }: BookingCardProps) => {
       {/* Main Content */}
       <div className="p-6 flex-1 flex flex-col justify-between">
         <div>
-          {/* Venue details */}
-          <h3 className="text-lg font-bold text-foreground line-clamp-1">{booking.venue.name}</h3>
-          <div className="flex items-center gap-1.5 text-xs text-foreground/60 mt-1">
-            <MapPin className="w-3.5 h-3.5 text-primary flex-shrink-0" />
-            <span className="line-clamp-1">{booking.venue.location}</span>
-          </div>
+          {/* Venue & Date Details */}
+          <BookingDetails booking={booking} />
 
-          <div className="border-t border-border/60 my-4" />
-
-          {/* Time & Dates */}
-          <div className="space-y-2.5">
-            <div className="flex items-center gap-2 text-xs text-foreground/80">
-              <Calendar className="w-4 h-4 text-foreground/40" />
-              <div>
-                <span className="font-semibold">{formatDate(booking.startDateTime)}</span>
-                {formatDate(booking.startDateTime) !== formatDate(booking.endDateTime) && (
-                  <>
-                    {' '}
-                    - <span className="font-semibold">{formatDate(booking.endDateTime)}</span>
-                  </>
-                )}
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 text-xs text-foreground/80">
-              <Clock className="w-4 h-4 text-foreground/40" />
-              <span>
-                {formatTime(booking.startDateTime)} - {formatTime(booking.endDateTime)}
-              </span>
-            </div>
-
-            <div className="flex items-center gap-2 text-xs text-foreground/80">
-              <Users className="w-4 h-4 text-foreground/40" />
-              <span>{booking.guests} guests</span>
-            </div>
-
-            <div className="flex items-center gap-2 text-xs text-foreground/80">
-              <CreditCard className="w-4 h-4 text-foreground/40" />
-              <span className="capitalize">Payment: {booking.paymentMethod}</span>
-            </div>
-          </div>
+          {/* Payment Info / Countdown banner */}
+          <BookingPaymentInfo booking={booking} />
         </div>
 
         {/* Pricing & Footer Actions */}
@@ -149,30 +200,58 @@ const BookingCard = ({ booking, onCancelSuccess }: BookingCardProps) => {
             </p>
           </div>
 
-          <div>
-            {booking.bookingStatus === 'pending_payment' ? (
-              <button
-                onClick={handleCancelBooking}
-                disabled={cancelling}
-                className="px-4 py-2 border border-error/30 text-error hover:bg-error/5 text-xs font-semibold rounded-xl transition-all disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
-              >
-                {cancelling ? (
-                  <>
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    Cancelling...
-                  </>
-                ) : (
-                  <>
-                    <XCircle className="w-3.5 h-3.5" />
-                    Cancel Booking
-                  </>
-                )}
-              </button>
-            ) : (
-              <span className="text-[11px] font-medium text-foreground/40">
+          <div className="flex items-center gap-3">
+            {booking.amountPaid > 0 && (
+              <span className="text-[11px] font-semibold text-success bg-success/5 border border-success/15 px-2.5 py-1 rounded-lg">
                 Paid: ₹{booking.amountPaid.toLocaleString('en-IN')}
               </span>
             )}
+
+            <div>
+              {booking.bookingStatus === 'reserved' && booking.paymentStatus === 'pending' ? (
+                <button
+                  onClick={handleCancelBooking}
+                  disabled={cancelling}
+                  className="px-4 py-2 border border-error/30 text-error hover:bg-error/5 text-xs font-semibold rounded-xl transition-all disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
+                >
+                  {cancelling ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      Cancelling...
+                    </>
+                  ) : (
+                    <>
+                      <XCircle className="w-3.5 h-3.5" />
+                      Cancel Booking
+                    </>
+                  )}
+                </button>
+              ) : booking.bookingStatus === 'reserved' && (booking.paymentStatus === 'partial' || booking.paymentStatus === 'overdue') ? (
+                <button
+                  onClick={handlePayBalance}
+                  disabled={payingBalance}
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl transition-all disabled:opacity-50 flex items-center gap-1.5 cursor-pointer shadow-sm hover:shadow hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  {payingBalance ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      <CreditCard className="w-3.5 h-3.5" />
+                      Pay Balance
+                    </>
+                  )}
+                </button>
+              ) : (
+                booking.amountPaid === 0 && (
+                  <span className="text-[11px] font-medium text-foreground/40">
+                    Unpaid
+                  </span>
+                )
+              )}
+            </div>
           </div>
         </div>
       </div>
