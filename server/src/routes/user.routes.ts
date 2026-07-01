@@ -3,6 +3,7 @@ import { Router } from 'express';
 import { authMiddleware } from '@/middlewares/auth.middleware';
 import { authorizeRoles } from '@/middlewares/role.middleware';
 import { getProfile, updateProfile, getUserBookings } from '@/controllers/user.controller';
+import { getUserWallet } from '@/controllers/wallet.controller';
 import { upload } from '@/middlewares/upload.middleware';
 
 const router = Router();
@@ -22,6 +23,7 @@ router.put(
   updateProfile
 );
 router.get('/bookings', getUserBookings);
+router.get('/wallet', getUserWallet);
 
 // Public routes
 
