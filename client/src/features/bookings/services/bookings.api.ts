@@ -7,6 +7,15 @@ export const bookingsApi = {
     return res.data;
   },
 
+  calculateQuote: async (quoteData: {
+    venueId: string;
+    startDateTime: string;
+    endDateTime: string;
+  }): Promise<any> => {
+    const res = await apiClient.post('/bookings/quote', quoteData);
+    return res.data;
+  },
+
   cancelPendingBooking: async (bookingId: string): Promise<any> => {
     const res = await apiClient.delete(`/bookings/pending/${bookingId}`);
     return res.data;
