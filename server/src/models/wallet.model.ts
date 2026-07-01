@@ -1,10 +1,10 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IWallet extends Document {
   userId: mongoose.Types.ObjectId;
   balance: number;
   currency: string;
-  status: "ACTIVE" | "SUSPENDED" | "LOCKED";
+  status: 'ACTIVE' | 'SUSPENDED' | 'LOCKED';
   createdAt: Date;
   updatedAt: Date;
 }
@@ -13,7 +13,7 @@ const walletSchema = new Schema<IWallet>(
   {
     userId: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
       unique: true,
       index: true,
@@ -27,13 +27,13 @@ const walletSchema = new Schema<IWallet>(
 
     currency: {
       type: String,
-      default: "INR",
+      default: 'INR',
     },
 
     status: {
       type: String,
-      enum: ["ACTIVE", "SUSPENDED", "LOCKED"],
-      default: "ACTIVE",
+      enum: ['ACTIVE', 'SUSPENDED', 'LOCKED'],
+      default: 'ACTIVE',
     },
   },
   {
@@ -41,4 +41,4 @@ const walletSchema = new Schema<IWallet>(
   }
 );
 
-export const Wallet = mongoose.model<IWallet>("Wallet", walletSchema);
+export const Wallet = mongoose.model<IWallet>('Wallet', walletSchema);

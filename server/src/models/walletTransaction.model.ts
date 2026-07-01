@@ -1,25 +1,25 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IWalletTransaction extends Document {
   walletId: mongoose.Types.ObjectId;
   userId: mongoose.Types.ObjectId;
 
-  type: "CREDIT" | "DEBIT";
+  type: 'CREDIT' | 'DEBIT';
 
   amount: number;
 
   balanceBefore: number;
   balanceAfter: number;
 
-  status: "PENDING" | "SUCCESS" | "FAILED" | "REVERSED";
+  status: 'PENDING' | 'SUCCESS' | 'FAILED' | 'REVERSED';
 
   source:
-    | "BOOKING_DEPOSIT"
-    | "BOOKING_PAYMENT"
-    | "REFUND"
-    | "CASHBACK"
-    | "ADJUSTMENT"
-    | "WITHDRAWAL";
+    | 'BOOKING_DEPOSIT'
+    | 'BOOKING_PAYMENT'
+    | 'REFUND'
+    | 'CASHBACK'
+    | 'ADJUSTMENT'
+    | 'WITHDRAWAL';
 
   bookingId?: mongoose.Types.ObjectId;
   paymentId?: mongoose.Types.ObjectId;
@@ -36,21 +36,21 @@ const walletTransactionSchema = new Schema<IWalletTransaction>(
   {
     walletId: {
       type: Schema.Types.ObjectId,
-      ref: "Wallet",
+      ref: 'Wallet',
       required: true,
       index: true,
     },
 
     userId: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
       index: true,
     },
 
     type: {
       type: String,
-      enum: ["CREDIT", "DEBIT"],
+      enum: ['CREDIT', 'DEBIT'],
       required: true,
     },
 
@@ -72,31 +72,31 @@ const walletTransactionSchema = new Schema<IWalletTransaction>(
 
     status: {
       type: String,
-      enum: ["PENDING", "SUCCESS", "FAILED", "REVERSED"],
-      default: "SUCCESS",
+      enum: ['PENDING', 'SUCCESS', 'FAILED', 'REVERSED'],
+      default: 'SUCCESS',
     },
 
     source: {
       type: String,
       enum: [
-        "BOOKING_DEPOSIT",
-        "BOOKING_PAYMENT",
-        "REFUND",
-        "CASHBACK",
-        "ADJUSTMENT",
-        "WITHDRAWAL",
+        'BOOKING_DEPOSIT',
+        'BOOKING_PAYMENT',
+        'REFUND',
+        'CASHBACK',
+        'ADJUSTMENT',
+        'WITHDRAWAL',
       ],
       required: true,
     },
 
     bookingId: {
       type: Schema.Types.ObjectId,
-      ref: "Booking",
+      ref: 'Booking',
     },
 
     paymentId: {
       type: Schema.Types.ObjectId,
-      ref: "Payment",
+      ref: 'Payment',
     },
 
     description: String,
@@ -111,6 +111,6 @@ const walletTransactionSchema = new Schema<IWalletTransaction>(
 );
 
 export const WalletTransaction = mongoose.model<IWalletTransaction>(
-  "WalletTransaction",
+  'WalletTransaction',
   walletTransactionSchema
 );

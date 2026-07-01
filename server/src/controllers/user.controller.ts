@@ -260,7 +260,6 @@ export const updateProfile = async (req: Request, res: Response, next: NextFunct
   }
 };
 
-
 export const getUserBookings = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.user?.id;
@@ -287,4 +286,3 @@ export const getUserBookings = async (req: Request, res: Response, next: NextFun
     next(error);
   }
 };
-

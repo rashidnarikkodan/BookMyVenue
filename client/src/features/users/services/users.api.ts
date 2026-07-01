@@ -131,11 +131,17 @@ export const usersApi = {
       let autoCancellationDate = b.autoCancellationDate || null;
 
       const mappedPaymentStatus = b.paymentStatus
-        ? (b.paymentStatus.toLowerCase() === 'deposit_paid' ? 'partial' : b.paymentStatus.toLowerCase())
+        ? b.paymentStatus.toLowerCase() === 'deposit_paid'
+          ? 'partial'
+          : b.paymentStatus.toLowerCase()
         : '';
       const mappedBookingStatus = b.bookingStatus ? b.bookingStatus.toLowerCase() : '';
 
-      if (!remainingPaymentDueDate && mappedBookingStatus === 'reserved' && (mappedPaymentStatus === 'partial' || mappedPaymentStatus === 'deposit_paid')) {
+      if (
+        !remainingPaymentDueDate &&
+        mappedBookingStatus === 'reserved' &&
+        (mappedPaymentStatus === 'partial' || mappedPaymentStatus === 'deposit_paid')
+      ) {
         const eventDate = new Date(b.startDateTime);
         const bookingDate = new Date(b.createdAt || b.bookingDate || Date.now());
         const diffMs = eventDate.getTime() - bookingDate.getTime();
@@ -145,10 +151,16 @@ export const usersApi = {
           const offsetDays = leadTimeDays * 0.5;
           const calculatedDue = new Date(eventDate.getTime() - offsetDays * 24 * 60 * 60 * 1000);
           calculatedDue.setHours(23, 59, 59, 999);
-          remainingPaymentDueDate = (calculatedDue > eventDate ? eventDate : calculatedDue).toISOString();
-          
-          const calculatedCancel = new Date(new Date(remainingPaymentDueDate).getTime() + 24 * 60 * 60 * 1000);
-          autoCancellationDate = (calculatedCancel > eventDate ? eventDate : calculatedCancel).toISOString();
+          remainingPaymentDueDate = (
+            calculatedDue > eventDate ? eventDate : calculatedDue
+          ).toISOString();
+
+          const calculatedCancel = new Date(
+            new Date(remainingPaymentDueDate).getTime() + 24 * 60 * 60 * 1000
+          );
+          autoCancellationDate = (
+            calculatedCancel > eventDate ? eventDate : calculatedCancel
+          ).toISOString();
         } else {
           remainingPaymentDueDate = bookingDate.toISOString();
           isImmediatePaymentRequired = true;

@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 
 const ForgotPasswordDetails = () => {
   const setForgotPasswordData = useAuthStore((state) => state.setForgotPasswordData);
-  
+
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

@@ -1,18 +1,14 @@
-
-import React from "react";
-import type { WalletTransaction } from "../types";
-import TransactionItem from "./TransactionItems";
-import EmptyWallet from "./EmptyWallet";
+import React from 'react';
+import type { WalletTransaction } from '../types';
+import TransactionItem from './TransactionItems';
+import EmptyWallet from './EmptyWallet';
 
 interface TransactionListProps {
   transactions: WalletTransaction[];
   loading?: boolean;
 }
 
-const TransactionList: React.FC<TransactionListProps> = ({
-  transactions,
-  loading = false,
-}) => {
+const TransactionList: React.FC<TransactionListProps> = ({ transactions, loading = false }) => {
   if (loading) {
     return (
       <div className="w-full space-y-3 mt-4">

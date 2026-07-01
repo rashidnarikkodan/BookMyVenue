@@ -85,7 +85,9 @@ const ResetPassword = () => {
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         {/* New Password */}
         <div className="flex flex-col gap-1">
-          <label className="text-[10px] font-medium text-slate-400 tracking-wide">NEW PASSWORD</label>
+          <label className="text-[10px] font-medium text-slate-400 tracking-wide">
+            NEW PASSWORD
+          </label>
           <div className="relative">
             <input
               type={showPassword ? 'text' : 'password'}
@@ -109,7 +111,9 @@ const ResetPassword = () => {
 
         {/* Confirm Password */}
         <div className="flex flex-col gap-1">
-          <label className="text-[10px] font-medium text-slate-400 tracking-wide">CONFIRM PASSWORD</label>
+          <label className="text-[10px] font-medium text-slate-400 tracking-wide">
+            CONFIRM PASSWORD
+          </label>
           <div className="relative">
             <input
               type={showConfirmPassword ? 'text' : 'password'}

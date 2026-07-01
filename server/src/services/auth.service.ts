@@ -24,9 +24,7 @@ type AuthTokenPayload = {
   purpose: 'email-verification' | 'password-reset';
 };
 
-const signup = async (
-  userData: RegisterDto
-): Promise<{ verificationToken: string }> => {
+const signup = async (userData: RegisterDto): Promise<{ verificationToken: string }> => {
   const email = userData.email.toLowerCase().trim();
 
   const existingUser = await userRepository.findByEmail(email);
@@ -91,7 +89,11 @@ const verifyToken = (verificationToken: string): AuthTokenPayload => {
   }
 };
 
-const validateOtpToken = async (verificationToken: string, otp: string, expectedPurpose: 'email-verification' | 'password-reset'): Promise<string> => {
+const validateOtpToken = async (
+  verificationToken: string,
+  otp: string,
+  expectedPurpose: 'email-verification' | 'password-reset'
+): Promise<string> => {
   const payload = verifyToken(verificationToken);
 
   if (payload.purpose !== expectedPurpose) {
@@ -146,7 +148,8 @@ const resendOtp = async (verificationToken: string): Promise<void> => {
 
   if (!allowed) {
     throw new AppError(
-      `${MESSAGES.OTP_RESEND_COOLDOWN}. Try again in ${secondsLeft} second${secondsLeft === 1 ? '' : 's'
+      `${MESSAGES.OTP_RESEND_COOLDOWN}. Try again in ${secondsLeft} second${
+        secondsLeft === 1 ? '' : 's'
       }.`,
       HTTP_STATUS.TOO_MANY_REQUESTS
     );
@@ -214,7 +217,7 @@ const signin = async (
       googleId: user.googleId,
       avatar: user.avatar,
       createdAt: user.createdAt,
-      updatedAt: user.updatedAt
+      updatedAt: user.updatedAt,
     },
     accessToken,
     refreshToken,

@@ -1,19 +1,19 @@
-import React, { useEffect, useCallback, useState } from "react";
-import { Loader2, Wallet, Search, ArrowUpRight, ArrowDownLeft, Clock } from "lucide-react";
+import React, { useEffect, useCallback, useState } from 'react';
+import { Loader2, Wallet, Search, ArrowUpRight, ArrowDownLeft, Clock } from 'lucide-react';
 
-import BalanceCard from "../components/BalanceCard";
-import TransactionList from "../components/TransactionList";
+import BalanceCard from '../components/BalanceCard';
+import TransactionList from '../components/TransactionList';
 
-import { walletApi } from "../services/userWallet.service";
-import { useAsyncFetch } from "@/shared/hooks/useAsyncFetch";
-import { useAppStore } from "@/store/app.store";
+import { walletApi } from '../services/userWallet.service';
+import { useAsyncFetch } from '@/shared/hooks/useAsyncFetch';
+import { useAppStore } from '@/store/app.store';
 
 const UserWallet: React.FC = () => {
   const { data, loading, error, execute } = useAsyncFetch<any>();
   const isAuthenticated = useAppStore((state) => state.isAuthenticated);
 
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filterType, setFilterType] = useState<"ALL" | "CREDIT" | "DEBIT">("ALL");
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterType, setFilterType] = useState<'ALL' | 'CREDIT' | 'DEBIT'>('ALL');
 
   const fetchWallet = useCallback(() => {
     if (isAuthenticated) {
@@ -41,7 +41,7 @@ const UserWallet: React.FC = () => {
           <Wallet className="w-12 h-12 text-error mb-4" />
           <p className="text-error font-semibold text-lg mb-2">Failed to load wallet</p>
           <p className="text-foreground/60 text-sm max-w-md mb-6">
-            {!isAuthenticated ? "You must be logged in to view your wallet." : error}
+            {!isAuthenticated ? 'You must be logged in to view your wallet.' : error}
           </p>
           {isAuthenticated && (
             <button
@@ -61,13 +61,13 @@ const UserWallet: React.FC = () => {
 
   // Filter transactions locally based on search query and selected filter type
   const filteredTransactions = (transactions || []).filter((tx: any) => {
-    const title = tx.title || "";
-    const description = tx.description || "";
+    const title = tx.title || '';
+    const description = tx.description || '';
     const matchesSearch =
       title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       description.toLowerCase().includes(searchQuery.toLowerCase());
 
-    const matchesType = filterType === "ALL" || tx.type === filterType;
+    const matchesType = filterType === 'ALL' || tx.type === filterType;
 
     return matchesSearch && matchesType;
   });
@@ -75,13 +75,13 @@ const UserWallet: React.FC = () => {
   // Calculate stats dynamically from transactions
   const stats = (transactions || []).reduce(
     (acc: any, tx: any) => {
-      if (tx.status === "SUCCESS") {
-        if (tx.type === "CREDIT") {
+      if (tx.status === 'SUCCESS') {
+        if (tx.type === 'CREDIT') {
           acc.totalCredits += tx.amount;
-        } else if (tx.type === "DEBIT") {
+        } else if (tx.type === 'DEBIT') {
           acc.totalDebits += tx.amount;
         }
-      } else if (tx.status === "PENDING") {
+      } else if (tx.status === 'PENDING') {
         acc.totalPending += 1;
       }
       return acc;
@@ -109,10 +109,8 @@ const UserWallet: React.FC = () => {
 
             {/* Wallet Summary Card */}
             <div className="w-full rounded-3xl border border-border bg-surface p-6 shadow-sm">
-              <h3 className="text-sm font-bold text-foreground mb-4">
-                Wallet Summary
-              </h3>
-              
+              <h3 className="text-sm font-bold text-foreground mb-4">Wallet Summary</h3>
+
               <div className="space-y-4">
                 <div className="flex items-center justify-between p-3.5 rounded-2xl bg-background border border-border">
                   <div className="flex items-center gap-3">
@@ -124,7 +122,7 @@ const UserWallet: React.FC = () => {
                         Total Credits
                       </p>
                       <h4 className="text-sm font-extrabold text-foreground mt-0.5">
-                        ₹{stats.totalCredits.toLocaleString("en-IN")}
+                        ₹{stats.totalCredits.toLocaleString('en-IN')}
                       </h4>
                     </div>
                   </div>
@@ -140,7 +138,7 @@ const UserWallet: React.FC = () => {
                         Total Spent
                       </p>
                       <h4 className="text-sm font-extrabold text-foreground mt-0.5">
-                        ₹{stats.totalDebits.toLocaleString("en-IN")}
+                        ₹{stats.totalDebits.toLocaleString('en-IN')}
                       </h4>
                     </div>
                   </div>
@@ -156,7 +154,8 @@ const UserWallet: React.FC = () => {
                         Pending Actions
                       </p>
                       <h4 className="text-sm font-extrabold text-foreground mt-0.5">
-                        {stats.totalPending} {stats.totalPending === 1 ? "Transaction" : "Transactions"}
+                        {stats.totalPending}{' '}
+                        {stats.totalPending === 1 ? 'Transaction' : 'Transactions'}
                       </h4>
                     </div>
                   </div>
@@ -171,9 +170,7 @@ const UserWallet: React.FC = () => {
               {/* Card Header & Controls */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border/50">
                 <div>
-                  <h2 className="text-base font-bold text-foreground">
-                    Transaction Activity
-                  </h2>
+                  <h2 className="text-base font-bold text-foreground">Transaction Activity</h2>
                   <p className="text-xs text-foreground/50 mt-0.5">
                     Showing {filteredTransactions.length} transactions
                   </p>
@@ -181,17 +178,17 @@ const UserWallet: React.FC = () => {
 
                 {/* Filter segments */}
                 <div className="flex bg-muted/20 border border-border p-1 rounded-xl self-start sm:self-auto">
-                  {(["ALL", "CREDIT", "DEBIT"] as const).map((type) => (
+                  {(['ALL', 'CREDIT', 'DEBIT'] as const).map((type) => (
                     <button
                       key={type}
                       onClick={() => setFilterType(type)}
                       className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                         filterType === type
-                          ? "bg-primary text-white shadow-sm"
-                          : "text-foreground/60 hover:text-foreground hover:bg-muted/10"
+                          ? 'bg-primary text-white shadow-sm'
+                          : 'text-foreground/60 hover:text-foreground hover:bg-muted/10'
                       }`}
                     >
-                      {type === "ALL" ? "All" : type === "CREDIT" ? "Credits" : "Debits"}
+                      {type === 'ALL' ? 'All' : type === 'CREDIT' ? 'Credits' : 'Debits'}
                     </button>
                   ))}
                 </div>

@@ -5,8 +5,8 @@ export const authRoutes = {
   verifyOtp: '/verify-otp',
   resendOtp: '/resend-otp',
   refreshToken: '/refresh-token',
-  logout: "/logout",
+  logout: '/logout',
   forgotPassword: '/forgot-password',
   verifyForgotPasswordOtp: '/verify-forgot-password-otp',
-  resetPassword:"/reset-password",
+  resetPassword: '/reset-password',
 };

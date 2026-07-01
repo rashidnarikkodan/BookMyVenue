@@ -1,5 +1,13 @@
 import { Link } from 'react-router-dom';
-import { User as UserIcon, Calendar, Heart, Settings, LogOut, Building, Wallet } from 'lucide-react';
+import {
+  User as UserIcon,
+  Calendar,
+  Heart,
+  Settings,
+  LogOut,
+  Building,
+  Wallet,
+} from 'lucide-react';
 import { useAppStore } from '@/store/app.store';
 import { useLogout } from '@/features/auth/hooks/useLogout';
 

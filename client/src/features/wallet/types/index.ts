@@ -1,13 +1,12 @@
-
 export interface Wallet {
   balance: number;
   currency: string;
   updatedAt: string;
 }
 
-export type TransactionType = "CREDIT" | "DEBIT";
+export type TransactionType = 'CREDIT' | 'DEBIT';
 
-export type TransactionStatus = "SUCCESS" | "PENDING" | "FAILED";
+export type TransactionStatus = 'SUCCESS' | 'PENDING' | 'FAILED';
 
 export interface WalletTransaction {
   id: string;
@@ -18,6 +17,6 @@ export interface WalletTransaction {
   status: TransactionStatus;
   createdAt: string;
 
-  // optional booking linkage 
+  // optional booking linkage
   bookingId?: string;
 }
