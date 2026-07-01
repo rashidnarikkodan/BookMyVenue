@@ -19,7 +19,9 @@ export interface IBooking extends Document {
   reservationDeposit: number;
   remainingBalance: number;
   amountPaid: number;
-  balancePaymentDeadline: Date | null;
+  remainingPaymentDueDate: Date | null;
+  autoCancellationDate: Date | null;
+  isImmediatePaymentRequired: boolean;
   cancellationReason: string;
   createdAt: Date;
   updatedAt: Date;

@@ -10,9 +10,25 @@ import {
   cancelPendingBookingService,
   payBalanceService,
   verifyBalancePaymentService,
+  calculateQuoteService,
 } from '@/services/booking.service';
 import { createOrder as createRazorpayOrder } from '@/services/razorpay.service';
 import { CreateBookingPayload } from '@/types/booking.types';
+
+// POST /bookings/quote
+export const getBookingQuote = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { venueId, startDateTime, endDateTime } = req.body;
+    if (!venueId || !startDateTime || !endDateTime) {
+      throw new AppError('venueId, startDateTime, and endDateTime are required', HTTP_STATUS.BAD_REQUEST);
+    }
+
+    const quote = await calculateQuoteService(venueId, startDateTime, endDateTime);
+    success(res, HTTP_STATUS.OK, quote, 'Quote calculated successfully');
+  } catch (error) {
+    next(error);
+  }
+};
 
 // POST /bookings
 export const createBooking = async (req: Request, res: Response, next: NextFunction) => {

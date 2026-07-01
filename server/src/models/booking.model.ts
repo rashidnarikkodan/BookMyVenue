@@ -104,9 +104,19 @@ const bookingSchema = new Schema(
       default: 0,
     },
 
-    balancePaymentDeadline: {
+    remainingPaymentDueDate: {
       type: Date,
       default: null,
+    },
+
+    autoCancellationDate: {
+      type: Date,
+      default: null,
+    },
+
+    isImmediatePaymentRequired: {
+      type: Boolean,
+      default: false,
     },
 
     cancellationReason: {

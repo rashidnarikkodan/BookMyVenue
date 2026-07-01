@@ -4,9 +4,12 @@ import app from './app';
 import { connectDB } from '@/configs/db.config';
 import logger from './libs/logger';
 
+import { startScheduler } from '@/utils/scheduler';
+
 const startServer = async () => {
   try {
     await connectDB();
+    startScheduler();
 
     app.listen(env.PORT, () => {
       logger.info(`Server running on port http://localhost:${env.PORT}`);
