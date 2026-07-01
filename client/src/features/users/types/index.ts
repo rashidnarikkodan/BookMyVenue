@@ -56,7 +56,7 @@ export interface OwnerVerificationResponse {
 
 export type PaymentMethod = 'online' | 'cash';
 
-export type BookingStatus = 'reserved' | 'confirmed' | 'cancelled' | 'completed' | 'expired';
+export type BookingStatus = 'pending' | 'reserved' | 'confirmed' | 'cancelled' | 'completed' | 'expired';
 
 export type PaymentStatus =
   | 'pending'
