@@ -112,7 +112,7 @@ export default function BookingSuccessModal({
               ₹{successData.totalAmount?.toLocaleString('en-IN')}
             </span>
           </div>
-        </div>
+        </div>a
 
         {/* Actions Grid */}
         <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 pt-1 sm:pt-2">
@@ -128,11 +128,11 @@ export default function BookingSuccessModal({
             type="button"
             onClick={() => {
               onClose();
-              navigate('/');
+              navigate(`/account/bookings/${successData?.id || successData?._id}`);
             }}
             className="flex-1 inline-flex justify-center items-center gap-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-bold py-3 rounded-xl transition-all cursor-pointer shadow-md shadow-primary/10"
           >
-            Return Home
+            Booking details
           </button>
         </div>
 
