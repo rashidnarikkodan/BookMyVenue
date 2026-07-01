@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { User as UserIcon, Calendar, Heart, Settings, LogOut, Building } from 'lucide-react';
+import { User as UserIcon, Calendar, Heart, Settings, LogOut, Building, Wallet } from 'lucide-react';
 import { useAppStore } from '@/store/app.store';
 import { useLogout } from '@/features/auth/hooks/useLogout';
 
@@ -58,12 +58,20 @@ const ProfileList = ({ onClose }: ProfileListProps) => {
           My Profile
         </Link>
         <Link
-          to="account/bookings"
+          to="/account/bookings"
           onClick={onClose}
           className="flex items-center gap-2.5 px-4 py-2 text-[12px] text-foreground/80 hover:bg-muted/30 hover:text-primary transition-all duration-150"
         >
           <Calendar size={14} className="text-foreground/50" />
           My Bookings
+        </Link>
+        <Link
+          to="/account/wallet"
+          onClick={onClose}
+          className="flex items-center gap-2.5 px-4 py-2 text-[12px] text-foreground/80 hover:bg-muted/30 hover:text-primary transition-all duration-150"
+        >
+          <Wallet size={14} className="text-foreground/50" />
+          My Wallet
         </Link>
         <Link
           to="/favorites"

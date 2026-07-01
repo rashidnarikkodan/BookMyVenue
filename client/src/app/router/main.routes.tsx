@@ -6,6 +6,7 @@ import VenueDetailsPage from '@/features/public/pages/VenueDetailsPage';
 import UserProfile from '@/features/profile/pages/UserProfile';
 import BookingPage from '@/features/bookings/pages/BookingPage';
 import UserBookingsPage from '@/features/users/pages/UserBookingsPage';
+import UserWallet from '@/features/wallet/pages/UserWallet';
 
 export const mainRoutes = {
   path: '/',
@@ -19,5 +20,6 @@ export const mainRoutes = {
     { path: 'account/profile', element: <UserProfile /> },
     { path: 'account/bookings', element: <UserBookingsPage /> },
     { path: '/bookings/:id', element: <BookingPage /> },
+    { path: 'account/wallet', element: <UserWallet/>}
   ],
 };
