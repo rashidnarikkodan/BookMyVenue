@@ -128,7 +128,7 @@ export default function BookingSuccessModal({
             type="button"
             onClick={() => {
               onClose();
-              navigate(`/account/bookings`);
+              navigate(`/account/bookings/${successData?.id || successData?._id}`);
             }}
             className="flex-1 inline-flex justify-center items-center gap-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-bold py-3 rounded-xl transition-all cursor-pointer shadow-md shadow-primary/10"
           >
