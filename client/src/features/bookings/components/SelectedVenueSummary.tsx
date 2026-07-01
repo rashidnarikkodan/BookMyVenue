@@ -1,5 +1,5 @@
-import { MapPin, Users } from "lucide-react";
-import type { Venue } from "@/features/venues/types/venues.types";
+import { MapPin, Users } from 'lucide-react';
+import type { Venue } from '@/features/venues/types/venues.types';
 
 interface SelectedVenueSummaryProps {
   venue: Venue;
@@ -7,7 +7,7 @@ interface SelectedVenueSummaryProps {
 
 export default function SelectedVenueSummary({ venue }: SelectedVenueSummaryProps) {
   const categoryName =
-    venue.categoryId && typeof venue.categoryId === "object" ? venue.categoryId.name : "Venue";
+    venue.categoryId && typeof venue.categoryId === 'object' ? venue.categoryId.name : 'Venue';
 
   return (
     <div className="bg-card border border-border rounded-2xl p-4 sm:p-6 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 transition-all hover:shadow-md">
@@ -27,7 +27,9 @@ export default function SelectedVenueSummary({ venue }: SelectedVenueSummaryProp
           <span className="text-xs font-bold text-primary uppercase tracking-wide">
             {categoryName}
           </span>
-          <h3 className="text-base sm:text-lg font-extrabold text-foreground truncate">{venue.name}</h3>
+          <h3 className="text-base sm:text-lg font-extrabold text-foreground truncate">
+            {venue.name}
+          </h3>
           <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted">
             <span className="flex items-center gap-1">
               <MapPin size={11} className="shrink-0" /> {venue.address.city}, {venue.address.state}

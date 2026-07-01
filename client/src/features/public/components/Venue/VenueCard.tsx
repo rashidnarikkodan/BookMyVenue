@@ -10,7 +10,9 @@ export default function VenueCard({ venue }: VenueCardProps) {
   const navigate = useNavigate();
 
   const categoryName =
-    venue.categoryId && typeof venue.categoryId === 'object' ? venue.categoryId.name : 'Uncategorized';
+    venue.categoryId && typeof venue.categoryId === 'object'
+      ? venue.categoryId.name
+      : 'Uncategorized';
 
   return (
     <div

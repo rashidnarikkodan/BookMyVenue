@@ -316,14 +316,14 @@ const UserNavbar = () => {
             {/* Profile actions shortcut */}
             <div className="grid grid-cols-2 gap-2 mt-1">
               <Link
-                to="/profile"
+                to="account/profile"
                 className="flex items-center justify-center py-2.5 rounded-xl text-[13px] font-medium border border-border text-foreground/90 hover:bg-muted/30 transition-all duration-300"
                 onClick={() => setMobileOpen(false)}
               >
                 Profile
               </Link>
               <Link
-                to="/bookings"
+                to="account/bookings"
                 className="flex items-center justify-center py-2.5 rounded-xl text-[13px] font-medium border border-border text-foreground/90 hover:bg-muted/30 transition-all duration-300"
                 onClick={() => setMobileOpen(false)}
               >

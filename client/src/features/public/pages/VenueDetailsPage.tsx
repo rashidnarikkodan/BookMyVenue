@@ -33,14 +33,16 @@ export default function VenueDetailsPage() {
   if (!venue) return <VenueNotFound />;
 
   const categoryName =
-    venue.categoryId && typeof venue.categoryId === 'object' ? venue.categoryId.name : (venue.categoryId || 'Uncategorized');
+    venue.categoryId && typeof venue.categoryId === 'object'
+      ? venue.categoryId.name
+      : venue.categoryId || 'Uncategorized';
 
   const formattedDate = venue.createdAt
     ? new Date(venue.createdAt).toLocaleString('en-IN', {
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric',
-    })
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+      })
     : 'N/A';
 
   return (
@@ -68,7 +70,7 @@ export default function VenueDetailsPage() {
             isAvailabilityConfigured={venue.isAvailabilityConfigured}
             availability={venue.availability}
           />
-          <VenueLocation 
+          <VenueLocation
             address={venue.address}
             coordinates={venue.location?.coordinates || []}
             venueName={venue.name}

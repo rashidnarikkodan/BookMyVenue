@@ -1,5 +1,5 @@
 import { apiClient } from '@/services/apiClient';
-import type { OwnerVerificationResponse, User, UserQuery } from '../types';
+import type { OwnerVerificationResponse, User, UserQuery, MyBookingsResponse } from '../types';
 
 export const usersApi = {
   getAll: async (
@@ -115,6 +115,50 @@ export const usersApi = {
 
     return {
       ...res.data,
+    };
+  },
+
+  getBookings: async (): Promise<{
+    success: boolean;
+    message: string;
+    data: MyBookingsResponse;
+  }> => {
+    const res = await apiClient.get('/users/bookings');
+    const rawData = res.data?.data;
+    const mappedBookings = (rawData?.bookings || []).map((b: any) => ({
+      id: b._id || b.id,
+      venue: {
+        id: b.venue?._id || b.venue?.id,
+        name: b.venue?.name || '',
+        imageUrl: b.venue?.images?.[0] || null,
+        location: b.venue?.address
+          ? `${b.venue.address.city || ''}, ${b.venue.address.state || ''}`
+          : b.venue?.location || '',
+      },
+      startDateTime: b.startDateTime,
+      endDateTime: b.endDateTime,
+      guests: b.guests,
+      contactName: b.contactName,
+      contactEmail: b.contactEmail,
+      contactPhone: b.contactPhone,
+      specialRequests: b.specialRequests || '',
+      paymentMethod: b.paymentMethod,
+      bookingStatus: b.bookingStatus ? b.bookingStatus.toLowerCase() : '',
+      paymentStatus: b.paymentStatus ? b.paymentStatus.toLowerCase() : '',
+      totalAmount: b.totalAmount,
+      amountPaid: b.amountPaid,
+      cancellationReason: b.cancellationReason || '',
+      createdAt: b.createdAt,
+      updatedAt: b.updatedAt,
+    }));
+
+    return {
+      success: res.data?.success || true,
+      message: res.data?.message || '',
+      data: {
+        bookings: mappedBookings,
+        totalBookings: rawData?.totalBookings ?? mappedBookings.length,
+      },
     };
   },
 };

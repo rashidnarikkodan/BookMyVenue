@@ -1,19 +1,19 @@
-import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
-import { toast } from "sonner";
-import { useAppStore } from "@/store/app.store";
-import { publicVenuesApi } from "@/features/public/services/public-venues.api";
-import type { Venue } from "@/features/venues/types/venues.types";
-import { bookingsApi } from "../services/bookings.api";
-import type { BookingDetails } from "../types/bookings.types";
-import DateTimeSection from "../components/DateTimeSection";
-import GuestSection from "../components/GuestSection";
-import PricingSection from "../components/PricingSection";
-import BookingHeader from "../components/BookingHeader";
-import SelectedVenueSummary from "../components/SelectedVenueSummary";
-import BookingSuccessModal from "../components/BookingSuccessModal";
-import { Loading } from "@/shared/components/ui";
-import { useAsyncFetch } from "@/shared/hooks/useAsyncFetch";
+import { useState, useEffect } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import { toast } from 'sonner';
+import { useAppStore } from '@/store/app.store';
+import { publicVenuesApi } from '@/features/public/services/public-venues.api';
+import type { Venue } from '@/features/venues/types/venues.types';
+import { bookingsApi } from '../services/bookings.api';
+import type { BookingDetails } from '../types/bookings.types';
+import DateTimeSection from '../components/DateTimeSection';
+import GuestSection from '../components/GuestSection';
+import PricingSection from '../components/PricingSection';
+import BookingHeader from '../components/BookingHeader';
+import SelectedVenueSummary from '../components/SelectedVenueSummary';
+import BookingSuccessModal from '../components/BookingSuccessModal';
+import { Loading } from '@/shared/components/ui';
+import { useAsyncFetch } from '@/shared/hooks/useAsyncFetch';
 
 const BookingPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -43,15 +43,15 @@ const BookingPage = () => {
   // Auto fill logged in user
   useEffect(() => {
     if (user) {
-      setContactName(user.fullName || "");
-      setContactEmail(user.email || "");
+      setContactName(user.fullName || '');
+      setContactEmail(user.email || '');
     }
   }, [user]);
 
   // Load Razorpay script dynamically
   useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
     script.async = true;
     document.body.appendChild(script);
     return () => {
@@ -72,8 +72,8 @@ const BookingPage = () => {
           setGuests(1);
         }
       } catch (err) {
-        console.error("Error fetching selected venue", err);
-        toast.error("Could not fetch the specified venue details.");
+        console.error('Error fetching selected venue', err);
+        toast.error('Could not fetch the specified venue details.');
       } finally {
         setVenueLoading(false);
       }
@@ -93,19 +93,19 @@ const BookingPage = () => {
     if (!selectedVenue) return;
 
     if (!contactName.trim()) {
-      toast.error("Contact Name is required.");
+      toast.error('Contact Name is required.');
       return;
     }
     if (!contactEmail.trim()) {
-      toast.error("Contact Email is required.");
+      toast.error('Contact Email is required.');
       return;
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail)) {
-      toast.error("Please enter a valid email address.");
+      toast.error('Please enter a valid email address.');
       return;
     }
     if (!contactPhone.trim()) {
-      toast.error("Contact Phone number is required.");
+      toast.error('Contact Phone number is required.');
       return;
     }
 
@@ -126,7 +126,7 @@ const BookingPage = () => {
       // 1. Create booking — backend determines scenario and returns Razorpay order
       const res = await bookingsApi.createBooking(bookingPayload);
       if (!res.success || !res.data) {
-        throw new Error(res.message || "Booking creation failed.");
+        throw new Error(res.message || 'Booking creation failed.');
       }
 
       const { booking, payment } = res.data;
@@ -205,15 +205,15 @@ const BookingPage = () => {
       });
       rzp.open();
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || err?.message || "An error occurred during checkout.");
+      toast.error(
+        err?.response?.data?.message || err?.message || 'An error occurred during checkout.'
+      );
       setIsSubmitting(false);
     }
   };
 
   if (venueLoading && !selectedVenue) {
-    return (
-      <Loading text="Retrieving checkout session…" fullPage={true} />
-    );
+    return <Loading text="Retrieving checkout session…" fullPage={true} />;
   }
 
   if (!selectedVenue) {
@@ -221,7 +221,8 @@ const BookingPage = () => {
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 text-center space-y-4 text-card-foreground">
         <h2 className="text-xl font-bold text-foreground">Booking Session Expired</h2>
         <p className="text-sm text-muted max-w-sm">
-          No valid venue details were loaded. Please return to the venue search page and select a venue.
+          No valid venue details were loaded. Please return to the venue search page and select a
+          venue.
         </p>
         <Link
           to="/venues"

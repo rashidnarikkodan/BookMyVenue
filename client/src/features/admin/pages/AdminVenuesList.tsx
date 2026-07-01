@@ -212,7 +212,9 @@ const AdminVenuesList = () => {
           <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {venues.map((venue) => {
               const categoryName =
-                venue.categoryId && typeof venue.categoryId === 'object' ? venue.categoryId.name : 'Uncategorized';
+                venue.categoryId && typeof venue.categoryId === 'object'
+                  ? venue.categoryId.name
+                  : 'Uncategorized';
               const statusClass = statusStyles[venue.verificationStatus] || statusStyles.pending;
 
               // Owner info from populated field
@@ -255,11 +257,13 @@ const AdminVenuesList = () => {
 
                     {/* Active/Inactive Badge */}
                     <div className="absolute bottom-3 left-3 z-10">
-                      <span className={`inline-flex items-center rounded-lg px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wide border shadow-sm ${
-                        venue.isActive 
-                          ? 'bg-emerald-500 border-emerald-400 text-white' 
-                          : 'bg-zinc-500 border-zinc-400 text-white'
-                      }`}>
+                      <span
+                        className={`inline-flex items-center rounded-lg px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wide border shadow-sm ${
+                          venue.isActive
+                            ? 'bg-emerald-500 border-emerald-400 text-white'
+                            : 'bg-zinc-500 border-zinc-400 text-white'
+                        }`}
+                      >
                         {venue.isActive ? 'Active' : 'Inactive'}
                       </span>
                     </div>

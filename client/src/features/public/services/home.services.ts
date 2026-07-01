@@ -8,7 +8,7 @@ type Districts = {
   coordinates: [number, number];
   venueCount: number;
   featuredVenues: Venue[];
-}
+};
 export interface HomeDataResponse {
   venues: Venue[];
   categories: Category[];

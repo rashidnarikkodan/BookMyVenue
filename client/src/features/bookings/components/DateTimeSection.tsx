@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { Calendar, Clock, Info } from "lucide-react";
-import type { AvailabilityConfig } from "@/features/venues/types/venues.types";
-import { DateTimePicker } from "@/shared/components/ui";
+import React, { useEffect, useState } from 'react';
+import { Calendar, Clock, Info } from 'lucide-react';
+import type { AvailabilityConfig } from '@/features/venues/types/venues.types';
+import { DateTimePicker } from '@/shared/components/ui';
 
 type Props = {
   startDateTime: string | null;
   endDateTime: string | null;
-  pricingUnit: "hour" | "day";
+  pricingUnit: 'hour' | 'day';
   availability?: AvailabilityConfig;
   existingBookings?: any[] | null;
   onChange: (start: string | null, end: string | null) => void;
@@ -21,11 +21,11 @@ const DateTimeSection: React.FC<Props> = ({
   onChange,
 }) => {
   const [error, setError] = useState<string | null>(null);
-  const [durationText, setDurationText] = useState<string>("");
+  const [durationText, setDurationText] = useState<string>('');
 
   useEffect(() => {
     if (!startDateTime || !endDateTime) {
-      setDurationText("");
+      setDurationText('');
       setError(null);
       return;
     }
@@ -34,21 +34,21 @@ const DateTimeSection: React.FC<Props> = ({
     const end = new Date(endDateTime).getTime();
 
     if (isNaN(start) || isNaN(end)) {
-      setError("Invalid dates selected.");
-      setDurationText("");
+      setError('Invalid dates selected.');
+      setDurationText('');
       return;
     }
 
     if (end <= start) {
-      setError("End date & time must be after start date & time.");
-      setDurationText("");
+      setError('End date & time must be after start date & time.');
+      setDurationText('');
       return;
     }
 
     const now = new Date().getTime();
     if (start < now) {
-      setError("Start time cannot be in the past.");
-      setDurationText("");
+      setError('Start time cannot be in the past.');
+      setDurationText('');
       return;
     }
 
@@ -64,8 +64,8 @@ const DateTimeSection: React.FC<Props> = ({
       });
 
       if (hasOverlap) {
-        setError("The selected timeline overlaps with an existing booking.");
-        setDurationText("");
+        setError('The selected timeline overlaps with an existing booking.');
+        setDurationText('');
         return;
       }
     }
@@ -73,29 +73,33 @@ const DateTimeSection: React.FC<Props> = ({
     setError(null);
     const diffMs = end - start;
 
-    if (pricingUnit === "hour") {
+    if (pricingUnit === 'hour') {
       const hours = diffMs / (1000 * 60 * 60);
 
       // Check constraints
       if (availability) {
         const { minBookingDuration, maxBookingDuration } = availability;
         if (hours < minBookingDuration) {
-          setError(`Minimum booking duration is ${minBookingDuration} hour${minBookingDuration > 1 ? "s" : ""}.`);
+          setError(
+            `Minimum booking duration is ${minBookingDuration} hour${minBookingDuration > 1 ? 's' : ''}.`
+          );
         } else if (maxBookingDuration && hours > maxBookingDuration) {
-          setError(`Maximum booking duration is ${maxBookingDuration} hour${maxBookingDuration > 1 ? "s" : ""}.`);
+          setError(
+            `Maximum booking duration is ${maxBookingDuration} hour${maxBookingDuration > 1 ? 's' : ''}.`
+          );
         }
       }
 
       const formattedHours = hours % 1 === 0 ? hours.toFixed(0) : hours.toFixed(1);
-      setDurationText(`${formattedHours} hour${hours !== 1 ? "s" : ""}`);
+      setDurationText(`${formattedHours} hour${hours !== 1 ? 's' : ''}`);
     } else {
       const days = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-      setDurationText(`${days} day${days > 1 ? "s" : ""}`);
+      setDurationText(`${days} day${days > 1 ? 's' : ''}`);
     }
   }, [startDateTime, endDateTime, pricingUnit, availability, existingBookings]);
 
   const formatDayOfWeek = (dayNum: number): string => {
-    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     return days[dayNum];
   };
 
@@ -118,13 +122,13 @@ const DateTimeSection: React.FC<Props> = ({
             <span className="font-semibold text-primary block">Venue Operating Rules:</span>
             <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 gap-x-4 gap-y-1 text-muted">
               <span className="flex items-center gap-1">
-                <Clock size={11} className="shrink-0" /> Hours: {availability.openingTime} - {availability.closingTime}
+                <Clock size={11} className="shrink-0" /> Hours: {availability.openingTime} -{' '}
+                {availability.closingTime}
               </span>
+              <span>Days: {availability.availableDays.map(formatDayOfWeek).join(', ')}</span>
               <span>
-                Days: {availability.availableDays.map(formatDayOfWeek).join(", ")}
-              </span>
-              <span>
-                Min Duration: {availability.minBookingDuration} hr{availability.minBookingDuration > 1 ? "s" : ""}
+                Min Duration: {availability.minBookingDuration} hr
+                {availability.minBookingDuration > 1 ? 's' : ''}
               </span>
               {availability.maxBookingDuration && (
                 <span>Max Duration: {availability.maxBookingDuration} hrs</span>
@@ -158,7 +162,9 @@ const DateTimeSection: React.FC<Props> = ({
           minDate={(() => {
             if (!startDateTime) return new Date();
             const minBookingDuration = availability?.minBookingDuration || 1;
-            return new Date(new Date(startDateTime).getTime() + minBookingDuration * 60 * 60 * 1000);
+            return new Date(
+              new Date(startDateTime).getTime() + minBookingDuration * 60 * 60 * 1000
+            );
           })()}
         />
       </div>

@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import * as userService from '@/services/user.service';
+import { getUserBookingsService } from '@/services/booking.service';
 import success from '@/utils/response';
 import { HTTP_STATUS } from '@/constants/http';
 import Owner from '@/models/owner.model';
@@ -254,6 +255,36 @@ export const updateProfile = async (req: Request, res: Response, next: NextFunct
     for (const file of tempFiles) {
       await fs.unlink(file.path).catch(() => {});
     }
+    next(error);
+  }
+};
+
+/**
+ * Get bookings for the logged-in user
+ */
+export const getUserBookings = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      throw new AppError('Unauthorized access', HTTP_STATUS.UNAUTHORIZED);
+    }
+
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 100;
+    const status = req.query.status as string | undefined;
+
+    const result = await getUserBookingsService(userId, page, limit, status);
+
+    return success(
+      res,
+      HTTP_STATUS.OK,
+      {
+        bookings: result.bookings,
+        totalBookings: result.pagination.total,
+      },
+      'Bookings fetched successfully'
+    );
+  } catch (error) {
     next(error);
   }
 };

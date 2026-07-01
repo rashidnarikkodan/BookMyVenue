@@ -286,3 +286,12 @@ export const cancelPendingBookingService = async (
 
   await bookingRepo.deleteBookingById(bookingId);
 };
+
+export const getUserBookingsService = async (
+  userId: string,
+  page: number,
+  limit: number,
+  status?: string
+) => {
+  return await bookingRepo.findBookingsByUser(userId, page, limit, status);
+};

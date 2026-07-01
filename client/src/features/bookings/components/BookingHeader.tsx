@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { Link } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 
 interface BookingHeaderProps {
   venueId?: string;
@@ -17,7 +17,7 @@ export default function BookingHeader({ venueId }: BookingHeaderProps) {
         </p>
       </div>
       <Link
-        to={venueId ? `/venues/${venueId}` : "/venues"}
+        to={venueId ? `/venues/${venueId}` : '/venues'}
         className="inline-flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-semibold text-primary hover:text-primary/80 transition-colors shrink-0"
       >
         <ArrowLeft size={14} className="sm:w-4 sm:h-4" /> Back to Venue Details

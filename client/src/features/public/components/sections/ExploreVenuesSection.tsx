@@ -27,45 +27,56 @@ interface ExploreVenuesSectionProps {
 
 const DISTRICT_METADATA: Record<string, { description: string; image: string }> = {
   kochi: {
-    description: 'The queen of the Arabian Sea, featuring premium waterfront convention centers and heritage banquet halls.',
+    description:
+      'The queen of the Arabian Sea, featuring premium waterfront convention centers and heritage banquet halls.',
     image: kochiImg,
   },
   ernakulam: {
-    description: 'The commercial hub of Kerala, featuring premium waterfront convention centers, business hotels, and luxury banquet halls.',
+    description:
+      'The commercial hub of Kerala, featuring premium waterfront convention centers, business hotels, and luxury banquet halls.',
     image: kochiImg,
   },
   trivandrum: {
-    description: 'The capital city, offering majestic royal halls, beachfront resorts, and state-of-the-art conference venues.',
+    description:
+      'The capital city, offering majestic royal halls, beachfront resorts, and state-of-the-art conference venues.',
     image: trivandrumImg,
   },
   thiruvananthapuram: {
-    description: 'The capital city, offering majestic royal halls, beachfront resorts, and state-of-the-art conference venues.',
+    description:
+      'The capital city, offering majestic royal halls, beachfront resorts, and state-of-the-art conference venues.',
     image: trivandrumImg,
   },
   alleppey: {
-    description: 'The Venice of the East, famous for scenic houseboat venues, lakeside lawns, and backwater resorts.',
+    description:
+      'The Venice of the East, famous for scenic houseboat venues, lakeside lawns, and backwater resorts.',
     image: alleppeyImg,
   },
   alappuzha: {
-    description: 'The Venice of the East, famous for scenic houseboat venues, lakeside lawns, and backwater resorts.',
+    description:
+      'The Venice of the East, famous for scenic houseboat venues, lakeside lawns, and backwater resorts.',
     image: alleppeyImg,
   },
   munnar: {
-    description: 'Breathtaking hill station offering mist-covered outdoor lawns, resort pavilions, and cozy tea-garden venues.',
+    description:
+      'Breathtaking hill station offering mist-covered outdoor lawns, resort pavilions, and cozy tea-garden venues.',
     image: munnarImg,
   },
   idukki: {
-    description: 'Breathtaking hill station offering mist-covered outdoor lawns, resort pavilions, and cozy tea-garden venues.',
+    description:
+      'Breathtaking hill station offering mist-covered outdoor lawns, resort pavilions, and cozy tea-garden venues.',
     image: munnarImg,
   },
 };
 
 const getDistrictMetadata = (districtId: string) => {
   const key = districtId.toLowerCase();
-  return DISTRICT_METADATA[key] || {
-    description: 'Explore handpicked premium venues, event spaces, and conference halls in this district.',
-    image: kochiImg,
-  };
+  return (
+    DISTRICT_METADATA[key] || {
+      description:
+        'Explore handpicked premium venues, event spaces, and conference halls in this district.',
+      image: kochiImg,
+    }
+  );
 };
 
 const getLeafletCoords = (coords?: [number, number]): [number, number] => {
@@ -77,7 +88,6 @@ export default function ExploreVenuesSection({ districts, loading }: ExploreVenu
   const [activeId, setActiveId] = useState<string>('');
   const { themeMode } = useUIStore();
 
-
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<L.Map | null>(null);
   const [mapReady, setMapReady] = useState(false);
@@ -86,10 +96,10 @@ export default function ExploreVenuesSection({ districts, loading }: ExploreVenu
   const isPanningRef = useRef<boolean>(false);
 
   useEffect(() => {
-  if (districts.length > 0 && !activeId) {
-    setActiveId(districts[0].id);
-  }
-}, [districts, activeId])
+    if (districts.length > 0 && !activeId) {
+      setActiveId(districts[0].id);
+    }
+  }, [districts, activeId]);
 
   const activeDistrict = districts.find((d) => d.id === activeId);
   const districtVenues = activeDistrict?.featuredVenues || [];
@@ -102,7 +112,9 @@ export default function ExploreVenuesSection({ districts, loading }: ExploreVenu
     if (loading || !mapRef.current || mapInstance.current) return;
 
     // Center on Kochi initially with zoom level 8 (covers Kerala region nicely)
-    const initialCoords = districts[0] ? (getLeafletCoords(districts[0].coordinates) as L.LatLngExpression) : ([9.9312, 76.2673] as L.LatLngExpression);
+    const initialCoords = districts[0]
+      ? (getLeafletCoords(districts[0].coordinates) as L.LatLngExpression)
+      : ([9.9312, 76.2673] as L.LatLngExpression);
     const map = L.map(mapRef.current, {
       zoomControl: true,
       scrollWheelZoom: true,
@@ -418,7 +430,8 @@ export default function ExploreVenuesSection({ districts, loading }: ExploreVenu
                   <Building2 className="w-10 h-10 text-zinc-400 stroke-[1.2] mb-3" />
                   <p className="text-xs font-bold text-foreground">No Venues Listed Yet</p>
                   <p className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1 max-w-[200px] leading-relaxed">
-                    We don't have spaces listed in {activeDistrict?.name || 'this district'} right now.
+                    We don't have spaces listed in {activeDistrict?.name || 'this district'} right
+                    now.
                   </p>
                   <Link
                     to="/owner/register"

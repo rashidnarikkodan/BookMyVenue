@@ -55,19 +55,20 @@ export default function FeaturedSection({ venues, loading }: FeaturedSectionProp
   const featuredList =
     dbFeatured.length > 0
       ? dbFeatured.map((v, idx) => ({
-        name: v.name,
-        description: v.description || fallbackFeatured[idx % 3].description,
-        image: v.images?.[0] || fallbackFeatured[idx % 3].image,
-        location: v.address
-          ? `${v.address.city}, ${v.address.state}`
-          : fallbackFeatured[idx % 3].location,
-        capacity: `${v.capacity} Guests`,
-        price: v.availability?.pricePerHour !== undefined
-          ? `₹${v.availability.pricePerHour.toLocaleString('en-IN')} / Hour`
-          : fallbackFeatured[idx % 3].price,
-        rating: '4.9',
-        tag: v.isElite ? 'Elite Choice' : 'Featured Space',
-      }))
+          name: v.name,
+          description: v.description || fallbackFeatured[idx % 3].description,
+          image: v.images?.[0] || fallbackFeatured[idx % 3].image,
+          location: v.address
+            ? `${v.address.city}, ${v.address.state}`
+            : fallbackFeatured[idx % 3].location,
+          capacity: `${v.capacity} Guests`,
+          price:
+            v.availability?.pricePerHour !== undefined
+              ? `₹${v.availability.pricePerHour.toLocaleString('en-IN')} / Hour`
+              : fallbackFeatured[idx % 3].price,
+          rating: '4.9',
+          tag: v.isElite ? 'Elite Choice' : 'Featured Space',
+        }))
       : fallbackFeatured;
 
   const handleNext = () => {
@@ -239,10 +240,11 @@ export default function FeaturedSection({ venues, loading }: FeaturedSectionProp
                       style={{
                         flex: isActive ? 3 : 1,
                       }}
-                      className={`h-1.5 rounded-full transition-all duration-500 cursor-pointer ${isActive
+                      className={`h-1.5 rounded-full transition-all duration-500 cursor-pointer ${
+                        isActive
                           ? 'bg-[#e21a47]'
                           : 'bg-zinc-200 dark:bg-zinc-800/80 hover:bg-zinc-300 dark:hover:bg-zinc-700'
-                        }`}
+                      }`}
                       aria-label={`Go to slide ${idx + 1}`}
                     />
                   );

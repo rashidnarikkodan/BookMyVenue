@@ -233,8 +233,15 @@ const AddEditModal = ({ category, onClose, onSuccess }: Props) => {
                 <Info size={16} className="text-primary shrink-0 mt-0.5" />
                 <div className="text-xs text-muted space-y-1">
                   <span className="font-bold text-primary block">Image Guidelines:</span>
-                  <p>1. Maximum allowed image file size is <span className="font-semibold text-foreground">2MB</span>.</p>
-                  <p>2. Image orientation must be <span className="font-semibold text-foreground">Vertical (Portrait)</span> where height is greater than width.</p>
+                  <p>
+                    1. Maximum allowed image file size is{' '}
+                    <span className="font-semibold text-foreground">2MB</span>.
+                  </p>
+                  <p>
+                    2. Image orientation must be{' '}
+                    <span className="font-semibold text-foreground">Vertical (Portrait)</span> where
+                    height is greater than width.
+                  </p>
                 </div>
               </div>
             </div>
@@ -296,11 +303,7 @@ const AddEditModal = ({ category, onClose, onSuccess }: Props) => {
 
               {previewUrl ? (
                 <div className="relative h-full w-full group">
-                  <img
-                    src={previewUrl}
-                    alt="Preview"
-                    className="h-full w-full object-cover"
-                  />
+                  <img src={previewUrl} alt="Preview" className="h-full w-full object-cover" />
                   <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <Upload className="h-8 w-8 text-white animate-bounce mb-2" />
                     <span className="text-white text-xs font-bold">Replace Image</span>
@@ -314,7 +317,9 @@ const AddEditModal = ({ category, onClose, onSuccess }: Props) => {
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-foreground">Upload category cover</p>
-                    <p className="text-xs text-muted mt-1 leading-relaxed">Drag & drop or click to browse</p>
+                    <p className="text-xs text-muted mt-1 leading-relaxed">
+                      Drag & drop or click to browse
+                    </p>
                     <p className="text-[10px] text-muted/60 mt-3 font-medium px-2">
                       Vertical JPEG/PNG up to 2MB
                     </p>

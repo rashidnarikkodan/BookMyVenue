@@ -1,6 +1,6 @@
-import { Link, useNavigate } from "react-router-dom";
-import { CheckCircle2, Printer, ExternalLink } from "lucide-react";
-import type { Venue } from "@/features/venues/types/venues.types";
+import { Link, useNavigate } from 'react-router-dom';
+import { CheckCircle2, Printer, ExternalLink } from 'lucide-react';
+import type { Venue } from '@/features/venues/types/venues.types';
 
 interface BookingSuccessModalProps {
   successData: any;
@@ -22,12 +22,12 @@ export default function BookingSuccessModal({
   };
 
   const formatDate = (dateStr: string | null) => {
-    if (!dateStr) return "N/A";
-    return new Date(dateStr).toLocaleString("en-IN", {
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
+    if (!dateStr) return 'N/A';
+    return new Date(dateStr).toLocaleString('en-IN', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
     });
   };
 
@@ -131,7 +131,7 @@ export default function BookingSuccessModal({
             type="button"
             onClick={() => {
               onClose();
-              navigate("/");
+              navigate('/');
             }}
             className="flex-1 inline-flex justify-center items-center gap-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-bold py-3 rounded-xl transition-all cursor-pointer shadow-md shadow-primary/10"
           >

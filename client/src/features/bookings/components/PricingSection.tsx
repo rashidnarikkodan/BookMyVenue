@@ -32,7 +32,7 @@ const PricingSection: React.FC<Props> = ({
 }) => {
   const [duration, setDuration] = useState<number>(0);
 
-  const pricingUnit = "hour";
+  const pricingUnit = 'hour';
   const priceRate = venue?.availability?.pricePerHour || 0;
 
   useEffect(() => {
@@ -99,21 +99,27 @@ const PricingSection: React.FC<Props> = ({
   const handleBookingSubmit = () => {
     if (!venue) return;
     if (!startDateTime || !endDateTime) {
-      alert("Please select dates first.");
+      alert('Please select dates first.');
       return;
     }
     if (hasOverlap) {
-      alert("The selected timeline overlaps with an existing booking. Please pick another date/time.");
+      alert(
+        'The selected timeline overlaps with an existing booking. Please pick another date/time.'
+      );
       return;
     }
     if (venue.availability) {
       const { minBookingDuration, maxBookingDuration } = venue.availability;
       if (duration < minBookingDuration) {
-        alert(`Minimum booking duration is ${minBookingDuration} hour${minBookingDuration > 1 ? "s" : ""}.`);
+        alert(
+          `Minimum booking duration is ${minBookingDuration} hour${minBookingDuration > 1 ? 's' : ''}.`
+        );
         return;
       }
       if (maxBookingDuration && duration > maxBookingDuration) {
-        alert(`Maximum booking duration is ${maxBookingDuration} hour${maxBookingDuration > 1 ? "s" : ""}.`);
+        alert(
+          `Maximum booking duration is ${maxBookingDuration} hour${maxBookingDuration > 1 ? 's' : ''}.`
+        );
         return;
       }
     }
@@ -121,12 +127,12 @@ const PricingSection: React.FC<Props> = ({
   };
 
   const formatDate = (dateStr: string | null) => {
-    if (!dateStr) return "Not selected";
-    return new Date(dateStr).toLocaleString("en-IN", {
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
+    if (!dateStr) return 'Not selected';
+    return new Date(dateStr).toLocaleString('en-IN', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
     });
   };
 
@@ -186,9 +192,13 @@ const PricingSection: React.FC<Props> = ({
               )}
               <div className="space-y-0.5 min-w-0">
                 <span className="text-xs font-semibold text-primary block uppercase tracking-wide">
-                  {venue.categoryId && typeof venue.categoryId === "object" ? venue.categoryId.name : "Venue"}
+                  {venue.categoryId && typeof venue.categoryId === 'object'
+                    ? venue.categoryId.name
+                    : 'Venue'}
                 </span>
-                <span className="text-sm font-bold text-foreground block truncate">{venue.name}</span>
+                <span className="text-sm font-bold text-foreground block truncate">
+                  {venue.name}
+                </span>
                 <span className="text-xs text-muted block truncate">
                   {venue.address.city}, {venue.address.state}
                 </span>
@@ -199,11 +209,15 @@ const PricingSection: React.FC<Props> = ({
             <div className="bg-background p-3 sm:p-3.5 rounded-xl border border-border text-xs space-y-2">
               <div className="flex justify-between gap-2">
                 <span className="text-muted font-medium shrink-0">Check-In:</span>
-                <span className="font-semibold text-foreground text-right">{formatDate(startDateTime)}</span>
+                <span className="font-semibold text-foreground text-right">
+                  {formatDate(startDateTime)}
+                </span>
               </div>
               <div className="flex justify-between gap-2">
                 <span className="text-muted font-medium shrink-0">Check-Out:</span>
-                <span className="font-semibold text-foreground text-right">{formatDate(endDateTime)}</span>
+                <span className="font-semibold text-foreground text-right">
+                  {formatDate(endDateTime)}
+                </span>
               </div>
               <div className="border-t border-border/60 pt-2 flex justify-between items-center gap-2">
                 <span className="text-muted font-medium">Total Duration:</span>
@@ -217,9 +231,12 @@ const PricingSection: React.FC<Props> = ({
             <div className="space-y-2 text-xs border-b border-border pb-3">
               <div className="flex justify-between gap-2">
                 <span className="text-muted">
-                  Base Price ({duration > 0 ? `${duration} × ` : ""}₹{priceRate.toLocaleString("en-IN")}/{pricingUnit})
+                  Base Price ({duration > 0 ? `${duration} × ` : ''}₹
+                  {priceRate.toLocaleString('en-IN')}/{pricingUnit})
                 </span>
-                <span className="font-semibold text-foreground shrink-0">₹{basePrice.toLocaleString("en-IN")}</span>
+                <span className="font-semibold text-foreground shrink-0">
+                  ₹{basePrice.toLocaleString('en-IN')}
+                </span>
               </div>
               <div className="flex justify-between text-muted">
                 <span>GST (18%)</span>
@@ -232,7 +249,7 @@ const PricingSection: React.FC<Props> = ({
               <div className="border-t border-border pt-3 flex justify-between items-baseline gap-2">
                 <span className="text-sm font-bold text-foreground">Total Amount</span>
                 <span className="text-xl sm:text-2xl font-extrabold text-primary shrink-0">
-                  ₹{grandTotal.toLocaleString("en-IN")}
+                  ₹{grandTotal.toLocaleString('en-IN')}
                 </span>
               </div>
             </div>
