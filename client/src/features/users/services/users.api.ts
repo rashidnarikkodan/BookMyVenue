@@ -125,86 +125,13 @@ export const usersApi = {
   }> => {
     const res = await apiClient.get('/users/bookings');
     const rawData = res.data?.data;
-    const mappedBookings = (rawData?.bookings || []).map((b: any) => {
-      let remainingPaymentDueDate = b.remainingPaymentDueDate || null;
-      let isImmediatePaymentRequired = !!b.isImmediatePaymentRequired;
-      let autoCancellationDate = b.autoCancellationDate || null;
-
-      const mappedPaymentStatus = b.paymentStatus
-        ? b.paymentStatus.toLowerCase() === 'deposit_paid'
-          ? 'partial'
-          : b.paymentStatus.toLowerCase()
-        : '';
-      const mappedBookingStatus = b.bookingStatus ? b.bookingStatus.toLowerCase() : '';
-
-      if (
-        !remainingPaymentDueDate &&
-        mappedBookingStatus === 'reserved' &&
-        (mappedPaymentStatus === 'partial' || mappedPaymentStatus === 'deposit_paid')
-      ) {
-        const eventDate = new Date(b.startDateTime);
-        const bookingDate = new Date(b.createdAt || b.bookingDate || Date.now());
-        const diffMs = eventDate.getTime() - bookingDate.getTime();
-        const leadTimeDays = Math.max(0, diffMs / (1000 * 60 * 60 * 24));
-
-        if (leadTimeDays >= 7) {
-          const offsetDays = leadTimeDays * 0.5;
-          const calculatedDue = new Date(eventDate.getTime() - offsetDays * 24 * 60 * 60 * 1000);
-          calculatedDue.setHours(23, 59, 59, 999);
-          remainingPaymentDueDate = (
-            calculatedDue > eventDate ? eventDate : calculatedDue
-          ).toISOString();
-
-          const calculatedCancel = new Date(
-            new Date(remainingPaymentDueDate).getTime() + 24 * 60 * 60 * 1000
-          );
-          autoCancellationDate = (
-            calculatedCancel > eventDate ? eventDate : calculatedCancel
-          ).toISOString();
-        } else {
-          remainingPaymentDueDate = bookingDate.toISOString();
-          isImmediatePaymentRequired = true;
-          autoCancellationDate = new Date(bookingDate.getTime() + 30 * 60 * 1000).toISOString();
-        }
-      }
-
-      return {
-        id: b._id || b.id,
-        venue: {
-          id: b.venue?._id || b.venue?.id,
-          name: b.venue?.name || '',
-          imageUrl: b.venue?.imageUrl || b.venue?.images?.[0] || null,
-          location: b.venue?.address
-            ? `${b.venue.address.city || ''}, ${b.venue.address.state || ''}`
-            : b.venue?.location || '',
-        },
-        startDateTime: b.startDateTime,
-        endDateTime: b.endDateTime,
-        guests: b.guests,
-        contactName: b.contactName,
-        contactEmail: b.contactEmail,
-        contactPhone: b.contactPhone,
-        specialRequests: b.specialRequests || '',
-        paymentMethod: b.paymentMethod,
-        bookingStatus: mappedBookingStatus,
-        paymentStatus: mappedPaymentStatus,
-        totalAmount: b.totalAmount,
-        amountPaid: b.amountPaid,
-        remainingPaymentDueDate,
-        autoCancellationDate,
-        isImmediatePaymentRequired,
-        cancellationReason: b.cancellationReason || '',
-        createdAt: b.createdAt,
-        updatedAt: b.updatedAt,
-      };
-    });
 
     return {
-      success: res.data?.success || true,
-      message: res.data?.message || '',
+      success: res.data?.success ?? true,
+      message: res.data?.message ?? '',
       data: {
-        bookings: mappedBookings,
-        totalBookings: rawData?.totalBookings ?? mappedBookings.length,
+        bookings: rawData?.bookings ?? [],
+        totalBookings: rawData?.totalBookings ?? 0,
       },
     };
   },

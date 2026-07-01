@@ -7,6 +7,8 @@ import {
   createBookingService,
   getBookingByVenueId,
   verifyAndConfirmDepositService,
+  cancelPendingBookingService,
+  cancelBookingService,
   deleteBookingService,
   payBalanceService,
   verifyBalancePaymentService,
@@ -169,6 +171,23 @@ export const getBookingAvailability = async (req: Request, res: Response, next: 
   }
 };
 
+// PATCH /bookings/:bookingId/cancel
+export const cancelBooking = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user?.id as string;
+
+    const bookingId = req.params.bookingId as string;
+    const { reason } = req.body;
+    
+    if (!reason) {
+      throw new AppError('Cancellation reason is required', HTTP_STATUS.BAD_REQUEST);
+    }
+
+    await cancelBookingService(userId, bookingId, reason);
+
+    success(res, HTTP_STATUS.OK, null, 'Booking cancelled successfully');
+ };
+  
 // GET /bookings/:bookingId
 export const getBookingById = async (req: Request, res: Response, next: NextFunction) => {
   try {
