@@ -3,17 +3,13 @@ import heroImage1 from '@/features/public/assets/hero-venue.png';
 import heroImage2 from '@/features/public/assets/hero-venue-2.png';
 import heroImage3 from '@/features/public/assets/hero-venue-3.png';
 import heroImage4 from '@/features/public/assets/hero-venue-4.png';
-import { MapPin, Calendar, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { MapPin, Search } from 'lucide-react';
 
 const images = [heroImage1, heroImage2, heroImage3, heroImage4];
 
 export default function HeroSection() {
   const [currentIdx, setCurrentIdx] = useState(0);
 
-  // Custom Date Picker States
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [currentMonth, setCurrentMonth] = useState(new Date());
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -21,28 +17,6 @@ export default function HeroSection() {
     }, 5000);
     return () => clearInterval(timer);
   }, []);
-
-  const handlePrevMonth = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1));
-  };
-
-  const handleNextMonth = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1));
-  };
-
-  const handleSelectDate = (date: Date) => {
-    setSelectedDate(date);
-    setIsOpen(false);
-  };
-
-  // Calendar calculations
-  const year = currentMonth.getFullYear();
-  const month = currentMonth.getMonth();
-  const firstDayOfMonth = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
   return (
     <section className="relative z-20 min-h-[75vh] flex flex-col justify-center py-16">

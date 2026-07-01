@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, MapPin, Calendar, Users, CreditCard,
-  RefreshCw, XCircle, Loader2, CheckCircle2, Clock, AlertTriangle,
+  XCircle, Loader2, CheckCircle2, Clock, AlertTriangle,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { bookingsApi } from '../services/bookings.api';
@@ -176,7 +176,6 @@ export default function BookingDetailPage() {
   const isPending = booking.bookingStatus === 'pending' && booking.paymentStatus === 'pending';
   const isPartial = booking.bookingStatus === 'reserved' &&
     ['partial', 'deposit_paid', 'overdue'].includes(booking.paymentStatus?.toLowerCase());
-  const canCancel = isPending;
 
   const venue = booking.venue;
   const imageUrl = venue?.images?.[0] || venue?.imageUrl || null;

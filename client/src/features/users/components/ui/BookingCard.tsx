@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { CreditCard, Loader2, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { bookingsApi } from '@/features/bookings/services/bookings.api';
@@ -229,12 +230,19 @@ const BookingCard = ({ booking, onCancelSuccess }: BookingCardProps) => {
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 flex-wrap justify-end">
             {booking.amountPaid > 0 && (
               <span className="text-[11px] font-semibold text-success bg-success/5 border border-success/15 px-2.5 py-1 rounded-lg">
                 Paid: ₹{booking.amountPaid.toLocaleString('en-IN')}
               </span>
             )}
+
+            <Link
+              to={`/account/bookings/${booking.id}`}
+              className="px-3 py-2 border border-border/70 text-foreground/75 hover:bg-muted/10 text-[11px] font-semibold rounded-xl transition-all"
+            >
+              View Details
+            </Link>
 
             <div>
               {booking.bookingStatus === 'pending' && booking.paymentStatus === 'pending' ? (
