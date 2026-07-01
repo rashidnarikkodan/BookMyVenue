@@ -4,20 +4,19 @@ import {
   createBooking,
   getBookingAvailability,
   verifyPayment,
-  deleteBooking,
+  // cancelPendingBooking,
   payBalance,
   verifyBalancePayment,
   getBookingQuote,
   cancelBooking,
-  getBookingById,
 } from '@/controllers/booking.controller';
 
 const router = Router();
 
-// Public — venue availability check
+// Public route: anyone can check venue availability
 router.get('/venues/:venueId', getBookingAvailability);
 
-// All routes below require authentication
+// Protected routes require authentication
 router.use(authMiddleware);
 
 router.post('/quote', getBookingQuote);
@@ -25,13 +24,7 @@ router.post('/', createBooking);
 router.post('/verify-payment', verifyPayment);
 router.post('/pay-balance', payBalance);
 router.post('/verify-balance', verifyBalancePayment);
-router.delete('/pending/:bookingId', cancelPendingBooking);
+// router.delete('/pending/:bookingId', cancelPendingBooking);
 router.patch('/:bookingId/cancel', cancelBooking);
-
-// Delete an unpaid (PENDING) booking — called on payment failure, dismiss, or explicit cancel
-router.delete('/:bookingId', deleteBooking);
-
-// Fetch a single booking by id — must be after named DELETE routes
-router.get('/:bookingId', getBookingById);
 
 export default router;

@@ -7,7 +7,6 @@ import {
   createBookingService,
   getBookingByVenueId,
   verifyAndConfirmDepositService,
-  cancelPendingBookingService,
   cancelBookingService,
   deleteBookingService,
   payBalanceService,
@@ -178,7 +177,7 @@ export const cancelBooking = async (req: Request, res: Response, next: NextFunct
 
     const bookingId = req.params.bookingId as string;
     const { reason } = req.body;
-    
+
     if (!reason) {
       throw new AppError('Cancellation reason is required', HTTP_STATUS.BAD_REQUEST);
     }
@@ -186,8 +185,12 @@ export const cancelBooking = async (req: Request, res: Response, next: NextFunct
     await cancelBookingService(userId, bookingId, reason);
 
     success(res, HTTP_STATUS.OK, null, 'Booking cancelled successfully');
- };
-  
+
+  } catch (error) {
+    next(error)
+  }
+}
+
 // GET /bookings/:bookingId
 export const getBookingById = async (req: Request, res: Response, next: NextFunction) => {
   try {
