@@ -29,10 +29,10 @@ const Signin = () => {
     setError(null);
   };
 
-  const handleSuccessfulAuth = (data: any) => {
-    setAuth(data.user);
+  const handleSuccessfulAuth = (user: any) => {
+    setAuth(user);
 
-    let path = getRoleRedirect(data.user.role);
+    let path = getRoleRedirect(user.role);
 
     navigate(path, { replace: true });
   };
