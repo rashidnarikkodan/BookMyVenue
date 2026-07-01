@@ -34,7 +34,7 @@ export const createBooking = async (
         specialRequests: payload.specialRequests || '',
         bookingScenario: reservation.bookingScenario,
         paymentMethod: PaymentMethod.RAZORPAY,
-        bookingStatus: BookingStatus.RESERVED,
+        bookingStatus: BookingStatus.PENDING,
         paymentStatus: PaymentStatus.PENDING,
         totalAmount: reservation.totalAmount,
         reservationDeposit: reservation.reservationDeposit,

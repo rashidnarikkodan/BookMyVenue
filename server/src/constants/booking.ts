@@ -1,4 +1,5 @@
 export enum BookingStatus {
+  PENDING = 'PENDING',
   RESERVED = 'RESERVED',
   CONFIRMED = 'CONFIRMED',
   CANCELLED = 'CANCELLED',
@@ -38,4 +39,4 @@ export const RESERVATION_POLICY = {
   SCHEDULING_MIN_DAYS: 5,               // latest possible due date (5 days before event)
   SCHEDULING_MAX_DAYS: 30,              // earliest possible due date (30 days before event)
   GRACE_PERIOD_HOURS: 24,               // hours to pay balance after deadline before auto-cancellation
-};
+}
