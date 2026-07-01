@@ -21,41 +21,137 @@ const determineScenario = (eventStart: Date): BookingScenario => {
   if (diffDays > RESERVATION_POLICY.ADVANCE_THRESHOLD_DAYS) {
     return BookingScenario.ADVANCE;
   }
-  if (diffDays >= RESERVATION_POLICY.SHORT_NOTICE_THRESHOLD_DAYS) {
-    return BookingScenario.SHORT_NOTICE;
-  }
   return BookingScenario.IMMEDIATE;
 };
 
 /**
- * Calculates the balance payment deadline based on the scenario.
- *   ADVANCE      → 1 day before the event start
- *   SHORT_NOTICE → 24 hours from now
- *   IMMEDIATE    → null (already fully paid)
+ * Calculates the remaining payment due date based on booking lead time.
+ * Uses UTC-based calculations.
+ * Core rule:
+ *   leadTimeDays = (eventDate - bookingDate) in days
+ *   If leadTimeDays >= 7 (Normal Booking):
+ *     remainingPaymentDueDate = eventDate - (leadTimeDays * cancellationFactor)
+ *   If leadTimeDays < 7 (Short Notice Booking):
+ *     remainingPaymentDueDate = bookingDate
+ *     isImmediatePaymentRequired = true
  */
-const calculateBalanceDeadline = (
-  scenario: BookingScenario,
-  eventStart: Date
-): Date | null => {
-  if (scenario === BookingScenario.ADVANCE) {
-    const deadline = new Date(eventStart);
-    deadline.setDate(deadline.getDate() - 1);
-    return deadline;
+export const calculateRemainingDueDate = (
+  bookingDate: Date,
+  eventDate: Date,
+  cancellationFactor: number = 0.5
+) => {
+  const bookingTime = bookingDate.getTime();
+  const eventTime = eventDate.getTime();
+  const diffMs = eventTime - bookingTime;
+  const leadTimeDays = diffMs / (1000 * 60 * 60 * 24);
+
+  if (leadTimeDays < 0) {
+    throw new AppError('Event date cannot be before booking date', HTTP_STATUS.BAD_REQUEST);
   }
-  if (scenario === BookingScenario.SHORT_NOTICE) {
-    const deadline = new Date();
-    deadline.setHours(
-      deadline.getHours() + RESERVATION_POLICY.SHORT_NOTICE_PAYMENT_DEADLINE_HOURS
+
+  let remainingPaymentDueDate: Date;
+  let isImmediatePaymentRequired: boolean;
+
+  if (leadTimeDays < RESERVATION_POLICY.ADVANCE_THRESHOLD_DAYS) {
+    // CASE 2: Short Notice Booking
+    remainingPaymentDueDate = new Date(bookingTime);
+    isImmediatePaymentRequired = true;
+  } else {
+    // CASE 1: Normal Booking
+    isImmediatePaymentRequired = false;
+    const daysToSubtract = leadTimeDays * cancellationFactor;
+    const dueTime = eventTime - (daysToSubtract * 24 * 60 * 60 * 1000);
+    // Clamp to ensure it doesn't fall before bookingDate or after eventDate
+    const clampedTime = Math.max(bookingTime, Math.min(eventTime, dueTime));
+    remainingPaymentDueDate = new Date(clampedTime);
+    // Round to 11:59 PM of the target day for clean display
+    remainingPaymentDueDate.setHours(23, 59, 59, 999);
+  }
+
+  // Calculate autoCancellationDate
+  let autoCancellationDate: Date;
+  if (isImmediatePaymentRequired) {
+    autoCancellationDate = new Date(bookingTime + 30 * 60 * 1000); // 30 minutes
+  } else {
+    autoCancellationDate = new Date(
+      remainingPaymentDueDate.getTime() + RESERVATION_POLICY.GRACE_PERIOD_HOURS * 60 * 60 * 1000
     );
-    return deadline;
   }
-  return null; // IMMEDIATE — no deadline, full payment at checkout
+
+  return {
+    remainingPaymentDueDate,
+    autoCancellationDate,
+    leadTimeDays,
+    isImmediatePaymentRequired,
+  };
 };
 
 // ── Public API ────────────────────────────────────────────────
 
 export const getBookingByVenueId = async (id: string) => {
   return bookingRepo.getBookingByVenueId(id);
+};
+
+/**
+ * Standalone service to calculate booking quotes (pricing breakdown, scenarios, and deposits).
+ * This ensures the backend has sole ownership of pricing calculations.
+ */
+export const calculateQuoteService = async (
+  venueId: string,
+  startDateTime: string | Date,
+  endDateTime: string | Date
+) => {
+  const start = new Date(startDateTime);
+  const end = new Date(endDateTime);
+
+  if (start >= end) {
+    throw new AppError('End date must be after the start date', HTTP_STATUS.BAD_REQUEST);
+  }
+  if (start < new Date()) {
+    throw new AppError('Past dates are not allowed', HTTP_STATUS.BAD_REQUEST);
+  }
+
+  // Fetch venue pricing
+  const availability: IAvailability | null = await getAvailabilityByVenueId(venueId);
+  if (!availability) {
+    throw new AppError('Venue not available to book', HTTP_STATUS.NOT_FOUND);
+  }
+
+  // Calculate total amount (base + GST + platform fee)
+  const durationInHours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+  const baseAmount = durationInHours * availability.pricePerHour;
+  const gst = baseAmount * RESERVATION_POLICY.GST_PERCENTAGE;
+  const platformFee = baseAmount * RESERVATION_POLICY.PLATFORM_FEE_PERCENTAGE;
+  const totalAmount = Math.round(baseAmount + gst + platformFee);
+
+  // Determine scenario
+  const scenario = determineScenario(start);
+
+  // Calculate deposit and balance
+  const reservationDeposit =
+    scenario === BookingScenario.IMMEDIATE
+      ? totalAmount
+      : Math.round(totalAmount * RESERVATION_POLICY.DEPOSIT_PERCENTAGE);
+
+  const remainingBalance = totalAmount - reservationDeposit;
+
+  // Calculate due date details
+  const now = new Date();
+  const deadlineDetails = calculateRemainingDueDate(now, start, 0.5);
+
+  return {
+    durationInHours,
+    baseAmount,
+    gst,
+    platformFee,
+    totalAmount,
+    bookingScenario: scenario,
+    reservationDeposit,
+    remainingBalance,
+    remainingPaymentDueDate: deadlineDetails.remainingPaymentDueDate,
+    autoCancellationDate: deadlineDetails.autoCancellationDate,
+    isImmediatePaymentRequired: deadlineDetails.isImmediatePaymentRequired,
+  };
 };
 
 /**
@@ -68,18 +164,10 @@ export const createBookingService = async (
   userId: string,
   payload: CreateBookingPayload
 ) => {
-  // ── 1. Validate dates ──────────────────────────────────
   const start = new Date(payload.startDateTime);
   const end = new Date(payload.endDateTime);
 
-  if (start >= end) {
-    throw new AppError('End date must be after the start date', HTTP_STATUS.BAD_REQUEST);
-  }
-  if (start < new Date()) {
-    throw new AppError('Past dates are not allowed', HTTP_STATUS.BAD_REQUEST);
-  }
-
-  // ── 2. Overlap check ───────────────────────────────────
+  // Overlap check
   const hasOverlapping = await bookingRepo.hasOverlappingBooking(
     payload.venueId,
     start,
@@ -89,51 +177,21 @@ export const createBookingService = async (
     throw new AppError('Venue unavailable at the selected time', HTTP_STATUS.CONFLICT);
   }
 
-  // ── 3. Fetch venue pricing ─────────────────────────────
-  const availability: IAvailability | null = await getAvailabilityByVenueId(
-    payload.venueId
-  );
-  if (!availability) {
-    throw new AppError('Venue not available to book', HTTP_STATUS.NOT_FOUND);
-  }
+  // Get pricing details from backend-owned quote service
+  const quote = await calculateQuoteService(payload.venueId, start, end);
 
-  // ── 4. Calculate total amount (base + GST + platform fee)
-  const durationInHours =
-    (end.getTime() - start.getTime()) / (1000 * 60 * 60);
-  const baseAmount = durationInHours * availability.pricePerHour;
-  const gst = baseAmount * RESERVATION_POLICY.GST_PERCENTAGE;
-  const platformFee = baseAmount * RESERVATION_POLICY.PLATFORM_FEE_PERCENTAGE;
-  const totalAmount = Math.round(baseAmount + gst + platformFee);
-
-  // ── 5. Determine booking scenario ──────────────────────
-  const scenario = determineScenario(start);
-
-  // ── 6. Calculate deposit & balance ─────────────────────
-  const reservationDeposit =
-    scenario === BookingScenario.IMMEDIATE
-      ? totalAmount
-      : Math.round(totalAmount * RESERVATION_POLICY.DEPOSIT_PERCENTAGE);
-
-  const remainingBalance = totalAmount - reservationDeposit;
-
-  // ── 7. Calculate balance payment deadline ──────────────
-  const balancePaymentDeadline = calculateBalanceDeadline(scenario, start);
-
-  // ── 8. Razorpay charge amount ──────────────────────────
-  //    For ADVANCE & SHORT_NOTICE → charge the 20% deposit
-  //    For IMMEDIATE → charge 100%
-  const razorpayChargeAmount = reservationDeposit;
-
-  // ── 9. Save booking to database ────────────────────────
+  // Save booking to database
   const booking = await bookingRepo.createBooking(userId, payload, {
-    totalAmount,
-    reservationDeposit,
-    remainingBalance,
-    bookingScenario: scenario,
-    balancePaymentDeadline,
+    totalAmount: quote.totalAmount,
+    reservationDeposit: quote.reservationDeposit,
+    remainingBalance: quote.remainingBalance,
+    bookingScenario: quote.bookingScenario,
+    remainingPaymentDueDate: quote.remainingPaymentDueDate,
+    autoCancellationDate: quote.autoCancellationDate,
+    isImmediatePaymentRequired: quote.isImmediatePaymentRequired,
   });
 
-  return { booking, razorpayChargeAmount };
+  return { booking, razorpayChargeAmount: quote.reservationDeposit };
 };
 
 /**
@@ -200,7 +258,8 @@ export const payBalanceService = async (userId: string, bookingId: string) => {
       HTTP_STATUS.BAD_REQUEST
     );
   }
-  if (booking.paymentStatus !== PaymentStatus.DEPOSIT_PAID) {
+  const allowedStatuses = [PaymentStatus.PARTIAL, PaymentStatus.DEPOSIT_PAID, PaymentStatus.OVERDUE];
+  if (!allowedStatuses.includes(booking.paymentStatus as PaymentStatus)) {
     throw new AppError(
       'Deposit must be paid before balance payment',
       HTTP_STATUS.BAD_REQUEST
@@ -209,8 +268,8 @@ export const payBalanceService = async (userId: string, bookingId: string) => {
 
   // ── 4. Check deadline hasn't expired ───────────────────
   if (
-    booking.balancePaymentDeadline &&
-    new Date() > booking.balancePaymentDeadline
+    booking.remainingPaymentDueDate &&
+    new Date() > booking.remainingPaymentDueDate
   ) {
     throw new AppError(
       'Balance payment deadline has passed',

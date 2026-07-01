@@ -56,9 +56,9 @@ export interface OwnerVerificationResponse {
 
 export type PaymentMethod = 'online' | 'cash';
 
-export type BookingStatus = 'pending_payment' | 'confirmed' | 'cancelled' | 'completed';
+export type BookingStatus = 'reserved' | 'confirmed' | 'cancelled' | 'completed' | 'expired';
 
-export type PaymentStatus = 'pending' | 'partially_paid' | 'paid' | 'failed' | 'refunded';
+export type PaymentStatus = 'pending' | 'partial' | 'paid' | 'overdue' | 'cancelled' | 'failed' | 'refunded';
 export interface MyBookingsResponse {
   bookings: Booking[];
   totalBookings: number;
@@ -93,6 +93,9 @@ export interface Booking {
 
   totalAmount: number;
   amountPaid: number;
+  remainingPaymentDueDate: string | null;
+  autoCancellationDate: string | null;
+  isImmediatePaymentRequired: boolean;
 
   cancellationReason: string;
 

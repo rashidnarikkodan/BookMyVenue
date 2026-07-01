@@ -7,6 +7,7 @@ import {
   cancelPendingBooking,
   payBalance,
   verifyBalancePayment,
+  getBookingQuote,
 } from '@/controllers/booking.controller';
 
 const router = Router();
@@ -17,6 +18,7 @@ router.get('/venues/:venueId', getBookingAvailability);
 // Protected routes require authentication
 router.use(authMiddleware);
 
+router.post('/quote', getBookingQuote);
 router.post('/', createBooking);
 router.post('/verify-payment', verifyPayment);
 router.post('/pay-balance', payBalance);

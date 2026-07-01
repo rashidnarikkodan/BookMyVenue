@@ -54,7 +54,7 @@ export default function BookingSuccessModal({
           <p className="text-xs text-muted max-w-sm mx-auto">
             {successData.bookingStatus === 'CONFIRMED'
               ? 'Your booking is confirmed with full payment received. We have sent a copy of the invoice to your registered email.'
-              : `Your venue is reserved! You've paid the 20% deposit of ₹${successData.amountPaid?.toLocaleString('en-IN')}. Your remaining balance of ₹${successData.remainingBalance?.toLocaleString('en-IN')} is due by ${successData.balancePaymentDeadline ? new Date(successData.balancePaymentDeadline).toLocaleString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'the event date'}.`
+              : `Your venue is reserved! You've paid the 20% deposit of ₹${successData.amountPaid?.toLocaleString('en-IN')}. Your remaining balance of ₹${successData.remainingBalance?.toLocaleString('en-IN')} is due by ${successData.remainingPaymentDueDate ? new Date(successData.remainingPaymentDueDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }) + ' (EOD)' : 'the event date'}.`
             }
           </p>
         </div>

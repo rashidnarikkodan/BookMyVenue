@@ -10,7 +10,9 @@ interface ReservationDetails {
   reservationDeposit: number;
   remainingBalance: number;
   bookingScenario: BookingScenario;
-  balancePaymentDeadline: Date | null;
+  remainingPaymentDueDate: Date | null;
+  autoCancellationDate: Date | null;
+  isImmediatePaymentRequired: boolean;
 }
 
 // ── Create ──────────────────────────────────────────────────
@@ -38,7 +40,9 @@ export const createBooking = async (
         reservationDeposit: reservation.reservationDeposit,
         remainingBalance: reservation.remainingBalance,
         amountPaid: 0,
-        balancePaymentDeadline: reservation.balancePaymentDeadline,
+        remainingPaymentDueDate: reservation.remainingPaymentDueDate,
+        autoCancellationDate: reservation.autoCancellationDate,
+        isImmediatePaymentRequired: reservation.isImmediatePaymentRequired,
     });
 
   return doc as IBooking;
@@ -182,7 +186,7 @@ export const confirmDepositPayment = async (
         bookingId,
         {
             bookingStatus: BookingStatus.RESERVED,
-            paymentStatus: PaymentStatus.DEPOSIT_PAID,
+            paymentStatus: PaymentStatus.PARTIAL,
             amountPaid: depositAmount,
         },
         { new: true }

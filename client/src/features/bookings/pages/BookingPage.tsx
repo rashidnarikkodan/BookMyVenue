@@ -36,9 +36,51 @@ const BookingPage = () => {
   const [contactPhone, setContactPhone] = useState("");
   const [specialRequests, setSpecialRequests] = useState("");
 
+  // Quote state calculated by the backend
+  const [quote, setQuote] = useState<any | null>(null);
+  const [quoteLoading, setQuoteLoading] = useState(false);
+
   // Action states
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successData, setSuccessData] = useState<any | null>(null);
+
+  // Fetch quote from backend when dates change
+  useEffect(() => {
+    const fetchQuote = async () => {
+      if (!id || !startDateTime || !endDateTime) {
+        setQuote(null);
+        return;
+      }
+
+      const start = new Date(startDateTime).getTime();
+      const end = new Date(endDateTime).getTime();
+      if (isNaN(start) || isNaN(end) || end <= start) {
+        setQuote(null);
+        return;
+      }
+
+      try {
+        setQuoteLoading(true);
+        const res = await bookingsApi.calculateQuote({
+          venueId: id,
+          startDateTime,
+          endDateTime,
+        });
+        if (res.success && res.data) {
+          setQuote(res.data);
+        } else {
+          setQuote(null);
+        }
+      } catch (err) {
+        console.error('Error fetching booking quote:', err);
+        setQuote(null);
+      } finally {
+        setQuoteLoading(false);
+      }
+    };
+
+    fetchQuote();
+  }, [id, startDateTime, endDateTime]);
 
   // Auto fill logged in user
   useEffect(() => {
@@ -282,6 +324,8 @@ const BookingPage = () => {
               onSubmit={handleSubmitBooking}
               isSubmitting={isSubmitting}
               existingBookings={existingBookings}
+              quote={quote}
+              quoteLoading={quoteLoading}
             />
           </div>
         </div>
