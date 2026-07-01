@@ -1,6 +1,6 @@
-import nodemailer, { Transporter } from "nodemailer";
-import dns from "node:dns";
-import env from "../configs/env.config";
+import nodemailer, { Transporter } from 'nodemailer';
+import dns from 'node:dns';
+import env from '../configs/env.config';
 
 const transporter: Transporter = nodemailer.createTransport({
   host: env.SMTP_HOST,
@@ -22,11 +22,7 @@ export interface SendEmailOptions {
 }
 
 export const emailService = {
-  async sendEmail({
-    to,
-    subject,
-    html,
-  }: SendEmailOptions): Promise<void> {
+  async sendEmail({ to, subject, html }: SendEmailOptions): Promise<void> {
     await transporter.sendMail({
       from: env.SMTP_FROM,
       to,

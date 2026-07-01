@@ -18,9 +18,21 @@ router.post(authRoutes.google, authController.googleAuth);
 router.post(authRoutes.verifyOtp, validateInputs(verifyOtpSchema), authController.verifyOtp);
 router.post(authRoutes.resendOtp, validateInputs(resendOtpSchema), authController.resendOtp);
 router.post(authRoutes.refreshToken, authController.refreshToken);
-router.post(authRoutes.forgotPassword, validateInputs(forgotPasswordSchema), authController.forgotPassword);
-router.post(authRoutes.verifyForgotPasswordOtp, validateInputs(verifyOtpSchema), authController.verifyForgotPasswordOtp);
-router.post(authRoutes.resetPassword, validateInputs(resetPasswordSchema), authController.resetPassword);
+router.post(
+  authRoutes.forgotPassword,
+  validateInputs(forgotPasswordSchema),
+  authController.forgotPassword
+);
+router.post(
+  authRoutes.verifyForgotPasswordOtp,
+  validateInputs(verifyOtpSchema),
+  authController.verifyForgotPasswordOtp
+);
+router.post(
+  authRoutes.resetPassword,
+  validateInputs(resetPasswordSchema),
+  authController.resetPassword
+);
 router.post(authRoutes.logout, authMiddleware, authController.logout);
 
 export default router;

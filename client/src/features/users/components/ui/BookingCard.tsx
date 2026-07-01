@@ -119,7 +119,9 @@ const BookingCard = ({ booking, onCancelSuccess }: BookingCardProps) => {
               toast.error(verifyRes.message || 'Payment signature verification failed.');
             }
           } catch (err: any) {
-            toast.error(err?.response?.data?.message || err?.message || 'Failed to verify payment.');
+            toast.error(
+              err?.response?.data?.message || err?.message || 'Failed to verify payment.'
+            );
           } finally {
             setPayingBalance(false);
           }
@@ -137,7 +139,9 @@ const BookingCard = ({ booking, onCancelSuccess }: BookingCardProps) => {
       const rzp = new (window as any).Razorpay(options);
       rzp.open();
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || err?.message || 'Failed to checkout remaining balance.');
+      toast.error(
+        err?.response?.data?.message || err?.message || 'Failed to checkout remaining balance.'
+      );
     } finally {
       setPayingBalance(false);
     }
@@ -272,9 +276,7 @@ const BookingCard = ({ booking, onCancelSuccess }: BookingCardProps) => {
                 </button>
               )}
               {!isCancellable && booking.bookingStatus !== 'reserved' && booking.amountPaid === 0 && (
-                <span className="text-[11px] font-medium text-foreground/40">
-                  Unpaid
-                </span>
+                <span className="text-[11px] font-medium text-foreground/40">Unpaid</span>
               )}
             </div>
           </div>

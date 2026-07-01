@@ -22,10 +22,7 @@ export const signupSchema = z
     phoneNumber: z
       .string()
       .trim()
-      .regex(
-        /^\+?[1-9]\d{7,14}$/,
-        'Phone number must be a valid international number'
-      ),
+      .regex(/^\+?[1-9]\d{7,14}$/, 'Phone number must be a valid international number'),
 
     password: z
       .string()
