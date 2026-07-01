@@ -6,6 +6,7 @@ import { getAvailabilityByVenueId } from '@/repositories/availability.repository
 import { IAvailability } from '@/types/availability.types';
 import * as bookingRepo from '@/repositories/booking.repository';
 import { verifyPaymentSignature } from './razorpay.service';
+import mongoose from 'mongoose';
 
 // ── Helpers ───────────────────────────────────────────────────
 
@@ -353,4 +354,78 @@ export const getUserBookingsService = async (
   status?: string
 ) => {
   return await bookingRepo.findBookingsByUser(userId, page, limit, status);
+};
+
+/**
+ * Cancels a user's booking.
+ *
+ * Rules:
+ * - If the booking is made more than 2 days before the event, cancellation is allowed within 48 hours of booking.
+ * - If the booking is made 2 days or less before the event, cancellation is allowed within 2 hours of booking.
+ *
+ * @param userId User ID
+ * @param bookingId Booking ID
+ * @param cancellationReason Reason for cancellation
+ */
+
+export const cancelBookingService = async (userId: string, bookingId: string, cancellationReason: string) => {
+
+  const booking = await bookingRepo.findBookingById(bookingId);
+  if (!booking) {
+    throw new AppError('Booking not found', HTTP_STATUS.NOT_FOUND);
+  }
+
+  if (booking.user._id.toString() !== userId) {
+    throw new AppError('Unauthorized access to booking', HTTP_STATUS.FORBIDDEN);
+  }
+
+  if (booking.bookingStatus === BookingStatus.CANCELLED) {
+    throw new AppError('Booking is already cancelled', HTTP_STATUS.BAD_REQUEST);
+  }
+  
+  if (![BookingStatus.RESERVED, BookingStatus.CONFIRMED].includes(booking.bookingStatus as BookingStatus)) {
+    throw new AppError(`Cannot cancel booking in ${booking.bookingStatus} state`, HTTP_STATUS.BAD_REQUEST);
+  }
+
+  //Slot Validation 
+  if (!booking.startDateTime || !booking.endDateTime) {
+    throw new AppError('Invalid booking slot. Cancellation aborted to prevent data corruption.', HTTP_STATUS.SERVER_ERROR);
+  }
+
+  //Event Already Started 
+  const now = new Date();
+  const eventStartTime = new Date(booking.startDateTime);
+  
+  if (now.getTime() >= eventStartTime.getTime()) {
+    throw new AppError('Cannot cancel a booking after the event has started', HTTP_STATUS.BAD_REQUEST);
+  }
+
+  //Cancellation Window Validation
+  const bookingCreatedAt = new Date(booking.createdAt);
+  const diffMs = eventStartTime.getTime() - bookingCreatedAt.getTime();
+  const diffDays = diffMs / (1000 * 60 * 60 * 24);
+
+  const windowHours = diffDays > 2 ? 48 : 2;
+  const windowDeadline = new Date(bookingCreatedAt.getTime() + windowHours * 60 * 60 * 1000);
+  
+  const effectiveDeadline = windowDeadline.getTime() < eventStartTime.getTime() ? windowDeadline : eventStartTime;
+
+  if (now.getTime() > effectiveDeadline.getTime()) {
+    throw new AppError('Cancellation window has expired for this booking', HTTP_STATUS.BAD_REQUEST);
+  }
+
+  const session = await mongoose.startSession();
+  try {
+    session.startTransaction();
+    
+    // Slot release and booking update
+    await bookingRepo.cancelBooking(bookingId, cancellationReason, session);
+
+    await session.commitTransaction();
+  } catch (error) {
+    await session.abortTransaction();
+    throw new AppError('Failed to cancel booking due to internal error', HTTP_STATUS.SERVER_ERROR);
+  } finally {
+    session.endSession();
+  }
 };

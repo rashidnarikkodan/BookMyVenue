@@ -8,6 +8,7 @@ import {
   payBalance,
   verifyBalancePayment,
   getBookingQuote,
+  cancelBooking,
 } from '@/controllers/booking.controller';
 
 const router = Router();
@@ -24,5 +25,6 @@ router.post('/verify-payment', verifyPayment);
 router.post('/pay-balance', payBalance);
 router.post('/verify-balance', verifyBalancePayment);
 router.delete('/pending/:bookingId', cancelPendingBooking);
+router.patch('/:bookingId/cancel', cancelBooking);
 
 export default router;

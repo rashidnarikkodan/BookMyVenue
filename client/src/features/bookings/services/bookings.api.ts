@@ -21,6 +21,11 @@ export const bookingsApi = {
     return res.data;
   },
 
+  cancelBooking: async (bookingId: string, reason: string): Promise<any> => {
+    const res = await apiClient.patch(`/bookings/${bookingId}/cancel`, { reason });
+    return res.data;
+  },
+
   verifyPayment: async (paymentData: {
     razorpay_payment_id: string;
     razorpay_order_id: string;
