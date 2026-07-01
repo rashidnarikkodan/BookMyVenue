@@ -3,39 +3,8 @@ import type { BookingDetails } from '../types/bookings.types';
 
 export const bookingsApi = {
   createBooking: async (bookingData: BookingDetails): Promise<any> => {
-    try {
-      console.log(bookingData)
-      const res = await apiClient.post('/bookings', bookingData);
-      console.log("Booking Confirmed", res.data);
-      return res.data;
-    } catch (err: any) {
-      console.warn("Backend /bookings post failed, falling back to mock response", err);
-
-      // Simulate network latency
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      
-      // Generate a mock confirmation number
-      const confirmationNumber = 'BMV-' + Math.floor(100000 + Math.random() * 900000);
-      
-      // Save mock booking to localStorage
-      const mockBooking = {
-        ...bookingData,
-        _id: confirmationNumber,
-        status: 'pending',
-        paymentStatus: bookingData.paymentMethod === 'cash' ? 'pending' : 'completed',
-        createdAt: new Date().toISOString(),
-      };
-      
-      const existing = JSON.parse(localStorage.getItem('mock_bookings') || '[]');
-      existing.push(mockBooking);
-      localStorage.setItem('mock_bookings', JSON.stringify(existing));
-      
-      return {
-        success: true,
-        message: 'Booking created successfully (simulation)',
-        data: mockBooking,
-      };
-    }
+    const res = await apiClient.post('/bookings', bookingData);
+    return res.data;
   },
 
   cancelPendingBooking: async (bookingId: string): Promise<any> => {
@@ -52,20 +21,29 @@ export const bookingsApi = {
     const res = await apiClient.post('/bookings/verify-payment', paymentData);
     return res.data;
   },
-  
-  getMockBookings: (): any[] => {
-    return JSON.parse(localStorage.getItem('mock_bookings') || '[]');
-  },
-    
-  getByVenueId : async (id: string): Promise<any> => {
-      try{
 
+  payBalance: async (bookingId: string): Promise<any> => {
+    const res = await apiClient.post('/bookings/pay-balance', { bookingId });
+    return res.data;
+  },
+
+  verifyBalancePayment: async (paymentData: {
+    razorpay_payment_id: string;
+    razorpay_order_id: string;
+    razorpay_signature: string;
+    bookingId: string;
+  }): Promise<any> => {
+    const res = await apiClient.post('/bookings/verify-balance', paymentData);
+    return res.data;
+  },
+
+  getByVenueId: async (id: string): Promise<any> => {
+    try {
       const res = await apiClient.get(`/bookings/venues/${id}`);
       return res.data.data;
-      }
-      catch(err:any){
-        console.log(err);
-        return null;
-      }
-  }
+    } catch (err: any) {
+      console.error('Failed to fetch venue bookings', err);
+      return null;
+    }
+  },
 };

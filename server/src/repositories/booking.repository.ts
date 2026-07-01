@@ -1,27 +1,25 @@
 import Booking from '@/models/booking.model';
 import { IBooking, CreateBookingPayload } from '@/types/booking.types';
-import { BookingStatus, PaymentMethod, PaymentStatus } from '@/constants/booking';
+import { BookingStatus, BookingScenario, PaymentMethod, PaymentStatus } from '@/constants/booking';
 import mongoose from 'mongoose';
+
+// ── Types ───────────────────────────────────────────────────
+
+interface ReservationDetails {
+  totalAmount: number;
+  reservationDeposit: number;
+  remainingBalance: number;
+  bookingScenario: BookingScenario;
+  balancePaymentDeadline: Date | null;
+}
 
 // ── Create ──────────────────────────────────────────────────
 
 export const createBooking = async (
     userId: string,
     payload: CreateBookingPayload,
-    totalAmount: number
+    reservation: ReservationDetails
 ): Promise<IBooking> => {
-    const paymentStatus =
-        payload.paymentMethod === PaymentMethod.RAZORPAY || payload.paymentMethod === PaymentMethod.CASH
-            ? PaymentStatus.PENDING
-            : PaymentStatus.PAID;
-
-    const bookingStatus =
-        payload.paymentMethod === PaymentMethod.CASH
-            ? BookingStatus.CONFIRMED
-            : payload.paymentMethod === PaymentMethod.RAZORPAY
-            ? BookingStatus.PENDING_PAYMENT
-            : BookingStatus.CONFIRMED;
-
     const doc = await Booking.create({
         venue: new mongoose.Types.ObjectId(payload.venueId),
         user: new mongoose.Types.ObjectId(userId),
@@ -32,11 +30,15 @@ export const createBooking = async (
         contactEmail: payload.contactEmail,
         contactPhone: payload.contactPhone,
         specialRequests: payload.specialRequests || '',
-        paymentMethod: payload.paymentMethod,
-        bookingStatus,
-        paymentStatus,
-        totalAmount,
-        amountPaid: paymentStatus === PaymentStatus.PAID ? totalAmount : 0,
+        bookingScenario: reservation.bookingScenario,
+        paymentMethod: PaymentMethod.RAZORPAY,
+        bookingStatus: BookingStatus.RESERVED,
+        paymentStatus: PaymentStatus.PENDING,
+        totalAmount: reservation.totalAmount,
+        reservationDeposit: reservation.reservationDeposit,
+        remainingBalance: reservation.remainingBalance,
+        amountPaid: 0,
+        balancePaymentDeadline: reservation.balancePaymentDeadline,
     });
 
     return doc as IBooking;
@@ -156,7 +158,7 @@ export const hasOverlappingBooking = async (
 ): Promise<boolean> => {
     const filter: Record<string, any> = {
         venue: new mongoose.Types.ObjectId(venueId),
-        bookingStatus: { $in: [BookingStatus.CONFIRMED, BookingStatus.PENDING_PAYMENT] },
+        bookingStatus: { $in: [BookingStatus.CONFIRMED, BookingStatus.RESERVED] },
         startDateTime: { $lt: endDateTime },
         endDateTime: { $gt: startDateTime },
     };
@@ -169,6 +171,48 @@ export const hasOverlappingBooking = async (
 };
 
 // ── Update ──────────────────────────────────────────────────
+
+/**
+ * Confirms the deposit payment (20%).
+ * Sets status to RESERVED + DEPOSIT_PAID.
+ */
+export const confirmDepositPayment = async (
+    bookingId: string,
+    depositAmount: number
+): Promise<IBooking | null> => {
+    return Booking.findByIdAndUpdate(
+        bookingId,
+        {
+            bookingStatus: BookingStatus.RESERVED,
+            paymentStatus: PaymentStatus.DEPOSIT_PAID,
+            amountPaid: depositAmount,
+        },
+        { new: true }
+    )
+        .populate('venue', 'name address images')
+        .populate('user', 'fullName email') as Promise<IBooking | null>;
+};
+
+/**
+ * Confirms full payment (100%).
+ * Sets status to CONFIRMED + PAID.
+ */
+export const confirmFullPayment = async (
+    bookingId: string,
+    totalAmount: number
+): Promise<IBooking | null> => {
+    return Booking.findByIdAndUpdate(
+        bookingId,
+        {
+            bookingStatus: BookingStatus.CONFIRMED,
+            paymentStatus: PaymentStatus.PAID,
+            amountPaid: totalAmount,
+        },
+        { new: true }
+    )
+        .populate('venue', 'name address images')
+        .populate('user', 'fullName email') as Promise<IBooking | null>;
+};
 
 export const updateBookingStatus = async (
     id: string,
@@ -202,22 +246,7 @@ export const updatePaymentStatus = async (
     return Booking.findByIdAndUpdate(id, update, { new: true }) as Promise<IBooking | null>;
 };
 
-export const confirmPaidBooking = async (
-    bookingId: string,
-    amountPaid: number
-): Promise<IBooking | null> => {
-    return Booking.findByIdAndUpdate(
-        bookingId,
-        {
-            bookingStatus: BookingStatus.CONFIRMED,
-            paymentStatus: PaymentStatus.PAID,
-            amountPaid,
-        },
-        { new: true }
-    )
-        .populate('venue', 'name address images')
-        .populate('user', 'fullName email') as Promise<IBooking | null>;
-};
+// ── Delete ──────────────────────────────────────────────────
 
 export const deleteBookingById = async (id: string): Promise<boolean> => {
     const res = await Booking.findByIdAndDelete(id);
