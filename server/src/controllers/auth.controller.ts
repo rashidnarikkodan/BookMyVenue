@@ -77,7 +77,7 @@ export const googleAuth = async (
       maxAge: 15 * 60 * 1000, // 15 minutes
     });
 
-    success(res, HTTP_STATUS.OK, result, 'Google Login Successful');
+    success(res, HTTP_STATUS.OK, result.user, 'Google Login Successful');
   } catch (error: unknown) {
     next(error);
   }
