@@ -1,5 +1,5 @@
 import { Document, Types } from 'mongoose';
-import { BookingStatus, PaymentMethod, PaymentStatus } from '@/constants/booking';
+import { BookingStatus, BookingScenario, PaymentMethod, PaymentStatus } from '@/constants/booking';
 
 export interface IBooking extends Document {
   venue: Types.ObjectId;
@@ -11,11 +11,15 @@ export interface IBooking extends Document {
   contactEmail: string;
   contactPhone: string;
   specialRequests: string;
+  bookingScenario: BookingScenario;
   paymentMethod: PaymentMethod;
   bookingStatus: BookingStatus;
   paymentStatus: PaymentStatus;
   totalAmount: number;
+  reservationDeposit: number;
+  remainingBalance: number;
   amountPaid: number;
+  balancePaymentDeadline: Date | null;
   cancellationReason: string;
   createdAt: Date;
   updatedAt: Date;
@@ -31,5 +35,4 @@ export interface CreateBookingPayload {
   contactEmail: string;
   contactPhone: string;
   specialRequests?: string;
-  paymentMethod: PaymentMethod;
 }
