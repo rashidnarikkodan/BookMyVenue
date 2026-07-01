@@ -7,4 +7,7 @@ export const AUTH_ROUTES = {
   VERIFY_OTP: `${API_BASE_URL}/auth/verify-otp`,
   RESEND_OTP: `${API_BASE_URL}/auth/resend-otp`,
   LOGOUT: `${API_BASE_URL}/auth/logout`,
+  FORGOT_PASSWORD: `${API_BASE_URL}/auth/forgot-password`,
+  VERIFY_FORGOT_PASSWORD_OTP: `${API_BASE_URL}/auth/verify-forgot-password-otp`,
+  RESET_PASSWORD: `${API_BASE_URL}/auth/reset-password`,
 };

@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { BookingStatus, PaymentMethod, PaymentStatus } from '../constants/booking';
+import { BookingStatus, BookingScenario, PaymentMethod, PaymentStatus } from '../constants/booking';
 
 const bookingSchema = new Schema(
   {
@@ -56,16 +56,24 @@ const bookingSchema = new Schema(
       trim: true,
     },
 
+    // ── Reservation Model Fields ─────────────────────────────
+
+    bookingScenario: {
+      type: String,
+      enum: Object.values(BookingScenario),
+      required: true,
+    },
+
     paymentMethod: {
       type: String,
       enum: Object.values(PaymentMethod),
-      required: true,
+      default: PaymentMethod.RAZORPAY,
     },
 
     bookingStatus: {
       type: String,
       enum: Object.values(BookingStatus),
-      default: BookingStatus.PENDING_PAYMENT,
+      default: BookingStatus.RESERVED,
     },
 
     paymentStatus: {
@@ -74,14 +82,31 @@ const bookingSchema = new Schema(
       default: PaymentStatus.PENDING,
     },
 
+    // ── Financial Fields ─────────────────────────────────────
+
     totalAmount: {
       type: Number,
-      default: 0,
+      required: true,
+    },
+
+    reservationDeposit: {
+      type: Number,
+      required: true,
+    },
+
+    remainingBalance: {
+      type: Number,
+      required: true,
     },
 
     amountPaid: {
       type: Number,
       default: 0,
+    },
+
+    balancePaymentDeadline: {
+      type: Date,
+      default: null,
     },
 
     cancellationReason: {

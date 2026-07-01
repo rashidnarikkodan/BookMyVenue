@@ -1,11 +1,3 @@
-export interface Addon {
-  id: string;
-  name: string;
-  price: number;
-  priceType: 'fixed' | 'perHead' | 'perHour';
-  description?: string;
-  quantity?: number;
-}
 
 export interface BookingDetails {
   venueId: string;
@@ -16,7 +8,4 @@ export interface BookingDetails {
   contactEmail: string;
   contactPhone: string;
   specialRequests: string;
-  paymentMethod: 'razorpay' | 'wallet' | 'cash';
-  guestList?: any[];
-  guestFileName?: string;
 }

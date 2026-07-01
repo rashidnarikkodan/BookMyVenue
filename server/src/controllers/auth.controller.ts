@@ -5,7 +5,12 @@ import { MESSAGES } from '@/constants/messages';
 import { HTTP_STATUS } from '@/constants/http';
 import { authService, refreshTokenService } from '../services/auth.service';
 
-export const signup = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const signup = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+
   try {
     const validatedData = req.body;
     const result = await authService.signup(validatedData);
@@ -15,20 +20,30 @@ export const signup = async (req: Request, res: Response, next: NextFunction): P
   }
 };
 
-export const verifyOtp = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const verifyOtp = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+
   try {
     const data = req.body;
-    const result = await authService.verifyOtp(data);
-    success(res, HTTP_STATUS.OK, result, MESSAGES.USER_VERIFIED);
+    await authService.verifyOtp(data);
+    success(res, HTTP_STATUS.OK, null, MESSAGES.USER_VERIFIED);
   } catch (error: unknown) {
     next(error);
   }
 };
 
-export const resendOtp = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const resendOtp = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+
   try {
-    const { registrationToken } = req.body;
-    await authService.resendOtp(registrationToken);
+    const { verificationToken } = req.body;
+    await authService.resendOtp(verificationToken);
     success(res, HTTP_STATUS.OK, null, MESSAGES.OTP_RESENT);
   } catch (error: unknown) {
     next(error);
@@ -68,7 +83,12 @@ export const googleAuth = async (
   }
 };
 
-export const signin = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const signin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+
   try {
     const validatedData = req.body;
 
@@ -88,7 +108,7 @@ export const signin = async (req: Request, res: Response, next: NextFunction): P
       maxAge: 15 * 60 * 1000, // 15 minutes
     });
 
-    success(res, HTTP_STATUS.OK, result, 'Sign In Successful');
+    success(res, HTTP_STATUS.OK, result.user, 'Sign In Successful');
   } catch (error: unknown) {
     next(error);
   }
@@ -118,7 +138,12 @@ export const refreshToken = async (
   }
 };
 
-export const logout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const logout = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+
   try {
     const userId = req.user?.id;
     if (!userId) {
@@ -140,6 +165,60 @@ export const logout = async (req: Request, res: Response, next: NextFunction): P
     });
 
     success(res, HTTP_STATUS.OK, null, 'Logged out successfully');
+  } catch (error: unknown) {
+    next(error);
+  }
+};
+
+
+export const forgotPassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { email } = req.body;
+    const result = await authService.forgotPassword(req.body);
+
+    success(
+      res,
+      HTTP_STATUS.OK,
+      result,
+      'If an account exists, an OTP has been sent to the registered email.'
+    );
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const verifyForgotPasswordOtp = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const data = req.body;
+    const result = await authService.verifyForgotPasswordOtp(data);
+
+    if (!result.resetToken) {
+      throw new AppError('Invalid operation', HTTP_STATUS.BAD_REQUEST);
+    }
+
+    success(res, HTTP_STATUS.OK, { resetToken: result.resetToken }, 'OTP verified successfully');
+  } catch (error: unknown) {
+    next(error);
+  }
+};
+
+export const resetPassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const data = req.body;
+    await authService.resetPassword(data);
+    success(res, HTTP_STATUS.OK, null, 'Password reset successfully');
   } catch (error: unknown) {
     next(error);
   }

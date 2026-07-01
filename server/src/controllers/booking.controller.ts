@@ -6,25 +6,30 @@ import { NextFunction, Request, Response } from 'express';
 import {
   createBookingService,
   getBookingByVenueId,
-  verifyAndConfirmBookingService,
+  verifyAndConfirmDepositService,
   cancelPendingBookingService,
+  payBalanceService,
+  verifyBalancePaymentService,
 } from '@/services/booking.service';
 import { createOrder as createRazorpayOrder } from '@/services/razorpay.service';
 import { CreateBookingPayload } from '@/types/booking.types';
 
-// POST /bookings/confirm
+// POST /bookings
 export const createBooking = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.user?.id;
     if (!userId) throw new AppError(MESSAGES.UNAUTHORIZED, HTTP_STATUS.UNAUTHORIZED);
 
     const payload: CreateBookingPayload = req.body;
-    const booking = await createBookingService(userId, payload);
 
-    let orderDetails = null;
-    if (payload.paymentMethod === 'razorpay') {
-      orderDetails = await createRazorpayOrder(booking.totalAmount, booking._id.toString());
-    }
+    // Service returns booking + the amount to charge via Razorpay
+    const { booking, razorpayChargeAmount } = await createBookingService(userId, payload);
+
+    // Create Razorpay order for the charge amount (deposit or full)
+    const orderDetails = await createRazorpayOrder(
+      razorpayChargeAmount,
+      booking._id.toString()
+    );
 
     success(res, HTTP_STATUS.CREATED, { payment: orderDetails, booking }, 'Booking created');
   } catch (error) {
@@ -44,8 +49,7 @@ export const verifyPayment = async (req: Request, res: Response, next: NextFunct
       throw new AppError('Missing payment verification details', HTTP_STATUS.BAD_REQUEST);
     }
 
-    // Since payment is verified, confirm the booking
-    const booking = await verifyAndConfirmBookingService(
+    const booking = await verifyAndConfirmDepositService(
       userId,
       bookingId,
       razorpay_order_id,
@@ -54,6 +58,57 @@ export const verifyPayment = async (req: Request, res: Response, next: NextFunct
     );
 
     success(res, HTTP_STATUS.OK, booking, 'Payment verified and booking confirmed');
+  } catch (error) {
+    next(error);
+  }
+};
+
+// POST /bookings/pay-balance
+export const payBalance = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) throw new AppError(MESSAGES.UNAUTHORIZED, HTTP_STATUS.UNAUTHORIZED);
+
+    const { bookingId } = req.body;
+    if (!bookingId) {
+      throw new AppError('Booking ID is required', HTTP_STATUS.BAD_REQUEST);
+    }
+
+    const { booking, razorpayChargeAmount } = await payBalanceService(userId, bookingId);
+
+    // Create Razorpay order for the remaining balance
+    const orderDetails = await createRazorpayOrder(
+      razorpayChargeAmount,
+      `${booking._id.toString()}-balance`
+    );
+
+    success(res, HTTP_STATUS.OK, { payment: orderDetails, booking }, 'Balance payment order created');
+  } catch (error) {
+    next(error);
+  }
+};
+
+// POST /bookings/verify-balance
+export const verifyBalancePayment = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) throw new AppError(MESSAGES.UNAUTHORIZED, HTTP_STATUS.UNAUTHORIZED);
+
+    const { razorpay_payment_id, razorpay_order_id, razorpay_signature, bookingId } = req.body;
+
+    if (!razorpay_payment_id || !razorpay_order_id || !razorpay_signature || !bookingId) {
+      throw new AppError('Missing payment verification details', HTTP_STATUS.BAD_REQUEST);
+    }
+
+    const booking = await verifyBalancePaymentService(
+      userId,
+      bookingId,
+      razorpay_order_id,
+      razorpay_payment_id,
+      razorpay_signature
+    );
+
+    success(res, HTTP_STATUS.OK, booking, 'Balance payment verified and booking confirmed');
   } catch (error) {
     next(error);
   }
@@ -78,6 +133,7 @@ export const cancelPendingBooking = async (req: Request, res: Response, next: Ne
   }
 };
 
+// GET /bookings/venues/:venueId
 export const getBookingAvailability = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { venueId } = req.params;

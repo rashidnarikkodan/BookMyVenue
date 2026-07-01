@@ -4,6 +4,7 @@ import ErrorPage from '@/shared/pages/ErrorPage';
 import Signin from '@/features/auth/pages/Signin';
 import AuthLayout from '../layouts/AuthLayout';
 import PublicRoute from '@/shared/components/PublicRoute';
+import ForgotPassword from '@/features/auth/pages/ForgotPassword';
 
 export const authRoutes = {
   path: '/',
@@ -23,6 +24,10 @@ export const authRoutes = {
     {
       path: 'signup',
       element: <Signup />,
+    },
+    {
+      path: 'forgot-password',
+      element: <ForgotPassword />,
     },
 
     // ── Aliases so old /login and /register still work ─────────────

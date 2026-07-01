@@ -7,6 +7,9 @@ export const useLogout = () => {
   const logoutState = useAppStore((state) => state.logout);
 
   const handleLogout = async () => {
+    const isConfirmed = window.confirm('Are you sure you want to log out?');
+    if (!isConfirmed) return;
+
     try {
       await logoutApi();
     } catch (error) {

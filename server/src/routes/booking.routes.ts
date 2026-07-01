@@ -1,10 +1,12 @@
-import { Router, Request, Response, NextFunction } from 'express';
+import { Router } from 'express';
 import { authMiddleware } from '@/middlewares/auth.middleware';
 import {
   createBooking,
   getBookingAvailability,
   verifyPayment,
   cancelPendingBooking,
+  payBalance,
+  verifyBalancePayment,
 } from '@/controllers/booking.controller';
 
 const router = Router();
@@ -17,6 +19,8 @@ router.use(authMiddleware);
 
 router.post('/', createBooking);
 router.post('/verify-payment', verifyPayment);
+router.post('/pay-balance', payBalance);
+router.post('/verify-balance', verifyBalancePayment);
 router.delete('/pending/:bookingId', cancelPendingBooking);
 
 export default router;

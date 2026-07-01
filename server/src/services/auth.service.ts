@@ -2,6 +2,7 @@ import argon2 from 'argon2';
 import { RegisterDto } from '@/dto/auth/register.dto';
 import { LoginDto } from '@/dto/auth/login.dto';
 import { VerifyOtpDto } from '@/dto/auth/verify-otp.dto';
+import { ResetPasswordDto } from '@/dto/auth/reset-password.dto';
 import { OAuth2Client } from 'google-auth-library';
 import { MESSAGES } from '@/constants/messages';
 import { HTTP_STATUS } from '@/constants/http';
@@ -13,16 +14,20 @@ import { otpService } from './otp.service';
 import jwt from 'jsonwebtoken';
 import { generateAccessToken, generateRefreshToken, jwtVerify } from '@/utils/jwtUtils';
 import { redisService } from './redis.service';
+import { ForgotPasswordDto } from '@/dto/auth/forgot-password.dto';
+import { emailService } from './email.service';
+import { otpEmail } from '@/template/otp.layout';
+import { UserDto } from '@/dto/user/user.dto';
 
-type RegistrationTokenPayload = {
+type AuthTokenPayload = {
   email: string;
-  purpose: 'email-verification';
+  purpose: 'email-verification' | 'password-reset';
 };
 
 const signup = async (
   userData: RegisterDto
-): Promise<{ email: string; registrationToken: string }> => {
-  const email = userData.email!.toLowerCase().trim();
+): Promise<{ verificationToken: string }> => {
+  const email = userData.email.toLowerCase().trim();
 
   const existingUser = await userRepository.findByEmail(email);
 
@@ -43,9 +48,19 @@ const signup = async (
     isVerified: false,
   });
 
-  await otpService.generateAndSendOtp(email);
+  const { otp } = await otpService.generateAndSendOtp(email);
 
-  const registrationToken = jwt.sign(
+  // Create the email
+  const mail = otpEmail(otp);
+
+  // Send the email
+  await emailService.sendEmail({
+    to: email,
+    subject: mail.subject,
+    html: mail.html,
+  });
+
+  const verificationToken = jwt.sign(
     {
       email,
       purpose: 'email-verification',
@@ -55,19 +70,18 @@ const signup = async (
   );
 
   return {
-    email,
-    registrationToken,
+    verificationToken,
   };
 };
 
-const verifyRegistrationToken = (registrationToken: string): RegistrationTokenPayload => {
+const verifyToken = (verificationToken: string): AuthTokenPayload => {
   try {
     const payload = jwt.verify(
-      registrationToken,
+      verificationToken,
       env.JWT_REGISTRATION_SECRET as string
-    ) as RegistrationTokenPayload;
+    ) as AuthTokenPayload;
 
-    if (payload.purpose !== 'email-verification') {
+    if (payload.purpose !== 'email-verification' && payload.purpose !== 'password-reset') {
       throw new Error();
     }
 
@@ -77,12 +91,21 @@ const verifyRegistrationToken = (registrationToken: string): RegistrationTokenPa
   }
 };
 
-const verifyOtp = async (data: VerifyOtpDto): Promise<{ user: Partial<IUser> }> => {
-  const payload = verifyRegistrationToken(data.registrationToken);
+const validateOtpToken = async (verificationToken: string, otp: string, expectedPurpose: 'email-verification' | 'password-reset'): Promise<string> => {
+  const payload = verifyToken(verificationToken);
 
-  await otpService.verifyOtp(payload.email, data.otp);
+  if (payload.purpose !== expectedPurpose) {
+    throw new AppError('Invalid token purpose', HTTP_STATUS.UNAUTHORIZED);
+  }
 
-  const user = await userRepository.findByEmail(payload.email);
+  await otpService.verifyOtp(payload.email, otp, expectedPurpose);
+  return payload.email;
+};
+
+const verifyOtp = async (data: VerifyOtpDto): Promise<void> => {
+  const email = await validateOtpToken(data.verificationToken, data.otp, 'email-verification');
+
+  const user = await userRepository.findByEmail(email);
 
   if (!user) {
     throw new AppError(MESSAGES.USER_NOT_FOUND, HTTP_STATUS.NOT_FOUND);
@@ -98,14 +121,24 @@ const verifyOtp = async (data: VerifyOtpDto): Promise<{ user: Partial<IUser> }> 
 
   const userObj = user.toObject();
   delete userObj.password;
-
-  return { user: userObj };
 };
 
-const resendOtp = async (registrationToken: string): Promise<void> => {
-  const payload = verifyRegistrationToken(registrationToken);
+const verifyForgotPasswordOtp = async (data: VerifyOtpDto): Promise<{ resetToken: string }> => {
+  const email = await validateOtpToken(data.verificationToken, data.otp, 'password-reset');
 
-  const { allowed, secondsLeft } = await otpService.canResend(payload.email);
+  const resetToken = jwt.sign(
+    { email, purpose: 'password-reset' },
+    env.JWT_REGISTRATION_SECRET as string,
+    { expiresIn: '10m' }
+  );
+
+  return { resetToken };
+};
+
+const resendOtp = async (verificationToken: string): Promise<void> => {
+  const payload = verifyToken(verificationToken);
+
+  const { allowed, secondsLeft } = await otpService.canResend(payload.email, payload.purpose);
 
   if (!allowed && secondsLeft === 0) {
     throw new AppError(MESSAGES.OTP_RESEND_LIMIT, HTTP_STATUS.TOO_MANY_REQUESTS);
@@ -113,20 +146,19 @@ const resendOtp = async (registrationToken: string): Promise<void> => {
 
   if (!allowed) {
     throw new AppError(
-      `${MESSAGES.OTP_RESEND_COOLDOWN}. Try again in ${secondsLeft} second${
-        secondsLeft === 1 ? '' : 's'
+      `${MESSAGES.OTP_RESEND_COOLDOWN}. Try again in ${secondsLeft} second${secondsLeft === 1 ? '' : 's'
       }.`,
       HTTP_STATUS.TOO_MANY_REQUESTS
     );
   }
 
-  await otpService.generateAndSendOtp(payload.email);
+  await otpService.generateAndSendOtp(payload.email, payload.purpose);
 };
 
 const signin = async (
   data: LoginDto
 ): Promise<{
-  user: Partial<IUser>;
+  user: UserDto;
   accessToken: string;
   refreshToken: string;
 }> => {
@@ -171,7 +203,19 @@ const signin = async (
   delete userObj.password;
 
   return {
-    user: userObj,
+    user: {
+      fullName: user.fullName,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      role: user.role,
+      isBlocked: user.isBlocked,
+      isVerified: user.isVerified,
+      authProvider: user.authProvider,
+      googleId: user.googleId,
+      avatar: user.avatar,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt
+    },
     accessToken,
     refreshToken,
   };
@@ -283,6 +327,46 @@ export const logout = async (userId: string): Promise<void> => {
   await redisService.del(key);
 };
 
+const forgotPassword = async (data: ForgotPasswordDto): Promise<{ verificationToken?: string }> => {
+  const normalizedEmail = data.email.toLowerCase().trim();
+  const user = await userRepository.findByEmail(normalizedEmail);
+
+  if (!user) {
+    return {};
+  }
+
+  await otpService.generateAndSendOtp(normalizedEmail, 'password-reset');
+
+  const verificationToken = jwt.sign(
+    {
+      email: normalizedEmail,
+      purpose: 'password-reset',
+    },
+    env.JWT_REGISTRATION_SECRET as string,
+    { expiresIn: '10m' }
+  );
+
+  return { verificationToken };
+};
+
+const resetPassword = async (data: ResetPasswordDto): Promise<void> => {
+  const payload = verifyToken(data.resetToken);
+
+  if (payload.purpose !== 'password-reset') {
+    throw new AppError(MESSAGES.INVALID_TOKEN, HTTP_STATUS.UNAUTHORIZED);
+  }
+
+  const user = await userRepository.findByEmail(payload.email);
+  if (!user) {
+    throw new AppError(MESSAGES.USER_NOT_FOUND, HTTP_STATUS.NOT_FOUND);
+  }
+
+  const hashedPassword = await argon2.hash(data.password);
+  await userRepository.update(user._id.toString(), {
+    password: hashedPassword,
+  });
+};
+
 export const authService = {
   signup,
   verifyOtp,
@@ -290,4 +374,7 @@ export const authService = {
   signin,
   googleAuth,
   logout,
+  forgotPassword,
+  verifyForgotPasswordOtp,
+  resetPassword,
 };

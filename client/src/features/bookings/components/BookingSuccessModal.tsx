@@ -47,11 +47,15 @@ export default function BookingSuccessModal({
             <CheckCircle2 size={36} className="sm:w-10 sm:h-10 animate-bounce" />
           </div>
           <h2 className="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">
-            Reservation Confirmed!
+            {successData.bookingStatus === 'CONFIRMED'
+              ? 'Booking Confirmed!'
+              : 'Venue Reserved!'}
           </h2>
           <p className="text-xs text-muted max-w-sm mx-auto">
-            Your reservation has been locked in. We have sent a copy of the invoice to your
-            registered email address.
+            {successData.bookingStatus === 'CONFIRMED'
+              ? 'Your booking is confirmed with full payment received. We have sent a copy of the invoice to your registered email.'
+              : `Your venue is reserved! You've paid the 20% deposit of ₹${successData.amountPaid?.toLocaleString('en-IN')}. Your remaining balance of ₹${successData.remainingBalance?.toLocaleString('en-IN')} is due by ${successData.balancePaymentDeadline ? new Date(successData.balancePaymentDeadline).toLocaleString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'the event date'}.`
+            }
           </p>
         </div>
 
@@ -90,20 +94,25 @@ export default function BookingSuccessModal({
           </div>
 
           <div className="flex justify-between items-center border-t border-border/80 pt-2.5 gap-2">
-            <span className="text-muted">Payment Type</span>
-            <span className="font-bold text-foreground capitalize text-right">
-              {successData.paymentMethod === 'razorpay'
-                ? 'Razorpay'
-                : successData.paymentMethod === 'wallet'
-                  ? 'BMV Wallet'
-                  : 'Pay At Venue'}
+            <span className="text-muted">Amount Paid Now</span>
+            <span className="font-bold text-green-600 text-right">
+              ₹{successData.amountPaid?.toLocaleString('en-IN')}
             </span>
           </div>
 
+          {successData.remainingBalance > 0 && (
+            <div className="flex justify-between items-center border-t border-border/80 pt-2.5 gap-2">
+              <span className="text-muted">Balance Due</span>
+              <span className="font-bold text-warning text-right">
+                ₹{successData.remainingBalance?.toLocaleString('en-IN')}
+              </span>
+            </div>
+          )}
+
           <div className="flex justify-between items-center border-t border-border/80 pt-2.5 text-sm font-bold text-foreground">
-            <span>Total Calculated</span>
+            <span>Total Booking Amount</span>
             <span className="text-primary text-base font-extrabold">
-              ₹{successData.totalAmount}
+              ₹{successData.totalAmount?.toLocaleString('en-IN')}
             </span>
           </div>
         </div>
