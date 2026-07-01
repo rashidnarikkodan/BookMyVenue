@@ -9,11 +9,8 @@ interface BalanceCardProps {
 
 const BalanceCard: React.FC<BalanceCardProps> = ({ wallet }) => {
   return (
-    <div className="w-full relative overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-primary/10 via-primary/[0.02] to-surface p-8 shadow-sm transition-all duration-300 hover:shadow-md hover:border-primary/25">
-      {/* Decorative Gradient Blur */}
-      <div className="absolute -top-12 -right-12 w-32 h-32 bg-primary/10 rounded-full blur-2xl pointer-events-none" />
-
-      <div className="flex flex-col h-full justify-between gap-6 relative">
+    <div className="w-full rounded-3xl border border-border bg-surface p-8 shadow-sm transition-all duration-300 hover:shadow-md hover:border-primary/20">
+      <div className="flex flex-col h-full justify-between gap-6">
         {/* Header Row */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
