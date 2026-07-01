@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { CreditCard, Loader2, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { bookingsApi } from '@/features/bookings/services/bookings.api';
@@ -18,24 +18,7 @@ const BookingCard = ({ booking, onCancelSuccess }: BookingCardProps) => {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelReason, setCancelReason] = useState('');
 
-  const isCancellable = useMemo(() => {
-    if (booking.bookingStatus !== 'reserved' && booking.bookingStatus !== 'confirmed') return false;
-    if (!booking.createdAt || !booking.startDateTime) return false;
-
-    const now = Date.now();
-    const eventStartTime = new Date(booking.startDateTime).getTime();
-    if (now >= eventStartTime) return false;
-
-    const bookingCreatedAt = new Date(booking.createdAt).getTime();
-    const diffMs = eventStartTime - bookingCreatedAt;
-    const diffDays = diffMs / (1000 * 60 * 60 * 24);
-
-    const windowHours = diffDays > 2 ? 48 : 2;
-    const windowDeadline = bookingCreatedAt + windowHours * 60 * 60 * 1000;
-
-    const effectiveDeadline = Math.min(windowDeadline, eventStartTime);
-    return now <= effectiveDeadline;
-  }, [booking.bookingStatus, booking.createdAt, booking.startDateTime]);
+  const isCancellable = booking.isCancellable ?? false;
 
   const handleCancelBooking = async () => {
     if (!cancelReason.trim()) {
@@ -192,7 +175,7 @@ const BookingCard = ({ booking, onCancelSuccess }: BookingCardProps) => {
           <img
             src={booking.venue.imageUrl}
             alt={booking.venue.name}
-            className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+            className="w-full h-full object-cover opacity-90 transition-transform duration-500 hover:scale-105 hover:opacity-100"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-muted/20 text-foreground/45">

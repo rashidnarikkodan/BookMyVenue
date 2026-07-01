@@ -4,7 +4,7 @@ import {
   createBooking,
   getBookingAvailability,
   verifyPayment,
-  // cancelPendingBooking,
+  cancelPendingBooking,
   payBalance,
   verifyBalancePayment,
   getBookingQuote,
@@ -24,7 +24,7 @@ router.post('/', createBooking);
 router.post('/verify-payment', verifyPayment);
 router.post('/pay-balance', payBalance);
 router.post('/verify-balance', verifyBalancePayment);
-// router.delete('/pending/:bookingId', cancelPendingBooking);
+router.delete('/pending/:bookingId', cancelPendingBooking);
 router.patch('/:bookingId/cancel', cancelBooking);
 
 export default router;

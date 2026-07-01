@@ -12,6 +12,7 @@ import { IAvailability } from '@/types/availability.types';
 import * as bookingRepo from '@/repositories/booking.repository';
 import { verifyPaymentSignature } from './razorpay.service';
 import mongoose from 'mongoose';
+import { UserBookingDTO } from '@/dto/booking/user-booking.dto';
 
 // ── Helpers ───────────────────────────────────────────────────
 
@@ -305,18 +306,13 @@ export const verifyBalancePaymentService = async (
 };
 
 /**
- * Permanently deletes a booking that hasn't been paid yet (PENDING payment status).
- * Called on payment failure, modal dismiss without paying, or explicit user cancel.
- * Frees the reserved slot.
+ * Cancels a booking that is still in PENDING payment status
+ * (before Razorpay deposit is confirmed).
  */
-export const deleteBookingService = async (
-  userId: string,
-  bookingId: string
-) => {
+export const cancelPendingBookingService = async (userId: string, bookingId: string) => {
   const booking = await bookingRepo.findBookingById(bookingId);
   if (!booking) {
-    // Already deleted — treat as success (idempotent)
-    return;
+    throw new AppError('Booking not found', HTTP_STATUS.NOT_FOUND);
   }
 
   if (booking.user._id.toString() !== userId) {
@@ -324,10 +320,7 @@ export const deleteBookingService = async (
   }
 
   if (booking.paymentStatus !== PaymentStatus.PENDING) {
-    throw new AppError(
-      'Only pending bookings can be cancelled',
-      HTTP_STATUS.BAD_REQUEST
-    );
+    throw new AppError('Only pending bookings can be cancelled', HTTP_STATUS.BAD_REQUEST);
   }
 
   await bookingRepo.deleteBookingById(bookingId);
@@ -338,7 +331,7 @@ export const getUserBookingsService = async (
   page: number,
   limit: number,
   status?: string
-) => {
+): Promise<{ bookings: UserBookingDTO[]; pagination: { total: number; page: number; limit: number; totalPages: number } }> => {
   const result = await bookingRepo.findBookingsByUser(userId, page, limit, status);
 
   const now = new Date();
@@ -368,9 +361,49 @@ export const getUserBookingsService = async (
       }
     }
 
+    const venue = (booking.venue as any) ?? {};
+    const venueImages: string[] = venue.images ?? [];
+
+    const rawPaymentStatus: string = booking.paymentStatus ?? '';
+    const paymentStatus =
+      rawPaymentStatus.toUpperCase() === PaymentStatus.DEPOSIT_PAID
+        ? 'partial'
+        : rawPaymentStatus.toLowerCase();
+
+    const bookingStatus = (booking.bookingStatus ?? '').toLowerCase();
+
     return {
-      ...booking,
-      isCancellable
+      id: String(booking._id),
+      bookingStatus,
+      paymentStatus,
+      bookingScenario: booking.bookingScenario ?? '',
+      startDateTime: booking.startDateTime ? new Date(booking.startDateTime).toISOString() : '',
+      endDateTime: booking.endDateTime ? new Date(booking.endDateTime).toISOString() : '',
+      guests: booking.guests ?? 0,
+      paymentMethod: booking.paymentMethod ?? '',
+      contactName: booking.contactName ?? '',
+      contactEmail: booking.contactEmail ?? '',
+      contactPhone: booking.contactPhone ?? '',
+      totalAmount: booking.totalAmount ?? 0,
+      amountPaid: booking.amountPaid ?? 0,
+      remainingPaymentDueDate: booking.remainingPaymentDueDate
+        ? new Date(booking.remainingPaymentDueDate).toISOString()
+        : null,
+      autoCancellationDate: booking.autoCancellationDate
+        ? new Date(booking.autoCancellationDate).toISOString()
+        : null,
+      isImmediatePaymentRequired: !!booking.isImmediatePaymentRequired,
+      cancellationReason: booking.cancellationReason ?? '',
+      createdAt: booking.createdAt ? new Date(booking.createdAt).toISOString() : '',
+      venue: {
+        id: String(venue._id ?? venue.id ?? ''),
+        name: venue.name ?? '',
+        imageUrl: venueImages[0] ?? null,
+        location: venue.address
+          ? [venue.address.city, venue.address.state].filter(Boolean).join(', ')
+          : '',
+      },
+      isCancellable,
     };
   });
 
@@ -452,15 +485,4 @@ export const cancelBookingService = async (userId: string, bookingId: string, ca
   } finally {
     session.endSession();
   }
-};
-
-export const getBookingByIdService = async (userId: string, bookingId: string) => {
-  const booking = await bookingRepo.findBookingById(bookingId);
-  if (!booking) {
-    throw new AppError('Booking not found', HTTP_STATUS.NOT_FOUND);
-  }
-  if (booking.user._id.toString() !== userId) {
-    throw new AppError('Unauthorized access to booking', HTTP_STATUS.UNAUTHORIZED);
-  }
-  return booking;
 };

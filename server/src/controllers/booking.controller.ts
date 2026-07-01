@@ -7,12 +7,11 @@ import {
   createBookingService,
   getBookingByVenueId,
   verifyAndConfirmDepositService,
+  cancelPendingBookingService,
   cancelBookingService,
-  deleteBookingService,
   payBalanceService,
   verifyBalancePaymentService,
   calculateQuoteService,
-  getBookingByIdService,
 } from '@/services/booking.service';
 import { createOrder as createRazorpayOrder } from '@/services/razorpay.service';
 import { CreateBookingPayload } from '@/types/booking.types';
@@ -137,10 +136,8 @@ export const verifyBalancePayment = async (req: Request, res: Response, next: Ne
   }
 };
 
-// DELETE /bookings/:bookingId
-// Deletes a PENDING (unpaid) booking to free the slot.
-// Called on: payment failure, modal close without payment, or explicit user cancellation.
-export const deleteBooking = async (req: Request, res: Response, next: NextFunction) => {
+// DELETE /bookings/pending/:bookingId
+export const cancelPendingBooking = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.user?.id;
     if (!userId) throw new AppError(MESSAGES.UNAUTHORIZED, HTTP_STATUS.UNAUTHORIZED);
@@ -150,9 +147,9 @@ export const deleteBooking = async (req: Request, res: Response, next: NextFunct
       throw new AppError('Invalid Booking ID parameter', HTTP_STATUS.BAD_REQUEST);
     }
 
-    await deleteBookingService(userId, bookingId);
+    await cancelPendingBookingService(userId, bookingId);
 
-    success(res, HTTP_STATUS.OK, null, 'Booking deleted successfully');
+    success(res, HTTP_STATUS.OK, null, 'Pending booking cancelled successfully');
   } catch (error) {
     next(error);
   }
@@ -177,7 +174,7 @@ export const cancelBooking = async (req: Request, res: Response, next: NextFunct
 
     const bookingId = req.params.bookingId as string;
     const { reason } = req.body;
-
+    
     if (!reason) {
       throw new AppError('Cancellation reason is required', HTTP_STATUS.BAD_REQUEST);
     }
@@ -185,25 +182,6 @@ export const cancelBooking = async (req: Request, res: Response, next: NextFunct
     await cancelBookingService(userId, bookingId, reason);
 
     success(res, HTTP_STATUS.OK, null, 'Booking cancelled successfully');
-
-  } catch (error) {
-    next(error)
-  }
-}
-
-// GET /bookings/:bookingId
-export const getBookingById = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const userId = req.user?.id;
-    if (!userId) throw new AppError(MESSAGES.UNAUTHORIZED, HTTP_STATUS.UNAUTHORIZED);
-
-    const { bookingId } = req.params;
-    if (!bookingId || typeof bookingId !== 'string') {
-      throw new AppError('Invalid Booking ID parameter', HTTP_STATUS.BAD_REQUEST);
-    }
-
-    const booking = await getBookingByIdService(userId, bookingId);
-    success(res, HTTP_STATUS.OK, booking, 'Booking fetched successfully');
   } catch (error) {
     next(error);
   }
