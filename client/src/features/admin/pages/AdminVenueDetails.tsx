@@ -31,7 +31,7 @@ const statusStyles: Record<string, string> = {
   rejected: 'border-error/20 bg-error/10 text-error',
 };
 
-const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 const AdminVenueDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -88,7 +88,9 @@ const AdminVenueDetails = () => {
 
     L.marker(latLng, { icon: customIcon })
       .addTo(map)
-      .bindPopup(`<b style="font-family: inherit; font-size: 13px;">${venue.name}</b><br/><span style="font-size:11px; color:#71717a">${venue.address.city}</span>`)
+      .bindPopup(
+        `<b style="font-family: inherit; font-size: 13px;">${venue.name}</b><br/><span style="font-size:11px; color:#71717a">${venue.address.city}</span>`
+      )
       .openPopup();
 
     mapInstance.current = map;
@@ -169,7 +171,9 @@ const AdminVenueDetails = () => {
   }
 
   const categoryName =
-    venue.categoryId && typeof venue.categoryId === 'object' ? venue.categoryId.name : (venue.categoryId || 'Uncategorized');
+    venue.categoryId && typeof venue.categoryId === 'object'
+      ? venue.categoryId.name
+      : venue.categoryId || 'Uncategorized';
   const statusClass = statusStyles[venue.verificationStatus] || statusStyles.pending;
 
   // Owner info from populated field
@@ -311,7 +315,6 @@ const AdminVenueDetails = () => {
 
       {/* Main Content Layout Grid */}
       <div className="grid gap-6 lg:grid-cols-12 items-start">
-        
         {/* Left Column: Image Gallery, Description, Amenities, Map */}
         <div className="lg:col-span-8 space-y-6">
           {/* Image Gallery */}
@@ -377,7 +380,9 @@ const AdminVenueDetails = () => {
               <div className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="bg-background border border-border rounded-xl p-4 flex flex-col justify-between">
-                    <span className="text-[10px] font-bold text-muted uppercase tracking-wider">Operating Hours</span>
+                    <span className="text-[10px] font-bold text-muted uppercase tracking-wider">
+                      Operating Hours
+                    </span>
                     <span className="text-base font-extrabold text-foreground mt-1 flex items-center gap-1.5">
                       <Clock size={16} className="text-primary" />
                       {venue.availability.openingTime} - {venue.availability.closingTime}
@@ -385,32 +390,44 @@ const AdminVenueDetails = () => {
                   </div>
 
                   <div className="bg-background border border-border rounded-xl p-4 flex flex-col justify-between">
-                    <span className="text-[10px] font-bold text-muted uppercase tracking-wider">Hourly Cost rate</span>
+                    <span className="text-[10px] font-bold text-muted uppercase tracking-wider">
+                      Hourly Cost rate
+                    </span>
                     <span className="text-base font-extrabold text-primary mt-1">
                       ₹{venue.availability.pricePerHour.toLocaleString()} / Hour
                     </span>
                   </div>
 
                   <div className="bg-background border border-border rounded-xl p-4 flex flex-col justify-between">
-                    <span className="text-[10px] font-bold text-muted uppercase tracking-wider">Booking Duration Rules</span>
+                    <span className="text-[10px] font-bold text-muted uppercase tracking-wider">
+                      Booking Duration Rules
+                    </span>
                     <span className="text-xs font-semibold text-foreground mt-1 space-y-0.5 block">
                       <span>• Min: {venue.availability.minBookingDuration} Hour(s)</span>
                       {venue.availability.maxBookingDuration && (
-                        <span className="block">• Max: {venue.availability.maxBookingDuration} Hours</span>
+                        <span className="block">
+                          • Max: {venue.availability.maxBookingDuration} Hours
+                        </span>
                       )}
                     </span>
                   </div>
 
                   <div className="bg-background border border-border rounded-xl p-4 flex flex-col justify-between">
-                    <span className="text-[10px] font-bold text-muted uppercase tracking-wider">Buffer/Rest Interval</span>
+                    <span className="text-[10px] font-bold text-muted uppercase tracking-wider">
+                      Buffer/Rest Interval
+                    </span>
                     <span className="text-base font-extrabold text-foreground mt-1">
-                      {venue.availability.bufferTime ? `${venue.availability.bufferTime} Min` : 'No buffer time'}
+                      {venue.availability.bufferTime
+                        ? `${venue.availability.bufferTime} Min`
+                        : 'No buffer time'}
                     </span>
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <span className="text-[10px] font-bold text-muted uppercase tracking-wider block">Weekly Operating Days</span>
+                  <span className="text-[10px] font-bold text-muted uppercase tracking-wider block">
+                    Weekly Operating Days
+                  </span>
                   <div className="flex flex-wrap gap-2 pt-1">
                     {weekdays.map((day, idx) => {
                       const active = isDayAvailable(idx);
@@ -434,7 +451,8 @@ const AdminVenueDetails = () => {
               <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4 flex items-center gap-3">
                 <AlertTriangle className="text-yellow-600 shrink-0" size={20} />
                 <div className="text-xs text-yellow-800 dark:text-yellow-600 font-medium">
-                  Operating rules and price rates have not been configured by the owner yet. Defaults will apply.
+                  Operating rules and price rates have not been configured by the owner yet.
+                  Defaults will apply.
                 </div>
               </div>
             )}
@@ -451,15 +469,16 @@ const AdminVenueDetails = () => {
               </div>
               {venue.location?.coordinates && (
                 <span className="text-[10px] font-mono text-muted bg-background border border-border px-2.5 py-1 rounded-lg">
-                  Lat: {venue.location.coordinates[1].toFixed(5)}, Lng: {venue.location.coordinates[0].toFixed(5)}
+                  Lat: {venue.location.coordinates[1].toFixed(5)}, Lng:{' '}
+                  {venue.location.coordinates[0].toFixed(5)}
                 </span>
               )}
             </div>
 
             {/* Map Anchor */}
-            <div 
-              ref={mapRef} 
-              className="h-[320px] w-full rounded-xl overflow-hidden border border-border shadow-inner z-0" 
+            <div
+              ref={mapRef}
+              className="h-[320px] w-full rounded-xl overflow-hidden border border-border shadow-inner z-0"
             />
           </div>
 
@@ -482,10 +501,9 @@ const AdminVenueDetails = () => {
             </div>
           )}
         </div>
-        
+
         {/* Right Column: Widgets, Specifications, Owner info */}
         <div className="lg:col-span-4 space-y-6">
-          
           {/* Visibility / Status Flags (New Widget) */}
           <div className="rounded-2xl border border-border bg-card p-5 shadow-sm space-y-3">
             <h2 className="text-xs font-bold text-foreground uppercase tracking-wider border-b border-border pb-2.5">
@@ -494,22 +512,26 @@ const AdminVenueDetails = () => {
             <div className="flex flex-col gap-2">
               <div className="flex justify-between items-center bg-background border border-border p-3 rounded-xl">
                 <span className="text-xs text-muted font-medium">Account Status</span>
-                <span className={`px-2 py-0.5 rounded-lg text-[10px] font-extrabold uppercase ${
-                  venue.isActive
-                    ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-600'
-                    : 'bg-zinc-500/10 border border-zinc-500/20 text-zinc-500'
-                }`}>
+                <span
+                  className={`px-2 py-0.5 rounded-lg text-[10px] font-extrabold uppercase ${
+                    venue.isActive
+                      ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-600'
+                      : 'bg-zinc-500/10 border border-zinc-500/20 text-zinc-500'
+                  }`}
+                >
                   {venue.isActive ? 'Active' : 'Inactive'}
                 </span>
               </div>
 
               <div className="flex justify-between items-center bg-background border border-border p-3 rounded-xl">
                 <span className="text-xs text-muted font-medium">Featured Space</span>
-                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-extrabold uppercase ${
-                  venue.isFeatured
-                    ? 'bg-blue-500/10 border border-blue-500/20 text-blue-600'
-                    : 'bg-zinc-500/10 border border-zinc-500/20 text-zinc-500'
-                }`}>
+                <span
+                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-extrabold uppercase ${
+                    venue.isFeatured
+                      ? 'bg-blue-500/10 border border-blue-500/20 text-blue-600'
+                      : 'bg-zinc-500/10 border border-zinc-500/20 text-zinc-500'
+                  }`}
+                >
                   <Star size={10} className={venue.isFeatured ? 'fill-current' : ''} />
                   {venue.isFeatured ? 'Yes' : 'No'}
                 </span>
@@ -517,11 +539,13 @@ const AdminVenueDetails = () => {
 
               <div className="flex justify-between items-center bg-background border border-border p-3 rounded-xl">
                 <span className="text-xs text-muted font-medium">Elite Selection</span>
-                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-extrabold uppercase ${
-                  venue.isElite
-                    ? 'bg-amber-500/10 border border-amber-500/20 text-amber-600'
-                    : 'bg-zinc-500/10 border border-zinc-500/20 text-zinc-500'
-                }`}>
+                <span
+                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-extrabold uppercase ${
+                    venue.isElite
+                      ? 'bg-amber-500/10 border border-amber-500/20 text-amber-600'
+                      : 'bg-zinc-500/10 border border-zinc-500/20 text-zinc-500'
+                  }`}
+                >
                   <Crown size={10} className={venue.isElite ? 'fill-current' : ''} />
                   {venue.isElite ? 'Elite' : 'Standard'}
                 </span>
@@ -540,7 +564,9 @@ const AdminVenueDetails = () => {
                 <div className="flex items-center gap-2 text-xs text-muted font-medium">
                   <Users size={14} /> Capacity
                 </div>
-                <span className="text-sm font-bold text-foreground">{venue.capacity} guests max</span>
+                <span className="text-sm font-bold text-foreground">
+                  {venue.capacity} guests max
+                </span>
               </div>
               <div className="flex items-center justify-between py-1">
                 <div className="flex items-center gap-2 text-xs text-muted font-medium">
@@ -596,7 +622,9 @@ const AdminVenueDetails = () => {
             <div className="space-y-2 text-xs">
               <div className="flex justify-between border-b border-border/40 pb-1.5">
                 <span className="text-muted">Street:</span>
-                <span className="font-semibold text-foreground max-w-[200px] text-right">{venue.address.street}</span>
+                <span className="font-semibold text-foreground max-w-[200px] text-right">
+                  {venue.address.street}
+                </span>
               </div>
               <div className="flex justify-between border-b border-border/40 pb-1.5">
                 <span className="text-muted">City:</span>
@@ -612,7 +640,9 @@ const AdminVenueDetails = () => {
               </div>
               <div className="flex justify-between">
                 <span className="text-muted">Pincode:</span>
-                <span className="font-semibold font-mono text-foreground">{venue.address.pincode}</span>
+                <span className="font-semibold font-mono text-foreground">
+                  {venue.address.pincode}
+                </span>
               </div>
             </div>
           </div>

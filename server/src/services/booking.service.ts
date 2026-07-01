@@ -4,15 +4,12 @@ import { CreateBookingPayload } from '@/types/booking.types';
 import { AppError } from '@/utils/AppError';
 import { getAvailabilityByVenueId } from '@/repositories/availability.repository';
 import { IAvailability } from '@/types/availability.types';
-import * as bookingRepo from "@/repositories/booking.repository"
-
+import * as bookingRepo from '@/repositories/booking.repository';
 
 export const getBookingByVenueId = async (id: string) => {
-  const bookings = await bookingRepo.getBookingByVenueId(id)
-  return bookings
-}
-
-
+  const bookings = await bookingRepo.getBookingByVenueId(id);
+  return bookings;
+};
 
 export const createBookingService = async (userId: string, payload: CreateBookingPayload) => {
   //validate dates
@@ -46,7 +43,7 @@ export const createBookingService = async (userId: string, payload: CreateBookin
   const gst = totalAmount * 0.18;
   const platformFee = totalAmount * 0.12;
 
-  totalAmount += (gst + platformFee);
+  totalAmount += gst + platformFee;
 
   const newBooking = await createBooking(userId, payload, totalAmount);
 
@@ -104,4 +101,13 @@ export const cancelPendingBookingService = async (userId: string, bookingId: str
   }
 
   await bookingRepo.deleteBookingById(bookingId);
+};
+
+export const getUserBookingsService = async (
+  userId: string,
+  page: number,
+  limit: number,
+  status?: string
+) => {
+  return await bookingRepo.findBookingsByUser(userId, page, limit, status);
 };

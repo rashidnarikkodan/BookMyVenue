@@ -57,7 +57,9 @@ const VenueFormModal = ({ venue, onClose, onSuccess }: Props) => {
       categoryId:
         venue?.categoryId && typeof venue.categoryId === 'object'
           ? venue.categoryId._id
-          : (typeof venue?.categoryId === 'string' ? venue.categoryId : ''),
+          : typeof venue?.categoryId === 'string'
+            ? venue.categoryId
+            : '',
       street: venue?.address?.street || '',
       city: venue?.address?.city || '',
       district: venue?.address?.district || '',

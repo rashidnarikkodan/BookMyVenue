@@ -39,7 +39,9 @@ export default function VenueLocation({ address, coordinates, venueName }: Venue
 
     L.marker(latLng, { icon: customIcon })
       .addTo(map)
-      .bindPopup(`<b style="font-family: inherit; font-size: 13px;">${venueName}</b><br/><span style="font-size:11px; color:#71717a">${address.city}</span>`)
+      .bindPopup(
+        `<b style="font-family: inherit; font-size: 13px;">${venueName}</b><br/><span style="font-size:11px; color:#71717a">${address.city}</span>`
+      )
       .openPopup();
 
     mapInstance.current = map;
@@ -80,9 +82,9 @@ export default function VenueLocation({ address, coordinates, venueName }: Venue
         </p>
       </div>
 
-      <div 
-        ref={mapRef} 
-        className="h-[300px] w-full rounded-xl overflow-hidden border border-border shadow-inner mt-4 z-0" 
+      <div
+        ref={mapRef}
+        className="h-[300px] w-full rounded-xl overflow-hidden border border-border shadow-inner mt-4 z-0"
       />
     </div>
   );

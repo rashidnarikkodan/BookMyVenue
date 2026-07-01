@@ -29,7 +29,10 @@ export const createOrder = async (amount: number, receiptId: string) => {
       currency: order.currency,
     };
   } catch (error: any) {
-    throw new AppError(error.message || 'Failed to create Razorpay order', HTTP_STATUS.SERVER_ERROR);
+    throw new AppError(
+      error.message || 'Failed to create Razorpay order',
+      HTTP_STATUS.SERVER_ERROR
+    );
   }
 };
 

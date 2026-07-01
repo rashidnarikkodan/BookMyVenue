@@ -2,7 +2,7 @@ import { getHomeData } from '@/controllers/home.controller';
 import { Router } from 'express';
 import { authMiddleware } from '@/middlewares/auth.middleware';
 import { authorizeRoles } from '@/middlewares/role.middleware';
-import { getProfile, updateProfile } from '@/controllers/user.controller';
+import { getProfile, updateProfile, getUserBookings } from '@/controllers/user.controller';
 import { upload } from '@/middlewares/upload.middleware';
 
 const router = Router();
@@ -21,6 +21,7 @@ router.put(
   ]),
   updateProfile
 );
+router.get('/bookings', getUserBookings);
 
 // Public routes
 

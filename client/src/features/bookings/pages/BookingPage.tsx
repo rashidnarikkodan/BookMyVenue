@@ -1,19 +1,19 @@
-import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
-import { toast } from "sonner";
-import { useAppStore } from "@/store/app.store";
-import { publicVenuesApi } from "@/features/public/services/public-venues.api";
-import type { Venue } from "@/features/venues/types/venues.types";
-import { bookingsApi } from "../services/bookings.api";
-import type { BookingDetails } from "../types/bookings.types";
-import DateTimeSection from "../components/DateTimeSection";
-import GuestSection from "../components/GuestSection";
-import PricingSection from "../components/PricingSection";
-import BookingHeader from "../components/BookingHeader";
-import SelectedVenueSummary from "../components/SelectedVenueSummary";
-import BookingSuccessModal from "../components/BookingSuccessModal";
-import { Loading } from "@/shared/components/ui";
-import { useAsyncFetch } from "@/shared/hooks/useAsyncFetch";
+import { useState, useEffect } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import { toast } from 'sonner';
+import { useAppStore } from '@/store/app.store';
+import { publicVenuesApi } from '@/features/public/services/public-venues.api';
+import type { Venue } from '@/features/venues/types/venues.types';
+import { bookingsApi } from '../services/bookings.api';
+import type { BookingDetails } from '../types/bookings.types';
+import DateTimeSection from '../components/DateTimeSection';
+import GuestSection from '../components/GuestSection';
+import PricingSection from '../components/PricingSection';
+import BookingHeader from '../components/BookingHeader';
+import SelectedVenueSummary from '../components/SelectedVenueSummary';
+import BookingSuccessModal from '../components/BookingSuccessModal';
+import { Loading } from '@/shared/components/ui';
+import { useAsyncFetch } from '@/shared/hooks/useAsyncFetch';
 
 const BookingPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -24,37 +24,37 @@ const BookingPage = () => {
   const [venueLoading, setVenueLoading] = useState(false);
 
   //existing booking state
-  const {data:existingBookings,execute} = useAsyncFetch<any[]>()
+  const { data: existingBookings, execute } = useAsyncFetch<any[]>();
 
   // Form fields state
   const [startDateTime, setStartDateTime] = useState<string | null>(null);
   const [endDateTime, setEndDateTime] = useState<string | null>(null);
   const [guests, setGuests] = useState<number>(1);
   // Contact details
-  const [contactName, setContactName] = useState("");
-  const [contactEmail, setContactEmail] = useState("");
-  const [contactPhone, setContactPhone] = useState("");
-  const [specialRequests, setSpecialRequests] = useState("");
+  const [contactName, setContactName] = useState('');
+  const [contactEmail, setContactEmail] = useState('');
+  const [contactPhone, setContactPhone] = useState('');
+  const [specialRequests, setSpecialRequests] = useState('');
 
   // Payment details
-  const [paymentMethod, setPaymentMethod] = useState<"razorpay" | "wallet" | "cash">("razorpay");
+  const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'wallet' | 'cash'>('razorpay');
 
   // Action states
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successData, setSuccessData] = useState<any | null>(null);
-  console.log(successData)
+  console.log(successData);
   // Auto fill logged in user
   useEffect(() => {
     if (user) {
-      setContactName(user.fullName || "");
-      setContactEmail(user.email || "");
+      setContactName(user.fullName || '');
+      setContactEmail(user.email || '');
     }
   }, [user]);
 
   // Load Razorpay script dynamically
   useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
     script.async = true;
     document.body.appendChild(script);
     return () => {
@@ -67,7 +67,7 @@ const BookingPage = () => {
     const fetchSelected = async () => {
       if (!id) return;
       try {
-        execute(()=> bookingsApi.getByVenueId(id))
+        execute(() => bookingsApi.getByVenueId(id));
         setVenueLoading(true);
         const res = await publicVenuesApi.getById(id);
         if (res.success && res.data) {
@@ -75,8 +75,8 @@ const BookingPage = () => {
           setGuests(1);
         }
       } catch (err) {
-        console.error("Error fetching selected venue", err);
-        toast.error("Could not fetch the specified venue details.");
+        console.error('Error fetching selected venue', err);
+        toast.error('Could not fetch the specified venue details.');
       } finally {
         setVenueLoading(false);
       }
@@ -96,19 +96,19 @@ const BookingPage = () => {
     if (!selectedVenue) return;
 
     if (!contactName.trim()) {
-      toast.error("Contact Name is required.");
+      toast.error('Contact Name is required.');
       return;
     }
     if (!contactEmail.trim()) {
-      toast.error("Contact Email is required.");
+      toast.error('Contact Email is required.');
       return;
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail)) {
-      toast.error("Please enter a valid email address.");
+      toast.error('Please enter a valid email address.');
       return;
     }
     if (!contactPhone.trim()) {
-      toast.error("Contact Phone number is required.");
+      toast.error('Contact Phone number is required.');
       return;
     }
 
@@ -130,18 +130,18 @@ const BookingPage = () => {
       // 1. Create booking (creates booking in DB, and returns Razorpay order details if paymentMethod is 'razorpay')
       const res = await bookingsApi.createBooking(bookingPayload);
       if (!res.success || !res.data) {
-        throw new Error(res.message || "Booking creation failed.");
+        throw new Error(res.message || 'Booking creation failed.');
       }
 
       const { booking, payment } = res.data;
 
-      if (paymentMethod === "razorpay") {
+      if (paymentMethod === 'razorpay') {
         if (!payment) {
-          throw new Error("Razorpay payment details were not generated by the server.");
+          throw new Error('Razorpay payment details were not generated by the server.');
         }
 
         if (!(window as any).Razorpay) {
-          throw new Error("Razorpay payment gateway is not loaded. Please refresh the page.");
+          throw new Error('Razorpay payment gateway is not loaded. Please refresh the page.');
         }
 
         const { orderId, amount, currency } = payment;
@@ -151,7 +151,7 @@ const BookingPage = () => {
           key: import.meta.env.VITE_RAZORPAY_KEY_ID,
           amount,
           currency,
-          name: "BookMyVenue",
+          name: 'BookMyVenue',
           description: `Booking for ${selectedVenue.name}`,
           order_id: orderId,
           handler: async (response: any) => {
@@ -166,13 +166,15 @@ const BookingPage = () => {
               });
 
               if (verifyRes.success) {
-                toast.success(verifyRes.message || "Payment verified and booking confirmed!");
+                toast.success(verifyRes.message || 'Payment verified and booking confirmed!');
                 setSuccessData(verifyRes.data);
               } else {
-                toast.error(verifyRes.message || "Signature verification failed.");
+                toast.error(verifyRes.message || 'Signature verification failed.');
               }
             } catch (err: any) {
-              toast.error(err?.response?.data?.message || err?.message || "Failed to verify payment.");
+              toast.error(
+                err?.response?.data?.message || err?.message || 'Failed to verify payment.'
+              );
             } finally {
               setIsSubmitting(false);
             }
@@ -183,15 +185,15 @@ const BookingPage = () => {
             contact: contactPhone,
           },
           theme: {
-            color: "#4f46e5", // Indigo theme
+            color: '#4f46e5', // Indigo theme
           },
           modal: {
             ondismiss: async () => {
-              toast.info("Payment cancelled. Releasing reserved slots...");
+              toast.info('Payment cancelled. Releasing reserved slots...');
               try {
                 await bookingsApi.cancelPendingBooking(booking._id);
               } catch (err) {
-                console.error("Failed to cancel pending booking", err);
+                console.error('Failed to cancel pending booking', err);
               }
               setIsSubmitting(false);
             },
@@ -199,31 +201,31 @@ const BookingPage = () => {
         };
 
         const rzp = new (window as any).Razorpay(options);
-        rzp.on("payment.failed", async (response: any) => {
+        rzp.on('payment.failed', async (response: any) => {
           toast.error(`Payment failed: ${response.error.description}. Releasing reserved slots...`);
           try {
             await bookingsApi.cancelPendingBooking(booking._id);
           } catch (err) {
-            console.error("Failed to cancel pending booking", err);
+            console.error('Failed to cancel pending booking', err);
           }
           setIsSubmitting(false);
         });
         rzp.open();
       } else {
         // Direct cash/wallet booking success
-        toast.success(res.message || "Booking successfully created!");
+        toast.success(res.message || 'Booking successfully created!');
         setSuccessData(booking);
       }
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || err?.message || "An error occurred during checkout.");
+      toast.error(
+        err?.response?.data?.message || err?.message || 'An error occurred during checkout.'
+      );
       setIsSubmitting(false);
     }
   };
 
   if (venueLoading && !selectedVenue) {
-    return (
-      <Loading text="Retrieving checkout session…" fullPage={true} />
-    );
+    return <Loading text="Retrieving checkout session…" fullPage={true} />;
   }
 
   if (!selectedVenue) {
@@ -231,7 +233,8 @@ const BookingPage = () => {
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 text-center space-y-4 text-card-foreground">
         <h2 className="text-xl font-bold text-foreground">Booking Session Expired</h2>
         <p className="text-sm text-muted max-w-sm">
-          No valid venue details were loaded. Please return to the venue search page and select a venue.
+          No valid venue details were loaded. Please return to the venue search page and select a
+          venue.
         </p>
         <Link
           to="/venues"

@@ -3,7 +3,12 @@ import { MESSAGES } from '@/constants/messages';
 import { AppError } from '@/utils/AppError';
 import success from '@/utils/response';
 import { NextFunction, Request, Response } from 'express';
-import { createBookingService, getBookingByVenueId, verifyAndConfirmBookingService, cancelPendingBookingService } from '@/services/booking.service';
+import {
+  createBookingService,
+  getBookingByVenueId,
+  verifyAndConfirmBookingService,
+  cancelPendingBookingService,
+} from '@/services/booking.service';
 import { createOrder as createRazorpayOrder } from '@/services/razorpay.service';
 import { CreateBookingPayload } from '@/types/booking.types';
 
@@ -19,14 +24,13 @@ export const createBooking = async (req: Request, res: Response, next: NextFunct
     let orderDetails = null;
     if (payload.paymentMethod === 'razorpay') {
       orderDetails = await createRazorpayOrder(booking.totalAmount, booking._id.toString());
-    }       
+    }
 
     success(res, HTTP_STATUS.CREATED, { payment: orderDetails, booking }, 'Booking created');
   } catch (error) {
     next(error);
   }
 };
-
 
 // POST /bookings/verify-payment
 export const verifyPayment = async (req: Request, res: Response, next: NextFunction) => {

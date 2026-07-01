@@ -1,6 +1,16 @@
-import React, { useState } from "react";
-import { Users, User, Mail, Phone, MessageSquare, Upload, FileSpreadsheet, Trash2, CheckCircle2 } from "lucide-react";
-import { toast } from "sonner";
+import React, { useState } from 'react';
+import {
+  Users,
+  User,
+  Mail,
+  Phone,
+  MessageSquare,
+  Upload,
+  FileSpreadsheet,
+  Trash2,
+  CheckCircle2,
+} from 'lucide-react';
+import { toast } from 'sonner';
 
 type Props = {
   guests: number;
@@ -39,47 +49,50 @@ const GuestSection: React.FC<Props> = ({
     presets.push(Math.round(maxCapacity * 0.75));
     presets.push(maxCapacity);
   }
-  const uniquePresets = Array.from(new Set(presets))
-    .filter(val => val > 0 && val <= maxCapacity);
+  const uniquePresets = Array.from(new Set(presets)).filter((val) => val > 0 && val <= maxCapacity);
 
   const downloadTemplate = () => {
-    const headers = "Full Name,Email,Phone,Special Notes\n";
-    const sample1 = "Aarav Sharma,aarav@example.com,+919876543210,Vegetarian\n";
-    const sample2 = "Diya Patel,diya@example.com,+919876543211,Access ramp required\n";
-    const csvContent = "data:text/csv;charset=utf-8," + encodeURIComponent(headers + sample1 + sample2);
+    const headers = 'Full Name,Email,Phone,Special Notes\n';
+    const sample1 = 'Aarav Sharma,aarav@example.com,+919876543210,Vegetarian\n';
+    const sample2 = 'Diya Patel,diya@example.com,+919876543211,Access ramp required\n';
+    const csvContent =
+      'data:text/csv;charset=utf-8,' + encodeURIComponent(headers + sample1 + sample2);
 
-    const link = document.createElement("a");
-    link.setAttribute("href", csvContent);
-    link.setAttribute("download", "bmv_guest_list_template.csv");
+    const link = document.createElement('a');
+    link.setAttribute('href', csvContent);
+    link.setAttribute('download', 'bmv_guest_list_template.csv');
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    toast.success("CSV template downloaded!");
+    toast.success('CSV template downloaded!');
   };
 
   const parseCsvText = (text: string) => {
-    const lines = text.split("\n").map(line => line.trim()).filter(line => line.length > 0);
+    const lines = text
+      .split('\n')
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0);
     if (lines.length <= 1) {
-      toast.error("CSV file is empty or only contains headers.");
+      toast.error('CSV file is empty or only contains headers.');
       return;
     }
 
-    const headers = lines[0].split(",").map(h => h.trim().replace(/['"]/g, "").toLowerCase());
+    const headers = lines[0].split(',').map((h) => h.trim().replace(/['"]/g, '').toLowerCase());
     const rows: any[] = [];
 
     for (let i = 1; i < lines.length; i++) {
-      const values = lines[i].split(",").map(v => v.trim().replace(/['"]/g, ""));
-      if (values.length === 0 || (values.length === 1 && values[0] === "")) continue;
+      const values = lines[i].split(',').map((v) => v.trim().replace(/['"]/g, ''));
+      if (values.length === 0 || (values.length === 1 && values[0] === '')) continue;
 
       const rowObj: any = {};
       headers.forEach((header, index) => {
-        rowObj[header] = values[index] || "";
+        rowObj[header] = values[index] || '';
       });
       rows.push(rowObj);
     }
 
     if (rows.length === 0) {
-      toast.error("Could not parse any guest records from the CSV file.");
+      toast.error('Could not parse any guest records from the CSV file.');
       return;
     }
 
@@ -87,7 +100,7 @@ const GuestSection: React.FC<Props> = ({
     onChange({
       guests: rows.length,
       guestList: rows,
-      guestFileName: csvFileName
+      guestFileName: csvFileName,
     });
     toast.success(`Successfully imported ${rows.length} guests from CSV!`);
   };
@@ -96,8 +109,8 @@ const GuestSection: React.FC<Props> = ({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!file.name.endsWith(".csv")) {
-      toast.error("Please upload a valid .csv file.");
+    if (!file.name.endsWith('.csv')) {
+      toast.error('Please upload a valid .csv file.');
       return;
     }
 
@@ -116,9 +129,9 @@ const GuestSection: React.FC<Props> = ({
     onChange({
       guests: 1,
       guestList: undefined,
-      guestFileName: undefined
+      guestFileName: undefined,
     });
-    toast.success("CSV list cleared. Guest count reset.");
+    toast.success('CSV list cleared. Guest count reset.');
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -136,8 +149,8 @@ const GuestSection: React.FC<Props> = ({
     const file = e.dataTransfer.files?.[0];
     if (!file) return;
 
-    if (!file.name.endsWith(".csv")) {
-      toast.error("Please upload a valid .csv file.");
+    if (!file.name.endsWith('.csv')) {
+      toast.error('Please upload a valid .csv file.');
       return;
     }
 
@@ -157,7 +170,9 @@ const GuestSection: React.FC<Props> = ({
           <Users size={18} className="sm:w-5 sm:h-5" />
         </div>
         <div>
-          <h3 className="text-base sm:text-lg font-bold text-foreground">Guest & Contact Information</h3>
+          <h3 className="text-base sm:text-lg font-bold text-foreground">
+            Guest & Contact Information
+          </h3>
           <p className="text-xs text-muted">Provide attendee count and primary contact details</p>
         </div>
       </div>
@@ -167,7 +182,9 @@ const GuestSection: React.FC<Props> = ({
         <div className="flex justify-between items-center bg-background p-3 sm:p-4 rounded-xl border border-border gap-3">
           <div className="min-w-0">
             <label className="text-sm font-bold text-foreground block">Number of Guests</label>
-            <span className="text-xs text-muted">Venue capacity: max {maxCapacity || "N/A"} guests</span>
+            <span className="text-xs text-muted">
+              Venue capacity: max {maxCapacity || 'N/A'} guests
+            </span>
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
@@ -204,7 +221,9 @@ const GuestSection: React.FC<Props> = ({
 
         {uniquePresets.length > 0 && (
           <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 p-1">
-            <span className="text-[10px] font-bold text-muted uppercase tracking-wider">Quick Presets:</span>
+            <span className="text-[10px] font-bold text-muted uppercase tracking-wider">
+              Quick Presets:
+            </span>
             {uniquePresets.map((preset) => (
               <button
                 key={preset}
@@ -217,7 +236,8 @@ const GuestSection: React.FC<Props> = ({
                     : 'bg-background text-muted border-border'
                 }`}
               >
-                {preset === maxCapacity ? 'Max' : preset} ({preset === maxCapacity ? '100%' : `${Math.round((preset / maxCapacity) * 100)}%`})
+                {preset === maxCapacity ? 'Max' : preset} (
+                {preset === maxCapacity ? '100%' : `${Math.round((preset / maxCapacity) * 100)}%`})
               </button>
             ))}
           </div>
@@ -227,7 +247,8 @@ const GuestSection: React.FC<Props> = ({
           <div className="bg-amber-500/10 border border-amber-500/20 text-amber-600 text-xs p-3 rounded-xl flex items-start gap-2">
             <span className="shrink-0">⚠️</span>
             <span className="font-semibold">
-              Warning: Guest count ({guests}) exceeds the recommended venue capacity of {maxCapacity} guests.
+              Warning: Guest count ({guests}) exceeds the recommended venue capacity of{' '}
+              {maxCapacity} guests.
             </span>
           </div>
         )}
@@ -238,7 +259,10 @@ const GuestSection: React.FC<Props> = ({
         <div className="flex justify-between items-start gap-3 sm:gap-4">
           <div className="min-w-0">
             <span className="text-xs font-bold text-foreground block">Bulk Guest List Import</span>
-            <p className="text-[11px] text-muted">Uploading a guest roster of 1,000+ people? Avoid typing manually and upload a CSV spreadsheet instead.</p>
+            <p className="text-[11px] text-muted">
+              Uploading a guest roster of 1,000+ people? Avoid typing manually and upload a CSV
+              spreadsheet instead.
+            </p>
           </div>
           <button
             type="button"
@@ -256,8 +280,8 @@ const GuestSection: React.FC<Props> = ({
             onDrop={handleDrop}
             className={`border-2 border-dashed rounded-xl p-5 sm:p-6 text-center transition-all ${
               isDragging
-                ? "border-primary bg-primary/5"
-                : "border-border hover:border-primary/50 bg-background/30"
+                ? 'border-primary bg-primary/5'
+                : 'border-border hover:border-primary/50 bg-background/30'
             }`}
           >
             <input
@@ -267,10 +291,7 @@ const GuestSection: React.FC<Props> = ({
               className="hidden"
               onChange={handleFileUpload}
             />
-            <label
-              htmlFor="csv-upload"
-              className="cursor-pointer flex flex-col items-center gap-2"
-            >
+            <label htmlFor="csv-upload" className="cursor-pointer flex flex-col items-center gap-2">
               <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">
                 <Upload size={16} />
               </div>
@@ -318,18 +339,21 @@ const GuestSection: React.FC<Props> = ({
                 </span>
                 <div className="border border-border/60 rounded-lg overflow-hidden divide-y divide-border/60 bg-background/30 text-[10px]">
                   {parsedGuests.slice(0, 3).map((guest, idx) => (
-                    <div key={idx} className="p-2 flex justify-between items-center gap-2 text-foreground font-medium">
+                    <div
+                      key={idx}
+                      className="p-2 flex justify-between items-center gap-2 text-foreground font-medium"
+                    >
                       <div className="space-y-0.5 min-w-0">
                         <span className="font-bold block truncate">
-                          {guest["full name"] || guest["name"] || "Unnamed Guest"}
+                          {guest['full name'] || guest['name'] || 'Unnamed Guest'}
                         </span>
                         <span className="text-muted block font-normal truncate">
-                          {guest["email"] || "No Email"} • {guest["phone"] || "No Phone"}
+                          {guest['email'] || 'No Email'} • {guest['phone'] || 'No Phone'}
                         </span>
                       </div>
-                      {guest["special notes"] || guest["notes"] ? (
+                      {guest['special notes'] || guest['notes'] ? (
                         <span className="text-primary bg-primary/10 px-1.5 py-0.5 rounded text-[8px] font-semibold max-w-[80px] sm:max-w-[120px] truncate shrink-0">
-                          {guest["special notes"] || guest["notes"]}
+                          {guest['special notes'] || guest['notes']}
                         </span>
                       ) : null}
                     </div>
@@ -353,7 +377,10 @@ const GuestSection: React.FC<Props> = ({
             Full Name
           </label>
           <div className="relative">
-            <User size={15} className="absolute left-3 sm:left-3.5 top-1/2 -translate-y-1/2 text-muted" />
+            <User
+              size={15}
+              className="absolute left-3 sm:left-3.5 top-1/2 -translate-y-1/2 text-muted"
+            />
             <input
               type="text"
               required
@@ -370,7 +397,10 @@ const GuestSection: React.FC<Props> = ({
             Email Address
           </label>
           <div className="relative">
-            <Mail size={15} className="absolute left-3 sm:left-3.5 top-1/2 -translate-y-1/2 text-muted" />
+            <Mail
+              size={15}
+              className="absolute left-3 sm:left-3.5 top-1/2 -translate-y-1/2 text-muted"
+            />
             <input
               type="email"
               required
@@ -387,7 +417,10 @@ const GuestSection: React.FC<Props> = ({
             Phone Number
           </label>
           <div className="relative">
-            <Phone size={15} className="absolute left-3 sm:left-3.5 top-1/2 -translate-y-1/2 text-muted" />
+            <Phone
+              size={15}
+              className="absolute left-3 sm:left-3.5 top-1/2 -translate-y-1/2 text-muted"
+            />
             <input
               type="tel"
               required
@@ -404,7 +437,10 @@ const GuestSection: React.FC<Props> = ({
             Special Requests / Notes
           </label>
           <div className="relative">
-            <MessageSquare size={15} className="absolute left-3 sm:left-3.5 top-3.5 sm:top-4 text-muted" />
+            <MessageSquare
+              size={15}
+              className="absolute left-3 sm:left-3.5 top-3.5 sm:top-4 text-muted"
+            />
             <textarea
               rows={3}
               className="w-full bg-background border border-border rounded-xl pl-9 sm:pl-10 pr-3 sm:pr-4 py-2.5 sm:py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none"

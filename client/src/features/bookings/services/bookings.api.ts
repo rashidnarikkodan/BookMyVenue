@@ -4,19 +4,19 @@ import type { BookingDetails } from '../types/bookings.types';
 export const bookingsApi = {
   createBooking: async (bookingData: BookingDetails): Promise<any> => {
     try {
-      console.log(bookingData)
+      console.log(bookingData);
       const res = await apiClient.post('/bookings', bookingData);
-      console.log("Booking Confirmed", res.data);
+      console.log('Booking Confirmed', res.data);
       return res.data;
     } catch (err: any) {
-      console.warn("Backend /bookings post failed, falling back to mock response", err);
+      console.warn('Backend /bookings post failed, falling back to mock response', err);
 
       // Simulate network latency
       await new Promise((resolve) => setTimeout(resolve, 1500));
-      
+
       // Generate a mock confirmation number
       const confirmationNumber = 'BMV-' + Math.floor(100000 + Math.random() * 900000);
-      
+
       // Save mock booking to localStorage
       const mockBooking = {
         ...bookingData,
@@ -25,11 +25,11 @@ export const bookingsApi = {
         paymentStatus: bookingData.paymentMethod === 'cash' ? 'pending' : 'completed',
         createdAt: new Date().toISOString(),
       };
-      
+
       const existing = JSON.parse(localStorage.getItem('mock_bookings') || '[]');
       existing.push(mockBooking);
       localStorage.setItem('mock_bookings', JSON.stringify(existing));
-      
+
       return {
         success: true,
         message: 'Booking created successfully (simulation)',
@@ -52,20 +52,18 @@ export const bookingsApi = {
     const res = await apiClient.post('/bookings/verify-payment', paymentData);
     return res.data;
   },
-  
+
   getMockBookings: (): any[] => {
     return JSON.parse(localStorage.getItem('mock_bookings') || '[]');
   },
-    
-  getByVenueId : async (id: string): Promise<any> => {
-      try{
 
+  getByVenueId: async (id: string): Promise<any> => {
+    try {
       const res = await apiClient.get(`/bookings/venues/${id}`);
       return res.data.data;
-      }
-      catch(err:any){
-        console.log(err);
-        return null;
-      }
-  }
+    } catch (err: any) {
+      console.log(err);
+      return null;
+    }
+  },
 };

@@ -1,6 +1,6 @@
-import { Link, useNavigate } from "react-router-dom";
-import { CheckCircle2, Printer, ExternalLink } from "lucide-react";
-import type { Venue } from "@/features/venues/types/venues.types";
+import { Link, useNavigate } from 'react-router-dom';
+import { CheckCircle2, Printer, ExternalLink } from 'lucide-react';
+import type { Venue } from '@/features/venues/types/venues.types';
 
 interface BookingSuccessModalProps {
   successData: any;
@@ -22,12 +22,12 @@ export default function BookingSuccessModal({
   };
 
   const formatDate = (dateStr: string | null) => {
-    if (!dateStr) return "N/A";
-    return new Date(dateStr).toLocaleString("en-IN", {
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
+    if (!dateStr) return 'N/A';
+    return new Date(dateStr).toLocaleString('en-IN', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
     });
   };
 
@@ -50,7 +50,8 @@ export default function BookingSuccessModal({
             Reservation Confirmed!
           </h2>
           <p className="text-xs text-muted max-w-sm mx-auto">
-            Your reservation has been locked in. We have sent a copy of the invoice to your registered email address.
+            Your reservation has been locked in. We have sent a copy of the invoice to your
+            registered email address.
           </p>
         </div>
 
@@ -91,11 +92,11 @@ export default function BookingSuccessModal({
           <div className="flex justify-between items-center border-t border-border/80 pt-2.5 gap-2">
             <span className="text-muted">Payment Type</span>
             <span className="font-bold text-foreground capitalize text-right">
-              {successData.paymentMethod === "razorpay"
-                ? "Razorpay"
-                : successData.paymentMethod === "wallet"
-                ? "BMV Wallet"
-                : "Pay At Venue"}
+              {successData.paymentMethod === 'razorpay'
+                ? 'Razorpay'
+                : successData.paymentMethod === 'wallet'
+                  ? 'BMV Wallet'
+                  : 'Pay At Venue'}
             </span>
           </div>
 
@@ -121,7 +122,7 @@ export default function BookingSuccessModal({
             type="button"
             onClick={() => {
               onClose();
-              navigate("/");
+              navigate('/');
             }}
             className="flex-1 inline-flex justify-center items-center gap-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-bold py-3 rounded-xl transition-all cursor-pointer shadow-md shadow-primary/10"
           >

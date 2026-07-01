@@ -1,4 +1,3 @@
-
 export interface Addon {
   id: string;
   name: string;

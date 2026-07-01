@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Calendar as CalendarIcon, Clock, ChevronLeft, ChevronRight } from "lucide-react";
+import React, { useState, useEffect, useRef } from 'react';
+import { Calendar as CalendarIcon, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface DateTimePickerProps {
   label: string;
@@ -13,20 +13,30 @@ interface DateTimePickerProps {
   existingBookings?: any[] | null;
 }
 
-const weekdaysShort = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+const weekdaysShort = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 const months = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December"
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
 ];
 
 export default function DateTimePicker({
   label,
   value,
   onChange,
-  placeholder = "Select date & time",
+  placeholder = 'Select date & time',
   disabledDays,
-  openingTime = "00:00",
-  closingTime = "23:30",
+  openingTime = '00:00',
+  closingTime = '23:30',
   minDate = new Date(),
   existingBookings,
 }: DateTimePickerProps) {
@@ -55,14 +65,14 @@ export default function DateTimePicker({
         setIsOpen(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const generateTimeSlots = (): string[] => {
     const slots: string[] = [];
-    const [startHour, startMin] = openingTime.split(":").map(Number);
-    const [endHour, endMin] = closingTime.split(":").map(Number);
+    const [startHour, startMin] = openingTime.split(':').map(Number);
+    const [endHour, endMin] = closingTime.split(':').map(Number);
 
     let current = new Date();
     current.setHours(startHour, startMin, 0, 0);
@@ -71,8 +81,8 @@ export default function DateTimePicker({
     endLimit.setHours(endHour, endMin, 0, 0);
 
     while (current <= endLimit) {
-      const hh = String(current.getHours()).padStart(2, "0");
-      const mm = String(current.getMinutes()).padStart(2, "0");
+      const hh = String(current.getHours()).padStart(2, '0');
+      const mm = String(current.getMinutes()).padStart(2, '0');
       slots.push(`${hh}:${mm}`);
       current.setMinutes(current.getMinutes() + 30);
     }
@@ -83,8 +93,8 @@ export default function DateTimePicker({
 
   const generateTimeSlotsForDate = (date: Date): Date[] => {
     const slots: Date[] = [];
-    const [startHour, startMin] = openingTime.split(":").map(Number);
-    const [endHour, endMin] = closingTime.split(":").map(Number);
+    const [startHour, startMin] = openingTime.split(':').map(Number);
+    const [endHour, endMin] = closingTime.split(':').map(Number);
 
     let current = new Date(date.getTime());
     current.setHours(startHour, startMin, 0, 0);
@@ -135,9 +145,9 @@ export default function DateTimePicker({
         const start = new Date(booking.startDateTime);
         const end = new Date(booking.endDateTime);
         const formatTime = (d: Date) => {
-          return d.toLocaleTimeString("en-IN", {
-            hour: "2-digit",
-            minute: "2-digit",
+          return d.toLocaleTimeString('en-IN', {
+            hour: '2-digit',
+            minute: '2-digit',
             hour12: true,
           });
         };
@@ -197,13 +207,13 @@ export default function DateTimePicker({
       baseDate.setDate(day);
     } else {
       baseDate = new Date(currentYear, currentMonth, day);
-      const [h, m] = openingTime.split(":").map(Number);
+      const [h, m] = openingTime.split(':').map(Number);
       baseDate.setHours(h || 9, m || 0, 0, 0);
     }
 
     if (openingTime || closingTime) {
-      const [sh, sm] = openingTime.split(":").map(Number);
-      const [eh, em] = closingTime.split(":").map(Number);
+      const [sh, sm] = openingTime.split(':').map(Number);
+      const [eh, em] = closingTime.split(':').map(Number);
       const currentHours = baseDate.getHours();
       const currentMins = baseDate.getMinutes();
       const currentVal = currentHours * 60 + currentMins;
@@ -232,7 +242,7 @@ export default function DateTimePicker({
 
   const handleTimeSelect = (timeStr: string) => {
     if (!isDateValid) return;
-    const [hours, minutes] = timeStr.split(":").map(Number);
+    const [hours, minutes] = timeStr.split(':').map(Number);
     const updatedDate = new Date(parsedValue.getTime());
     updatedDate.setHours(hours, minutes, 0, 0);
     onChange(updatedDate.toISOString());
@@ -240,13 +250,13 @@ export default function DateTimePicker({
   };
 
   const formatInputText = (): string => {
-    if (!isDateValid) return "";
-    return parsedValue.toLocaleString("en-IN", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
+    if (!isDateValid) return '';
+    return parsedValue.toLocaleString('en-IN', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
       hour12: true,
     });
   };
@@ -276,12 +286,12 @@ export default function DateTimePicker({
           type="button"
           disabled={disabled}
           onClick={() => handleDateSelect(day)}
-          title={hasSomeBookings ? `Booked: ${bookedIntervals.join(", ")}` : undefined}
+          title={hasSomeBookings ? `Booked: ${bookedIntervals.join(', ')}` : undefined}
           className={`
             h-9 w-9 text-xs font-semibold rounded-xl flex flex-col items-center justify-center transition-all cursor-pointer select-none relative
-            ${isSelected ? "bg-primary text-white shadow-md shadow-primary/20 scale-105" : ""}
-            ${!isSelected && !disabled ? "text-foreground hover:bg-primary/10 hover:text-primary" : ""}
-            ${disabled ? "text-muted/30 line-through cursor-not-allowed bg-zinc-50/50 dark:bg-zinc-800/10" : ""}
+            ${isSelected ? 'bg-primary text-white shadow-md shadow-primary/20 scale-105' : ''}
+            ${!isSelected && !disabled ? 'text-foreground hover:bg-primary/10 hover:text-primary' : ''}
+            ${disabled ? 'text-muted/30 line-through cursor-not-allowed bg-zinc-50/50 dark:bg-zinc-800/10' : ''}
           `}
         >
           <span>{day}</span>
@@ -311,7 +321,7 @@ export default function DateTimePicker({
             text-sm text-foreground text-left focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all cursor-pointer
           "
         >
-          <span className={isDateValid ? "font-semibold text-foreground" : "text-muted"}>
+          <span className={isDateValid ? 'font-semibold text-foreground' : 'text-muted'}>
             {formatInputText() || placeholder}
           </span>
           <CalendarIcon size={16} className="text-muted" />
@@ -319,7 +329,6 @@ export default function DateTimePicker({
 
         {isOpen && (
           <div className="absolute right-0 left-0 sm:left-auto sm:right-0 sm:w-[500px] mt-2 bg-card border border-border shadow-xl rounded-2xl p-4 grid grid-cols-1 sm:grid-cols-12 gap-4 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
-            
             <div className="sm:col-span-7 space-y-3.5 border-b sm:border-b-0 sm:border-r border-border pb-4 sm:pb-0 sm:pr-4">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-foreground">
@@ -351,9 +360,7 @@ export default function DateTimePicker({
                 ))}
               </div>
 
-              <div className="grid grid-cols-7 gap-1">
-                {renderCalendarDays()}
-              </div>
+              <div className="grid grid-cols-7 gap-1">{renderCalendarDays()}</div>
             </div>
 
             <div className="sm:col-span-5 space-y-2 flex flex-col h-[240px]">
@@ -370,7 +377,9 @@ export default function DateTimePicker({
                 <>
                   {selectedDateBookings.length > 0 && (
                     <div className="bg-amber-500/10 border border-amber-500/20 text-[10px] text-amber-700 p-2 rounded-lg space-y-0.5 shrink-0">
-                      <span className="font-extrabold block uppercase tracking-wide">Reserved Times Today:</span>
+                      <span className="font-extrabold block uppercase tracking-wide">
+                        Reserved Times Today:
+                      </span>
                       <div className="space-y-0.5 font-medium max-h-[42px] overflow-y-auto">
                         {selectedDateBookings.map((interval, idx) => (
                           <div key={idx} className="flex items-center gap-1">
@@ -384,7 +393,7 @@ export default function DateTimePicker({
 
                   <div className="flex-1 overflow-y-auto space-y-1 pr-1 custom-scrollbar">
                     {timeSlots.map((time) => {
-                      const [h, m] = time.split(":").map(Number);
+                      const [h, m] = time.split(':').map(Number);
                       const isSelected =
                         isDateValid &&
                         parsedValue.getHours() === h &&
@@ -409,9 +418,9 @@ export default function DateTimePicker({
                       })();
 
                       const displayTime = (() => {
-                        const suffix = h >= 12 ? "PM" : "AM";
+                        const suffix = h >= 12 ? 'PM' : 'AM';
                         const displayH = h % 12 || 12;
-                        const displayM = String(m).padStart(2, "0");
+                        const displayM = String(m).padStart(2, '0');
                         return `${displayH}:${displayM} ${suffix}`;
                       })();
 
@@ -425,10 +434,10 @@ export default function DateTimePicker({
                             w-full py-1.5 px-3 rounded-lg text-xs font-bold text-center border transition-all cursor-pointer disabled:cursor-not-allowed
                             ${
                               isSelected
-                                ? "bg-primary border-primary text-white shadow-sm"
+                                ? 'bg-primary border-primary text-white shadow-sm'
                                 : isTimeDisabled
-                                ? "bg-zinc-50 dark:bg-zinc-800/10 border-border text-muted/30 line-through"
-                                : "bg-background border-border text-foreground hover:bg-primary/10 hover:text-primary hover:border-primary/30"
+                                  ? 'bg-zinc-50 dark:bg-zinc-800/10 border-border text-muted/30 line-through'
+                                  : 'bg-background border-border text-foreground hover:bg-primary/10 hover:text-primary hover:border-primary/30'
                             }
                           `}
                         >

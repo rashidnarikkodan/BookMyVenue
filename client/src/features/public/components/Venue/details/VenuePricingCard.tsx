@@ -19,13 +19,14 @@ export default function VenuePricingCard({
 }: VenuePricingCardProps) {
   const handleShare = () => {
     const url = window.location.href;
-    navigator.clipboard.writeText(url)
+    navigator.clipboard
+      .writeText(url)
       .then(() => {
-        toast.success("Venue listing link copied to clipboard!");
+        toast.success('Venue listing link copied to clipboard!');
       })
       .catch((err) => {
-        console.error("Could not copy URL: ", err);
-        toast.error("Failed to copy link to clipboard.");
+        console.error('Could not copy URL: ', err);
+        toast.error('Failed to copy link to clipboard.');
       });
   };
 
@@ -68,7 +69,7 @@ export default function VenuePricingCard({
         >
           Book Venue
         </Link>
-        
+
         <button
           onClick={handleShare}
           className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-background px-4 py-2.5 text-xs font-semibold text-foreground hover:bg-surface transition-all active:scale-[0.98] cursor-pointer"
