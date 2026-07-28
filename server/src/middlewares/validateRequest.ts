@@ -3,10 +3,6 @@ import { ZodSchema, ZodError } from 'zod';
 import { AppError } from '@/utils/AppError';
 import { HTTP_STATUS } from '@/constants/http';
 
-/**
- * Middleware factory for validating incoming HTTP requests using Zod schemas.
- * Validates req.body, req.query, and req.params against the provided schema.
- */
 export const validateRequest = (schema: ZodSchema) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {

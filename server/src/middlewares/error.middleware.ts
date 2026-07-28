@@ -3,10 +3,7 @@ import { AppError } from '@/utils/AppError';
 import logger from '@/libs/logger';
 import { ZodError } from 'zod';
 
-/**
- * Centralized error handling middleware.
- * Must be registered LAST in the Express app middleware chain.
- */
+
 export const errorMiddleware = (
   err: Error,
   req: Request,

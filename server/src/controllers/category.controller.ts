@@ -2,7 +2,6 @@ import { Request, Response, NextFunction } from 'express';
 import * as categoryService from '@/services/category.service';
 import success from '@/utils/response';
 import { HTTP_STATUS } from '@/constants/http';
-import { uploadToCloudinary } from '@/libs/cloudinary';
 import fs from 'fs/promises';
 
 // CREATE
