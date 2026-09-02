@@ -70,7 +70,6 @@ const authLimiter = rateLimit({
   message: { success: false, message: 'Too many auth attempts. Please try again in 15 minutes.' },
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req) => req.ip ?? 'unknown',
 });
 
 const otpLimiter = rateLimit({
@@ -79,7 +78,6 @@ const otpLimiter = rateLimit({
   message: { success: false, message: 'Too many OTP requests. Please wait 5 minutes.' },
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req) => req.ip ?? 'unknown',
 });
 
 app.use('/api/auth/signin', authLimiter);
