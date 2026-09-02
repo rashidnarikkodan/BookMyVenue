@@ -38,12 +38,27 @@ export const getPublicVenuesQuerySchema = z.object({
     .transform((val) => (val ? Math.max(0, parseInt(val, 10) || 0) : undefined)),
 
   sort: z
-    .enum(['newest', 'oldest', 'price_asc', 'price_desc', 'capacity_asc', 'capacity_desc'])
+    .enum(['newest', 'oldest', 'price_asc', 'price_desc', 'capacity_asc', 'capacity_desc', 'distance'])
     .optional()
     .default('newest'),
 
   startDateTime: z.string().optional(),
   endDateTime: z.string().optional(),
+
+  lat: z
+    .string()
+    .optional()
+    .transform((val) => (val !== undefined && val !== '' ? parseFloat(val) : undefined)),
+
+  lng: z
+    .string()
+    .optional()
+    .transform((val) => (val !== undefined && val !== '' ? parseFloat(val) : undefined)),
+
+  radius: z
+    .string()
+    .optional()
+    .transform((val) => (val !== undefined && val !== '' ? Math.max(1, parseFloat(val) || 10) : undefined)),
 });
 
 export type GetPublicVenuesQueryDTO = z.infer<typeof getPublicVenuesQuerySchema>;

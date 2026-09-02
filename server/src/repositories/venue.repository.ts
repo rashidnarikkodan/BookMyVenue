@@ -245,6 +245,16 @@ export const findPublicVenues = async (query: GetPublicVenuesQueryDTO) => {
     }
   }
 
+  // Filter by GPS coordinates and radius (in km)
+  if (query.lat !== undefined && query.lng !== undefined) {
+    const radiusInKm = query.radius || 10;
+    filter.location = {
+      $geoWithin: {
+        $centerSphere: [[query.lng, query.lat], radiusInKm / 6378.1],
+      },
+    };
+  }
+
   // Build the aggregation pipeline 
   const pipeline: any[]= [];
 
