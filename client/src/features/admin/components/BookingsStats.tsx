@@ -33,7 +33,7 @@ const BookingsStats = ({ stats, loading }: BookingsStatsProps) => {
       <StatCard
         label="Confirmed"
         value={stats.confirmedCount}
-        colorClass="bg-emerald-500/10 text-emerald-500"
+        colorClass="bg-success/10 text-success"
         icon={<CheckCircle2 size={22} className="stroke-[1.5]" />}
         loading={loading}
       />
@@ -47,7 +47,7 @@ const BookingsStats = ({ stats, loading }: BookingsStatsProps) => {
       <StatCard
         label="Cancelled"
         value={stats.cancelledCount}
-        colorClass="bg-rose-500/10 text-rose-500"
+        colorClass="bg-error/10 text-error"
         icon={<XCircle size={22} className="stroke-[1.5]" />}
         loading={loading}
       />

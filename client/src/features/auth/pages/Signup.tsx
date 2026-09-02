@@ -107,16 +107,16 @@ const Signup = () => {
   return (
     <>
       <div className="mb-5 text-center">
-        <h2 id="signup-header-title" className="text-lg font-semibold text-white tracking-tight">
+        <h2 id="signup-header-title" className="text-lg font-semibold text-foreground tracking-tight">
           Create Account
         </h2>
-        <p className="text-[11px] text-slate-400 mt-1">Join our premium venue dashboard</p>
+        <p className="text-[11px] text-foreground/70 mt-1">Join our premium venue dashboard</p>
       </div>
 
       {error && (
         <div
           id="signup-error-alert"
-          className="bg-red-500/10 border border-red-500/50 text-red-400 text-xs p-3 rounded-xl mb-4 flex items-start gap-2"
+          className="bg-error/10 border border-error/50 text-error text-xs p-3 rounded-xl mb-4 flex items-start gap-2"
         >
           <span className="mt-0.5">⚠</span>
           <span>{error}</span>
@@ -128,7 +128,7 @@ const Signup = () => {
         <div className="flex flex-col gap-1.5">
           <label
             id="signup-role-label"
-            className="text-[10px] font-medium text-slate-400 tracking-wide uppercase"
+            className="text-[10px] font-medium text-foreground/70 tracking-wide uppercase"
           >
             ROLE
           </label>
@@ -142,7 +142,7 @@ const Signup = () => {
                 ${
                   role === 'user'
                     ? 'bg-primary/10 border-primary shadow-[0_0_12px_rgba(245,101,101,0.15)]'
-                    : 'bg-slate-900/30 border-slate-700/50 hover:bg-slate-900/50 hover:border-slate-600'
+                    : 'bg-card border-border hover:bg-card hover:border-border'
                 }`}
             >
               <div
@@ -150,7 +150,7 @@ const Signup = () => {
                   ${
                     role === 'user'
                       ? 'bg-primary text-white shadow-sm shadow-primary/20'
-                      : 'bg-slate-800 text-slate-400 group-hover:text-slate-300'
+                      : 'bg-card text-foreground/70 group-hover:text-foreground/45'
                   }`}
               >
                 <User size={15} />
@@ -158,12 +158,12 @@ const Signup = () => {
               <div className="flex flex-col gap-0.5">
                 <span
                   className={`text-xs font-semibold tracking-wide transition-colors duration-200 ${
-                    role === 'user' ? 'text-white' : 'text-slate-300'
+                    role === 'user' ? 'text-white' : 'text-foreground/45'
                   }`}
                 >
                   Customer
                 </span>
-                <span className="text-[9px] text-slate-500 leading-tight">
+                <span className="text-[9px] text-foreground/70 leading-tight">
                   Find and book premium venues
                 </span>
               </div>
@@ -178,7 +178,7 @@ const Signup = () => {
                 ${
                   role === 'owner'
                     ? 'bg-primary/10 border-primary shadow-[0_0_12px_rgba(245,101,101,0.15)]'
-                    : 'bg-slate-900/30 border-slate-700/50 hover:bg-slate-900/50 hover:border-slate-600'
+                    : 'bg-card border-border hover:bg-card hover:border-border'
                 }`}
             >
               <div
@@ -186,7 +186,7 @@ const Signup = () => {
                   ${
                     role === 'owner'
                       ? 'bg-primary text-white shadow-sm shadow-primary/20'
-                      : 'bg-slate-800 text-slate-400 group-hover:text-slate-300'
+                      : 'bg-card text-foreground/70 group-hover:text-foreground/45'
                   }`}
               >
                 <Building size={15} />
@@ -194,12 +194,12 @@ const Signup = () => {
               <div className="flex flex-col gap-0.5">
                 <span
                   className={`text-xs font-semibold tracking-wide transition-colors duration-200 ${
-                    role === 'owner' ? 'text-white' : 'text-slate-300'
+                    role === 'owner' ? 'text-white' : 'text-foreground/45'
                   }`}
                 >
                   Venue Owner
                 </span>
-                <span className="text-[9px] text-slate-500 leading-tight">
+                <span className="text-[9px] text-foreground/70 leading-tight">
                   List & manage your venues
                 </span>
               </div>
@@ -211,7 +211,7 @@ const Signup = () => {
         <div className="flex flex-col gap-1.5">
           <label
             htmlFor="signup-fullName"
-            className="text-[10px] font-medium text-slate-400 tracking-wide uppercase"
+            className="text-[10px] font-medium text-foreground/70 tracking-wide uppercase"
           >
             FULL NAME
           </label>
@@ -224,7 +224,7 @@ const Signup = () => {
             placeholder="John Doe"
             required
             minLength={3}
-            className="w-full bg-slate-950/35 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all shadow-inner"
+            className="w-full bg-card border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground placeholder:text-foreground/40 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all shadow-inner"
           />
         </div>
 
@@ -232,7 +232,7 @@ const Signup = () => {
         <div className="flex flex-col gap-1.5">
           <label
             htmlFor="signup-email"
-            className="text-[10px] font-medium text-slate-400 tracking-wide uppercase"
+            className="text-[10px] font-medium text-foreground/70 tracking-wide uppercase"
           >
             EMAIL ADDRESS
           </label>
@@ -244,7 +244,7 @@ const Signup = () => {
             onChange={handleChange}
             placeholder="name@company.com"
             required
-            className="w-full bg-slate-950/35 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all shadow-inner"
+            className="w-full bg-card border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground placeholder:text-foreground/40 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all shadow-inner"
           />
         </div>
 
@@ -252,7 +252,7 @@ const Signup = () => {
         <div className="flex flex-col gap-1.5">
           <label
             htmlFor="signup-phoneNumber"
-            className="text-[10px] font-medium text-slate-400 tracking-wide uppercase"
+            className="text-[10px] font-medium text-foreground/70 tracking-wide uppercase"
           >
             PHONE NUMBER
           </label>
@@ -266,7 +266,7 @@ const Signup = () => {
             required
             pattern="^\+?[1-9]\d{1,14}$"
             title="Please enter a valid phone number with country code, e.g. +15550000000 (digits only, no spaces or dashes)."
-            className="w-full bg-slate-950/35 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all shadow-inner"
+            className="w-full bg-card border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground placeholder:text-foreground/40 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all shadow-inner"
           />
         </div>
 
@@ -274,7 +274,7 @@ const Signup = () => {
         <div className="flex flex-col gap-1.5">
           <label
             htmlFor="signup-password"
-            className="text-[10px] font-medium text-slate-400 tracking-wide uppercase"
+            className="text-[10px] font-medium text-foreground/70 tracking-wide uppercase"
           >
             PASSWORD
           </label>
@@ -290,12 +290,12 @@ const Signup = () => {
               minLength={8}
               pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$"
               title="Min 8 chars with uppercase, lowercase, number and special character."
-              className="w-full bg-slate-950/35 border border-slate-800 rounded-xl px-3.5 py-2.5 pr-10 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all shadow-inner"
+              className="w-full bg-card border border-border rounded-xl px-3.5 py-2.5 pr-10 text-sm text-foreground placeholder:text-foreground/40 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all shadow-inner"
             />
             <button
               type="button"
               id="signup-toggle-password-btn"
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 focus:outline-none transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/70 hover:text-foreground/45 focus:outline-none transition-colors"
               onClick={() => setShowPassword(!showPassword)}
               tabIndex={-1}
             >
@@ -308,7 +308,7 @@ const Signup = () => {
         <div className="flex flex-col gap-1.5">
           <label
             htmlFor="signup-confirmPassword"
-            className="text-[10px] font-medium text-slate-400 tracking-wide uppercase"
+            className="text-[10px] font-medium text-foreground/70 tracking-wide uppercase"
           >
             CONFIRM PASSWORD
           </label>
@@ -321,12 +321,12 @@ const Signup = () => {
               onChange={handleChange}
               placeholder="••••••••"
               required
-              className="w-full bg-slate-950/35 border border-slate-800 rounded-xl px-3.5 py-2.5 pr-10 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all shadow-inner"
+              className="w-full bg-card border border-border rounded-xl px-3.5 py-2.5 pr-10 text-sm text-foreground placeholder:text-foreground/40 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all shadow-inner"
             />
             <button
               type="button"
               id="signup-toggle-confirm-password-btn"
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 focus:outline-none transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/70 hover:text-foreground/45 focus:outline-none transition-colors"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               tabIndex={-1}
             >
@@ -372,11 +372,11 @@ const Signup = () => {
 
         {/* Divider */}
         <div className="flex items-center my-1">
-          <div className="flex-grow border-t border-slate-700/60"></div>
-          <span className="px-3 text-[10px] text-slate-500 uppercase tracking-wider">
+          <div className="flex-grow border-t border-border"></div>
+          <span className="px-3 text-[10px] text-foreground/70 uppercase tracking-wider">
             Or continue with
           </span>
-          <div className="flex-grow border-t border-slate-700/60"></div>
+          <div className="flex-grow border-t border-border"></div>
         </div>
 
         {/* Google Login */}
@@ -391,7 +391,7 @@ const Signup = () => {
         </div>
       </form>
 
-      <div className="mt-4 text-center text-xs text-slate-400">
+      <div className="mt-4 text-center text-xs text-foreground/70">
         Already have an account?{' '}
         <Link
           to="/signin"

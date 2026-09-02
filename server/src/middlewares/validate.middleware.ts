@@ -1,4 +1,3 @@
-import logger from '@/libs/logger';
 import { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import { AppError } from '@/utils/AppError';
@@ -9,8 +8,6 @@ export const validateInputs = (schema: ZodSchema) => {
     try {
       const validatedData = schema.parse(req.body);
       req.body = validatedData;
-
-      logger.info(`Inputs: ${JSON.stringify(req.body)}`);
 
       next();
     } catch (error) {

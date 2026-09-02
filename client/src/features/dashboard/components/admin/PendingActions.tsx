@@ -19,16 +19,16 @@ export default function PendingActions({ data }: PendingActionsProps) {
       title: 'Pending Owner Verifications',
       count: data ? data.ownerVerifications : 0,
       icon: UserCheck,
-      colorClass: 'text-blue-500 bg-blue-500/10 dark:bg-blue-500/20',
-      borderColor: 'hover:border-blue-500/25 dark:hover:border-blue-500/35',
+      colorClass: 'text-info bg-info/10',
+      borderColor: 'hover:border-info/25 dark:hover:border-info/35',
       path: '/admin/users',
     },
     {
       title: 'Pending Venue Approvals',
       count: data ? data.venueApprovals : 0,
       icon: Building2,
-      colorClass: 'text-amber-500 bg-amber-500/10 dark:bg-amber-500/20',
-      borderColor: 'hover:border-amber-500/25 dark:hover:border-amber-500/35',
+      colorClass: 'text-warning bg-warning/10',
+      borderColor: 'hover:border-warning/25 dark:hover:border-warning/35',
       path: '/admin/venues',
     },
     {
@@ -43,32 +43,32 @@ export default function PendingActions({ data }: PendingActionsProps) {
       title: 'Reported Venues',
       count: data ? data.reportedVenues : 0,
       icon: Flag,
-      colorClass: 'text-rose-500 bg-rose-500/10 dark:bg-rose-500/20',
-      borderColor: 'hover:border-rose-500/25 dark:hover:border-rose-500/35',
+      colorClass: 'text-error bg-error/10',
+      borderColor: 'hover:border-error/25 dark:hover:border-error/35',
       path: '/admin/venues',
     },
     {
       title: 'Refund Requests',
       count: data ? data.refundRequests : 0,
       icon: IndianRupee,
-      colorClass: 'text-emerald-500 bg-emerald-500/10 dark:bg-emerald-500/20',
-      borderColor: 'hover:border-emerald-500/25 dark:hover:border-emerald-500/35',
+      colorClass: 'text-success bg-success/10',
+      borderColor: 'hover:border-success/25 dark:hover:border-success/35',
       path: '/admin/settlements',
     },
   ];
 
   return (
-    <div className="rounded-3xl border border-zinc-200/80 dark:border-zinc-800/85 bg-white dark:bg-[#1a1a1a] p-6 text-foreground shadow-xl transition-all duration-300 flex flex-col justify-between">
+    <div className="rounded-3xl border border-border bg-white dark:bg-[#1a1a1a] p-6 text-foreground shadow-xl transition-all duration-300 flex flex-col justify-between">
       <div>
         <div className="flex items-center gap-2 mb-1">
-          <span className="text-[10px] font-bold text-[#e21a47] uppercase tracking-[0.25em]">
+          <span className="text-[10px] font-bold text-primary uppercase tracking-[0.25em]">
             Moderation
           </span>
-          <span className="w-1.5 h-1.5 rounded-full bg-[#e21a47]" />
+          <span className="w-1.5 h-1.5 rounded-full bg-primary" />
         </div>
 
         <h2 className="text-lg font-bold tracking-tight text-black dark:text-white leading-none mb-6">
-          Pending <span className="text-[#e21a47]">Actions</span>
+          Pending <span className="text-primary">Actions</span>
         </h2>
 
         <div className="space-y-4">
@@ -77,7 +77,7 @@ export default function PendingActions({ data }: PendingActionsProps) {
             return (
               <div
                 key={action.title}
-                className={`group p-4 rounded-2xl border border-zinc-200/50 dark:border-zinc-800/60 bg-zinc-50/50 dark:bg-zinc-900/20 transition-all duration-300 flex items-center justify-between ${action.borderColor}`}
+                className={`group p-4 rounded-2xl border border-border bg-card transition-all duration-300 flex items-center justify-between ${action.borderColor}`}
               >
                 <div className="flex items-center gap-4">
                   <div
@@ -86,10 +86,10 @@ export default function PendingActions({ data }: PendingActionsProps) {
                     <Icon className="w-5 h-5" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-sm text-black dark:text-white group-hover:text-[#e21a47] transition-colors duration-200">
+                    <h4 className="font-bold text-sm text-black dark:text-white group-hover:text-primary transition-colors duration-200">
                       {action.title}
                     </h4>
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+                    <p className="text-xs text-foreground/70 mt-0.5">
                       {data ? `${action.count} items requiring review` : 'Data not available'}
                     </p>
                   </div>
@@ -98,7 +98,7 @@ export default function PendingActions({ data }: PendingActionsProps) {
                 {action.count > 0 && (
                   <button
                     onClick={() => navigate(action.path)}
-                    className="flex items-center gap-1.5 py-1.5 px-3 rounded-lg border border-zinc-200 dark:border-zinc-800 text-xs font-bold uppercase tracking-wider text-black dark:text-white hover:bg-zinc-50 dark:hover:bg-zinc-900 hover:border-[#e21a47]/30 transition-all duration-200 group/btn cursor-pointer"
+                    className="flex items-center gap-1.5 py-1.5 px-3 rounded-lg border border-border text-xs font-bold uppercase tracking-wider text-black dark:text-white hover:bg-card hover:border-primary/30 transition-all duration-200 group/btn cursor-pointer"
                   >
                     Review
                     <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform duration-200" />

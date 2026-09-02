@@ -224,7 +224,7 @@ export default function AdminTransactions() {
         </div>
 
         <div className="flex items-center gap-4 rounded-2xl border border-border bg-card p-5 shadow-sm">
-          <div className="rounded-xl bg-blue-500/10 p-3 text-blue-500">
+          <div className="rounded-xl bg-info/10 p-3 text-info">
             <TrendingUp size={22} className="stroke-[1.5]" />
           </div>
           <div>

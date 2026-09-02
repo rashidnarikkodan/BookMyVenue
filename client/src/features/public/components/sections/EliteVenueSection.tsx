@@ -90,18 +90,18 @@ export default function EliteVenuesSection({ venues, loading }: EliteVenuesSecti
         {/* Centered Header matching Featured style */}
         <div className="flex flex-col items-center text-center">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-bold text-[#e21a47] uppercase tracking-[0.25em]">
+            <span className="text-[10px] font-bold text-primary uppercase tracking-[0.25em]">
               Signature Selection
             </span>
-            <span className="w-1.5 h-1.5 rounded-full bg-[#e21a47]" />
+            <span className="w-1.5 h-1.5 rounded-full bg-primary" />
           </div>
           <h2 className="text-4xl md:text-5xl font-black tracking-tight mt-2 text-black dark:text-white leading-none">
             Elite Venues <br className="sm:hidden" />
-            <span className="text-[#e21a47] ml-1">in Kerala</span>
+            <span className="text-primary ml-1">in Kerala</span>
           </h2>
         </div>
 
-        <div className="mt-8 mb-12 border-t border-[#e21a47]/5 dark:border-zinc-800" />
+        <div className="mt-8 mb-12 border-t border-primary/5 dark:border-zinc-800" />
 
         {/* Asymmetric Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
@@ -119,7 +119,7 @@ export default function EliteVenuesSection({ venues, loading }: EliteVenuesSecti
 
             {/* Content overlayed at bottom */}
             <div className="absolute bottom-0 inset-x-0 p-8 flex flex-col justify-end">
-              <span className="bg-[#e21a47] text-white text-[10px] font-bold tracking-wider px-2.5 py-1 rounded w-fit uppercase mb-3">
+              <span className="bg-primary text-white text-[10px] font-bold tracking-wider px-2.5 py-1 rounded w-fit uppercase mb-3">
                 {largeVenue.tag}
               </span>
               <h3 className="text-2xl md:text-3xl font-bold text-white group-hover:text-zinc-200 transition-colors">
@@ -128,7 +128,7 @@ export default function EliteVenuesSection({ venues, loading }: EliteVenuesSecti
 
               <div className="flex flex-wrap items-center gap-4 mt-3 text-xs md:text-sm text-zinc-300 font-medium">
                 <div className="flex items-center gap-1">
-                  <Star className="w-4 h-4 text-[#e21a47] fill-[#e21a47]" />
+                  <Star className="w-4 h-4 text-primary fill-primary" />
                   <span>{largeVenue.rating}</span>
                 </div>
                 <span className="text-zinc-600">•</span>
@@ -155,11 +155,11 @@ export default function EliteVenuesSection({ venues, loading }: EliteVenuesSecti
 
               {/* Right Content */}
               <div className="flex-1 pr-2">
-                <h4 className="text-lg font-bold text-foreground group-hover:text-[#e21a47] transition-colors leading-tight">
+                <h4 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors leading-tight">
                   {topVenue.name}
                 </h4>
                 <p className="text-xs text-black dark:text-zinc-400 mt-1">{topVenue.location}</p>
-                <p className="text-sm font-bold text-[#e21a47] mt-3">{topVenue.price}</p>
+                <p className="text-sm font-bold text-primary mt-3">{topVenue.price}</p>
               </div>
             </div>
 
@@ -176,11 +176,11 @@ export default function EliteVenuesSection({ venues, loading }: EliteVenuesSecti
 
               {/* Right Content */}
               <div className="flex-1 pr-2">
-                <h4 className="text-lg font-bold text-foreground group-hover:text-[#e21a47] transition-colors leading-tight">
+                <h4 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors leading-tight">
                   {bottomVenue.name}
                 </h4>
                 <p className="text-xs text-black dark:text-zinc-400 mt-1">{bottomVenue.location}</p>
-                <p className="text-sm font-bold text-[#e21a47] mt-3">{bottomVenue.price}</p>
+                <p className="text-sm font-bold text-primary mt-3">{bottomVenue.price}</p>
               </div>
             </div>
           </div>
@@ -191,7 +191,7 @@ export default function EliteVenuesSection({ venues, loading }: EliteVenuesSecti
           {/* Card 1: Elite Membership */}
           <div className="bg-card border border-zinc-200/20 dark:border-zinc-800/60 rounded-[24px] p-8 flex flex-col justify-between min-h-[260px] group hover:border-zinc-200 dark:hover:border-zinc-700 transition-all duration-300">
             <div className="flex justify-between items-start">
-              <div className="w-12 h-12 rounded-xl bg-background border border-zinc-200/20 dark:bg-zinc-900/80 dark:border-zinc-800 flex items-center justify-center text-[#e21a47]">
+              <div className="w-12 h-12 rounded-xl bg-background border border-zinc-200/20 dark:bg-zinc-900/80 dark:border-zinc-800 flex items-center justify-center text-primary">
                 <Shield className="w-5 h-5 stroke-[1.5]" />
               </div>
               <span className="text-[9px] font-semibold text-black dark:text-zinc-400 uppercase tracking-widest mt-1">
@@ -209,7 +209,7 @@ export default function EliteVenuesSection({ venues, loading }: EliteVenuesSecti
           </div>
 
           {/* Card 2: Planning a Corporate Gala */}
-          <div className="bg-[#e21a47] rounded-[24px] p-8 flex flex-col justify-between min-h-[260px] group hover:bg-[#c81239] transition-all duration-300 shadow-lg shadow-rose-950/20">
+          <div className="bg-primary rounded-[24px] p-8 flex flex-col justify-between min-h-[260px] group hover:bg-[#c81239] transition-all duration-300 shadow-lg shadow-rose-950/20">
             <div>
               <h4 className="text-lg font-bold text-white">Planning a Corporate Gala?</h4>
               <p className="text-xs text-white/90 mt-2 leading-relaxed">
@@ -218,7 +218,7 @@ export default function EliteVenuesSection({ venues, loading }: EliteVenuesSecti
               </p>
             </div>
 
-            <button className="w-full mt-6 py-3 bg-white hover:bg-zinc-100 transition-colors text-[#e21a47] font-semibold rounded-xl text-xs text-center cursor-pointer">
+            <button className="w-full mt-6 py-3 bg-white hover:bg-zinc-100 transition-colors text-primary font-semibold rounded-xl text-xs text-center cursor-pointer">
               Download Brochure
             </button>
           </div>
@@ -234,7 +234,7 @@ export default function EliteVenuesSection({ venues, loading }: EliteVenuesSecti
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
 
             <div className="absolute bottom-6 left-6 right-6">
-              <span className="text-[9px] font-bold text-[#e21a47] bg-white/90 px-2 py-0.5 rounded uppercase tracking-wider">
+              <span className="text-[9px] font-bold text-primary bg-white/90 px-2 py-0.5 rounded uppercase tracking-wider">
                 Elite Catering
               </span>
               <h5 className="text-sm font-bold text-white mt-1.5">Curated Banquet Dinners</h5>

@@ -12,7 +12,6 @@ import {
   XCircle,
   MapPin,
   CreditCard,
-  Camera,
   FileText,
   Loader2,
   LogOut,

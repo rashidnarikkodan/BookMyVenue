@@ -99,11 +99,14 @@ export const processSettlement = async (
       await settlementRepo.updateSettlementStatus(settlement._id.toString(), SettlementStatus.SETTLED);
       await Booking.findByIdAndUpdate(bookingId, { settlementStatus: SettlementStatus.SETTLED });
 
-      // Execute actual wallet credit to owner
-      const ownerWallet = await walletRepository.getOrCreateByUserId(ownerId.toString());
-      const balanceBefore = ownerWallet.balance;
-      const balanceAfter = balanceBefore + ownerEarnings;
-      await walletRepository.creditToWallet(ownerId.toString(), ownerEarnings);
+      // Execute actual wallet credit to owner (atomic $inc, then read back the true balance)
+      await walletRepository.getOrCreateByUserId(ownerId.toString());
+      const ownerWallet = await walletRepository.creditToWallet(ownerId.toString(), ownerEarnings);
+      if (!ownerWallet) {
+        throw new AppError('Owner wallet not found for settlement payout', HTTP_STATUS.SERVER_ERROR);
+      }
+      const balanceAfter = ownerWallet.balance;
+      const balanceBefore = balanceAfter - ownerEarnings;
       await walletRepository.createPayoutTransaction({
         walletId: ownerWallet._id as any,
         userId: ownerId as any,

@@ -276,7 +276,7 @@ const PricingSection: React.FC<Props> = ({
                       className={`w-full font-extrabold text-xs sm:text-sm py-3.5 rounded-xl shadow-lg flex items-center justify-center transition-all select-none uppercase tracking-wider
                         ${
                           hasOverlap
-                            ? 'bg-red-500/10 text-red-500 border border-red-500/20 cursor-not-allowed shadow-none'
+                            ? 'bg-error/10 text-error border border-error/20 cursor-not-allowed shadow-none'
                             : isSubmitting
                               ? 'bg-primary/70 text-white cursor-wait'
                               : 'bg-primary hover:bg-primary/90 text-white shadow-primary/20 hover:scale-[1.01] active:scale-[0.99] cursor-pointer'
@@ -298,7 +298,7 @@ const PricingSection: React.FC<Props> = ({
                     {/* Trust Seal */}
                     <div className="flex flex-col items-center gap-1 text-[9px] text-muted font-bold uppercase tracking-wider pt-1">
                       <span className="flex items-center gap-1">
-                        <ShieldCheck size={12} className="text-green-600 shrink-0" />
+                        <ShieldCheck size={12} className="text-success shrink-0" />
                         256-Bit SSL Secured Checkout
                       </span>
                       <span>Razorpay Partner Encryption</span>

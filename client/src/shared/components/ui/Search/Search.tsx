@@ -107,7 +107,7 @@ const Search = ({
           onClick={handleGpsToggle}
           disabled={gpsLoading}
           className={`p-3 px-4 rounded-xl border flex items-center justify-center gap-2 transition-all cursor-pointer ${gpsActive
-              ? 'bg-[#e21a47]/10 border-[#e21a47]/40 text-[#e21a47] shadow-lg shadow-[#e21a47]/5'
+              ? 'bg-primary/10 border-primary/40 text-primary shadow-lg shadow-primary/5'
               : 'bg-zinc-950/40 border-zinc-800/40 text-zinc-400 hover:text-white hover:border-zinc-700/60'
             }`}
           title={gpsActive ? "Disable GPS Mode" : "Enable GPS Mode"}
@@ -115,7 +115,7 @@ const Search = ({
           {gpsLoading ? (
             <Loader2 className="w-5 h-5 animate-spin" />
           ) : (
-            <Navigation className={`w-4 h-4 ${gpsActive ? 'fill-[#e21a47]' : ''}`} />
+            <Navigation className={`w-4 h-4 ${gpsActive ? 'fill-primary' : ''}`} />
           )}
           <span className="text-xs font-semibold hidden md:inline">
             {gpsActive ? 'GPS Active' : 'Use GPS'}

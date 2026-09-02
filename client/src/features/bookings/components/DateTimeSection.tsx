@@ -170,16 +170,16 @@ const DateTimeSection: React.FC<Props> = ({
       </div>
 
       {error && (
-        <div className="bg-red-500/10 border border-red-500/20 text-red-500 text-xs p-3 rounded-xl flex items-start gap-2">
+        <div className="bg-error/10 border border-error/20 text-error text-xs p-3 rounded-xl flex items-start gap-2">
           <span className="shrink-0">⚠️</span>
           <span className="font-medium">{error}</span>
         </div>
       )}
 
       {durationText && !error && (
-        <div className="bg-green-500/10 border border-green-500/20 text-green-600 text-xs p-3 rounded-xl flex justify-between items-center gap-2">
+        <div className="bg-success/10 border border-success/20 text-success text-xs p-3 rounded-xl flex justify-between items-center gap-2">
           <span className="font-medium">Selected Duration:</span>
-          <span className="font-bold text-xs sm:text-sm bg-green-500 text-white px-2.5 py-0.5 rounded-full shrink-0">
+          <span className="font-bold text-xs sm:text-sm bg-success text-white px-2.5 py-0.5 rounded-full shrink-0">
             {durationText}
           </span>
         </div>

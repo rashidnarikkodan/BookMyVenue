@@ -272,12 +272,12 @@ const AdminVenuesList = () => {
                     {/* Elite/Featured Badges */}
                     <div className="absolute top-3 left-3 flex flex-col gap-1 z-10">
                       {venue.isElite && (
-                        <span className="inline-flex items-center gap-0.5 rounded-lg bg-amber-500 text-white px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wide shadow-sm border border-amber-400">
+                        <span className="inline-flex items-center gap-0.5 rounded-lg bg-warning text-white px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wide shadow-sm border border-warning">
                           <Crown size={9} className="fill-current" /> Elite
                         </span>
                       )}
                       {venue.isFeatured && (
-                        <span className="inline-flex items-center gap-0.5 rounded-lg bg-blue-500 text-white px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wide shadow-sm border border-blue-400">
+                        <span className="inline-flex items-center gap-0.5 rounded-lg bg-info text-white px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wide shadow-sm border border-info">
                           <Star size={9} className="fill-current" /> Featured
                         </span>
                       )}
@@ -288,8 +288,8 @@ const AdminVenuesList = () => {
                       <span
                         className={`inline-flex items-center rounded-lg px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wide border shadow-sm ${
                           venue.isActive
-                            ? 'bg-emerald-500 border-emerald-400 text-white'
-                            : 'bg-zinc-500 border-zinc-400 text-white'
+                            ? 'bg-success border-success text-white'
+                            : 'bg-card border-border text-foreground'
                         }`}
                       >
                         {venue.isActive ? 'Active' : 'Inactive'}

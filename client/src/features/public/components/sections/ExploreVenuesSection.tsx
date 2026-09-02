@@ -199,11 +199,11 @@ export default function ExploreVenuesSection({ districts, loading }: ExploreVenu
         className: 'custom-leaflet-marker',
         html: `
           <div class="relative flex items-center justify-center">
-            <div class="absolute w-10 h-10 bg-[#e21a47]/20 rounded-full animate-ping ${isActive ? 'opacity-100' : 'opacity-0'}"></div>
+            <div class="absolute w-10 h-10 bg-primary/20 rounded-full animate-ping ${isActive ? 'opacity-100' : 'opacity-0'}"></div>
             <div class="relative flex items-center justify-center w-7 h-7 rounded-full border border-white dark:border-zinc-950 ${
               isActive
-                ? 'bg-[#e21a47] text-white ring-4 ring-[#e21a47]/30 scale-110 shadow-lg'
-                : 'bg-zinc-500 dark:bg-zinc-800 text-white hover:bg-[#e21a47] hover:scale-105'
+                ? 'bg-primary text-white ring-4 ring-primary/30 scale-110 shadow-lg'
+                : 'bg-zinc-500 dark:bg-zinc-800 text-white hover:bg-primary hover:scale-105'
             } transition-all duration-300">
               <span class="text-[9px] font-black">${count}</span>
             </div>
@@ -269,18 +269,18 @@ export default function ExploreVenuesSection({ districts, loading }: ExploreVenu
         {/* Header matching Featured style */}
         <div className="mb-8">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-bold text-[#e21a47] uppercase tracking-[0.25em]">
+            <span className="text-[10px] font-bold text-primary uppercase tracking-[0.25em]">
               Real-time Map
             </span>
-            <span className="w-1.5 h-1.5 rounded-full bg-[#e21a47]" />
+            <span className="w-1.5 h-1.5 rounded-full bg-primary" />
           </div>
           <h2 className="text-4xl md:text-5xl font-black tracking-tight mt-2 text-black dark:text-white leading-none">
             Explore <br />
-            <span className="text-[#e21a47]">by District</span>
+            <span className="text-primary">by District</span>
           </h2>
         </div>
 
-        <div className="mt-8 mb-10 border-t border-[#e21a47]/5 dark:border-zinc-800" />
+        <div className="mt-8 mb-10 border-t border-primary/5 dark:border-zinc-800" />
 
         {/* Grid Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
@@ -288,7 +288,7 @@ export default function ExploreVenuesSection({ districts, loading }: ExploreVenu
           <div className="lg:col-span-7 flex flex-col p-6 md:p-8 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200/40 dark:border-zinc-800/60 rounded-[32px] shadow-lg min-h-[460px] relative">
             <div className="flex justify-between items-center mb-4 z-20">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200/50 dark:border-zinc-800 text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
-                <Map className="w-3 h-3 text-[#e21a47]" />
+                <Map className="w-3 h-3 text-primary" />
                 Interactive Map
               </span>
 
@@ -299,7 +299,7 @@ export default function ExploreVenuesSection({ districts, loading }: ExploreVenu
             </div>
 
             {/* Map Div wrapper */}
-            <div className="flex-1 relative min-h-[320px] rounded-2xl overflow-hidden border border-[#e21a47]/10 dark:border-[#e21a47]/30 shadow-inner z-10">
+            <div className="flex-1 relative min-h-[320px] rounded-2xl overflow-hidden border border-primary/10 dark:border-primary/30 shadow-inner z-10">
               <div
                 ref={mapRef}
                 className="absolute inset-0 w-full h-full bg-zinc-100 dark:bg-zinc-900"
@@ -309,7 +309,7 @@ export default function ExploreVenuesSection({ districts, loading }: ExploreVenu
             {/* Simple Map Legend */}
             <div className="flex justify-center gap-4 mt-4 text-[10px] font-bold tracking-wider text-zinc-400 dark:text-zinc-500 uppercase border-t border-zinc-200/50 dark:border-zinc-900 pt-4 z-20">
               <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#e21a47]" />
+                <span className="w-2.5 h-2.5 rounded-full bg-primary" />
                 <span>Selected</span>
               </div>
               <div className="flex items-center gap-1.5">
@@ -325,11 +325,11 @@ export default function ExploreVenuesSection({ districts, loading }: ExploreVenu
             <div className="mb-4">
               <div className="flex justify-between items-start gap-4">
                 <div>
-                  <span className="text-[10px] font-bold text-[#e21a47] bg-[#e21a47]/10 px-2.5 py-1 rounded-md uppercase tracking-wider">
+                  <span className="text-[10px] font-bold text-primary bg-primary/10 px-2.5 py-1 rounded-md uppercase tracking-wider">
                     {loading ? 'Loading...' : `${districtVenues.length} Spaces Available`}
                   </span>
                   <h3 className="text-2xl md:text-3xl font-extrabold text-black dark:text-white mt-3 flex items-center gap-2">
-                    <MapPin className="w-6 h-6 text-[#e21a47]" />
+                    <MapPin className="w-6 h-6 text-primary" />
                     {activeDistrict?.name || ''}
                   </h3>
                 </div>
@@ -342,7 +342,7 @@ export default function ExploreVenuesSection({ districts, loading }: ExploreVenu
                       onClick={() => setActiveId(d.id)}
                       className={`px-2.5 py-1 rounded-md text-[9px] font-bold uppercase tracking-wider transition-all duration-200 ${
                         activeId === d.id
-                          ? 'bg-[#e21a47] text-white shadow-sm'
+                          ? 'bg-primary text-white shadow-sm'
                           : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-500 hover:text-foreground'
                       }`}
                     >
@@ -357,7 +357,7 @@ export default function ExploreVenuesSection({ districts, loading }: ExploreVenu
               </p>
             </div>
 
-            <div className="border-t border-[#e21a47]/5 dark:border-zinc-800 my-4" />
+            <div className="border-t border-primary/5 dark:border-zinc-800 my-4" />
 
             {/* Venues scrollable area */}
             <div className="flex-1 overflow-y-auto max-h-[340px] pr-2 space-y-4 scrollbar-thin scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-800">
@@ -380,7 +380,7 @@ export default function ExploreVenuesSection({ districts, loading }: ExploreVenu
                 districtVenues.map((venue) => (
                   <div
                     key={venue._id}
-                    className="flex gap-4 p-3 rounded-2xl bg-zinc-50/50 dark:bg-zinc-900/20 border border-zinc-200/40 dark:border-zinc-800/40 hover:border-[#e21a47]/30 dark:hover:border-[#e21a47]/20 hover:bg-zinc-50 dark:hover:bg-zinc-900/60 transition-all duration-300 group shadow-sm"
+                    className="flex gap-4 p-3 rounded-2xl bg-zinc-50/50 dark:bg-zinc-900/20 border border-zinc-200/40 dark:border-zinc-800/40 hover:border-primary/30 dark:hover:border-primary/20 hover:bg-zinc-50 dark:hover:bg-zinc-900/60 transition-all duration-300 group shadow-sm"
                   >
                     {/* Left Thumbnail */}
                     <div className="w-20 h-20 rounded-xl overflow-hidden bg-zinc-950 flex-shrink-0 border border-zinc-200/10">
@@ -394,11 +394,11 @@ export default function ExploreVenuesSection({ districts, loading }: ExploreVenu
                     {/* Right Details */}
                     <div className="flex-1 flex flex-col justify-between">
                       <div>
-                        <h4 className="text-sm font-bold text-foreground group-hover:text-[#e21a47] transition-colors line-clamp-1 leading-tight">
+                        <h4 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors line-clamp-1 leading-tight">
                           {venue.name}
                         </h4>
                         <div className="flex items-center gap-1 text-[10px] text-zinc-500 dark:text-zinc-400 mt-1">
-                          <MapPin className="w-3 h-3 text-[#e21a47]" />
+                          <MapPin className="w-3 h-3 text-primary" />
                           <span>{venue.address?.city || activeDistrict?.name}</span>
                         </div>
                       </div>
@@ -410,13 +410,13 @@ export default function ExploreVenuesSection({ districts, loading }: ExploreVenu
                             {venue.capacity} guests
                           </span>
                           <span className="text-zinc-300 dark:text-zinc-700">|</span>
-                          <span className="text-[#e21a47] font-bold">
+                          <span className="text-primary font-bold">
                             ₹{(venue.availability?.pricePerHour || 0).toLocaleString('en-IN')} / Hr
                           </span>
                         </div>
                         <Link
                           to={`/venues/${venue._id}`}
-                          className="flex items-center justify-center w-7 h-7 rounded-full bg-white dark:bg-zinc-800 hover:bg-[#e21a47] hover:text-white border border-zinc-200 dark:border-zinc-800 text-[#e21a47] dark:text-zinc-300 transition-all duration-300 shadow-sm"
+                          className="flex items-center justify-center w-7 h-7 rounded-full bg-white dark:bg-zinc-800 hover:bg-primary hover:text-white border border-zinc-200 dark:border-zinc-800 text-primary dark:text-zinc-300 transition-all duration-300 shadow-sm"
                         >
                           <ArrowRight className="w-3.5 h-3.5" />
                         </Link>
@@ -435,7 +435,7 @@ export default function ExploreVenuesSection({ districts, loading }: ExploreVenu
                   </p>
                   <Link
                     to="/owner/register"
-                    className="mt-4 inline-flex items-center gap-1 text-[10px] font-bold text-[#e21a47] hover:text-[#c81239] transition-colors uppercase tracking-wider"
+                    className="mt-4 inline-flex items-center gap-1 text-[10px] font-bold text-primary hover:text-[#c81239] transition-colors uppercase tracking-wider"
                   >
                     <span>Become a Host</span>
                     <ArrowRight className="w-3 h-3" />

@@ -11,31 +11,31 @@ export default function HealthCard({
 }) {
   const styles = {
     blue: {
-      border: 'hover:border-blue-500/30',
-      bg: 'bg-blue-500/10',
-      text: 'text-blue-500',
-      glow: 'bg-blue-500/5',
+      border: 'hover:border-info/30',
+      bg: 'bg-info/10',
+      text: 'text-info',
+      glow: 'bg-info/5',
     },
 
     green: {
-      border: 'hover:border-emerald-500/30',
-      bg: 'bg-emerald-500/10',
-      text: 'text-emerald-500',
-      glow: 'bg-emerald-500/5',
+      border: 'hover:border-success/30',
+      bg: 'bg-success/10',
+      text: 'text-success',
+      glow: 'bg-success/5',
     },
 
     amber: {
-      border: 'hover:border-amber-500/30',
-      bg: 'bg-amber-500/10',
-      text: 'text-amber-500',
-      glow: 'bg-amber-500/5',
+      border: 'hover:border-warning/30',
+      bg: 'bg-warning/10',
+      text: 'text-warning',
+      glow: 'bg-warning/5',
     },
 
     red: {
-      border: 'hover:border-[#e21a47]/30',
-      bg: 'bg-[#e21a47]/10',
-      text: 'text-[#e21a47]',
-      glow: 'bg-[#e21a47]/5',
+      border: 'hover:border-primary/30',
+      bg: 'bg-primary/10',
+      text: 'text-primary',
+      glow: 'bg-primary/5',
     },
   };
 
@@ -43,14 +43,14 @@ export default function HealthCard({
 
   return (
     <div
-      className={`bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/80 rounded-2xl p-4 relative overflow-hidden group transition-all duration-300 ${s.border}`}
+      className={`bg-card border border-border rounded-2xl p-4 relative overflow-hidden group transition-all duration-300 ${s.border}`}
     >
       <div
         className={`absolute top-0 right-0 w-16 h-16 rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform duration-300 ${s.glow}`}
       />
 
       <div className="flex items-center justify-between">
-        <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+        <span className="text-[10px] font-bold uppercase tracking-wider text-foreground/70">
           {title}
         </span>
 

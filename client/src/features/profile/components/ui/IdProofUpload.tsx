@@ -58,7 +58,7 @@ const IdProofUpload: React.FC<IdProofUploadProps> = ({
               className="relative w-12 h-12 rounded-lg overflow-hidden border border-border bg-muted/20 flex items-center justify-center cursor-pointer group shrink-0"
             >
               {isPdf ? (
-                <FileText className="w-6 h-6 text-red-500" />
+                <FileText className="w-6 h-6 text-error" />
               ) : idProofPreview ? (
                 <img
                   src={idProofPreview}

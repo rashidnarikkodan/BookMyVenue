@@ -92,12 +92,12 @@ const Signin = () => {
   return (
     <>
       <div className="mb-4 text-center">
-        <h2 className="text-lg font-semibold text-white tracking-tight">Welcome Back</h2>
-        <p className="text-[11px] text-slate-400 mt-0.5">Sign in to your premium venue dashboard</p>
+        <h2 className="text-lg font-semibold text-foreground tracking-tight">Welcome Back</h2>
+        <p className="text-[11px] text-foreground/70 mt-0.5">Sign in to your premium venue dashboard</p>
       </div>
 
       {error && (
-        <div className="bg-red-500/10 border border-red-500/50 text-red-400 text-xs p-3 rounded-xl mb-4 flex items-start gap-2">
+        <div className="bg-error/10 border border-error/50 text-error text-xs p-3 rounded-xl mb-4 flex items-start gap-2">
           <span className="mt-0.5">⚠</span>
           <span>{error}</span>
         </div>
@@ -106,7 +106,7 @@ const Signin = () => {
       <form onSubmit={handleSubmit} className="flex flex-col gap-2.5">
         {/* Email */}
         <div className="flex flex-col gap-1">
-          <label className="text-[10px] font-medium text-slate-400 tracking-wide">
+          <label className="text-[10px] font-medium text-foreground/70 tracking-wide">
             EMAIL ADDRESS
           </label>
           <input
@@ -116,17 +116,17 @@ const Signin = () => {
             onChange={handleChange}
             placeholder="name@company.com"
             required
-            className="w-full bg-bg-base/50 border border-slate-700/60 rounded-xl px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-all shadow-inner"
+            className="w-full bg-background/50 border border-border rounded-xl px-3 py-2 text-sm text-foreground placeholder:text-foreground/40 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-inner"
           />
         </div>
 
         {/* Password */}
         <div className="flex flex-col gap-1">
           <div className="flex justify-between items-center">
-            <label className="text-[10px] font-medium text-slate-400 tracking-wide">PASSWORD</label>
+            <label className="text-[10px] font-medium text-foreground/70 tracking-wide">PASSWORD</label>
             <Link
               to="/forgot-password"
-              className="text-[10px] font-medium text-primary-500 hover:text-primary-400 transition-colors"
+              className="text-[10px] font-medium text-primary hover:text-primary/80 transition-colors"
             >
               Forgot password?
             </Link>
@@ -139,11 +139,11 @@ const Signin = () => {
               onChange={handleChange}
               placeholder="••••••••"
               required
-              className="w-full bg-bg-base/50 border border-slate-700/60 rounded-xl px-3 py-2 pr-10 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-all shadow-inner"
+              className="w-full bg-background/50 border border-border rounded-xl px-3 py-2 pr-10 text-sm text-foreground placeholder:text-foreground/40 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-inner"
             />
             <button
               type="button"
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 focus:outline-none transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/70 hover:text-foreground/45 focus:outline-none transition-colors"
               onClick={() => setShowPassword(!showPassword)}
               tabIndex={-1}
             >
@@ -156,7 +156,7 @@ const Signin = () => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full mt-2 bg-primary hover:bg-primary-500 text-white font-semibold text-sm py-2.5 rounded-xl shadow-lg shadow-primary-600/20 flex items-center justify-center transition-all group disabled:opacity-50"
+          className="w-full mt-2 bg-primary hover:bg-primary/90 text-white font-semibold text-sm py-2.5 rounded-xl shadow-lg shadow-primary/20 flex items-center justify-center transition-all group disabled:opacity-50"
         >
           {loading ? (
             <>
@@ -183,11 +183,11 @@ const Signin = () => {
 
         {/* Divider */}
         <div className="flex items-center my-1">
-          <div className="flex-grow border-t border-slate-700/60"></div>
-          <span className="px-3 text-[10px] text-slate-500 uppercase tracking-wider">
+          <div className="flex-grow border-t border-border"></div>
+          <span className="px-3 text-[10px] text-foreground/70 uppercase tracking-wider">
             Or continue with
           </span>
-          <div className="flex-grow border-t border-slate-700/60"></div>
+          <div className="flex-grow border-t border-border"></div>
         </div>
 
         {/* Google Login */}
@@ -202,11 +202,11 @@ const Signin = () => {
         </div>
       </form>
 
-      <div className="mt-4 text-center text-xs text-slate-400">
+      <div className="mt-4 text-center text-xs text-foreground/70">
         Don't have an account?{' '}
         <Link
           to="/signup"
-          className="text-primary-500 hover:text-primary-400 font-semibold transition-colors"
+          className="text-primary hover:text-primary/80 font-semibold transition-colors"
         >
           Sign Up
         </Link>

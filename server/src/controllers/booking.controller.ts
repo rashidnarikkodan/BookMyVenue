@@ -225,11 +225,12 @@ export const getBookingAvailability = async (req: Request, res: Response, next: 
 // PATCH /bookings/:bookingId/cancel
 export const cancelBooking = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const userId = req.user?.id as string;
+    const userId = req.user?.id;
+    if (!userId) throw new AppError(MESSAGES.UNAUTHORIZED, HTTP_STATUS.UNAUTHORIZED);
 
     const bookingId = req.params.bookingId as string;
     const { reason } = req.body;
-    
+
     if (!reason) {
       throw new AppError('Cancellation reason is required', HTTP_STATUS.BAD_REQUEST);
     }

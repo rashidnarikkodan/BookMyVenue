@@ -17,34 +17,34 @@ export default function PlatformLeaders({ data = [] }: PlatformLeadersProps) {
       return {
         icon: TrendingUp,
         colorClass:
-          'from-amber-500/20 to-yellow-500/10 border-amber-500/30 text-amber-500 dark:text-amber-400',
-        rankBg: 'bg-gradient-to-r from-amber-500 to-yellow-400 text-black',
-        glowClass: 'bg-amber-500/5',
+          'from-warning/20 to-warning/10 border-warning/30 text-warning',
+        rankBg: 'bg-warning text-black',
+        glowClass: 'bg-warning/5',
       };
     }
     if (rank === 2) {
       return {
         icon: Calendar,
         colorClass:
-          'from-blue-500/20 to-cyan-500/10 border-blue-500/30 text-blue-500 dark:text-blue-400',
+          'from-info/20 to-info/10 border-info/30 text-info',
         rankBg: 'bg-gradient-to-r from-zinc-400 to-zinc-300 text-black',
-        glowClass: 'bg-blue-500/5',
+        glowClass: 'bg-info/5',
       };
     }
     if (rank === 3) {
       return {
         icon: Star,
         colorClass:
-          'from-emerald-500/20 to-teal-500/10 border-emerald-500/30 text-emerald-550 dark:text-emerald-400',
-        rankBg: 'bg-gradient-to-r from-orange-400 to-amber-600 text-white',
-        glowClass: 'bg-emerald-500/5',
+          'from-success/20 to-success/10 border-success/30 text-success',
+        rankBg: 'bg-warning text-white',
+        glowClass: 'bg-success/5',
       };
     }
     return {
       icon: Users,
       colorClass:
         'from-indigo-500/20 to-purple-500/10 border-indigo-500/30 text-indigo-500 dark:text-indigo-400',
-      rankBg: 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300',
+      rankBg: 'bg-card text-foreground',
       glowClass: 'bg-indigo-500/5',
     };
   };
@@ -55,21 +55,21 @@ export default function PlatformLeaders({ data = [] }: PlatformLeadersProps) {
   }));
 
   return (
-    <div className="rounded-3xl border border-zinc-200/80 dark:border-zinc-800/85 bg-white dark:bg-[#1a1a1a] p-6 text-foreground shadow-xl transition-all duration-300 flex flex-col justify-between">
+    <div className="rounded-3xl border border-border bg-white dark:bg-[#1a1a1a] p-6 text-foreground shadow-xl transition-all duration-300 flex flex-col justify-between">
       <div>
         <div className="flex items-center justify-between mb-6">
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold text-[#e21a47] uppercase tracking-[0.25em]">
+              <span className="text-[10px] font-bold text-primary uppercase tracking-[0.25em]">
                 Hall of Fame
               </span>
-              <span className="w-1.5 h-1.5 rounded-full bg-[#e21a47]" />
+              <span className="w-1.5 h-1.5 rounded-full bg-primary" />
             </div>
             <h2 className="text-lg font-bold tracking-tight mt-1 text-black dark:text-white leading-none">
-              Platform <span className="text-[#e21a47]">Leaders</span>
+              Platform <span className="text-primary">Leaders</span>
             </h2>
           </div>
-          <div className="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-500">
+          <div className="w-9 h-9 rounded-xl bg-warning/10 flex items-center justify-center text-warning">
             <Trophy className="w-5 h-5 animate-bounce" />
           </div>
         </div>
@@ -81,7 +81,7 @@ export default function PlatformLeaders({ data = [] }: PlatformLeadersProps) {
               return (
                 <div
                   key={leader.title}
-                  className={`rounded-2xl border border-zinc-200/60 dark:border-zinc-800/65 bg-gradient-to-b ${leader.colorClass} p-5 shadow-md relative overflow-hidden group hover:-translate-y-1 transition-all duration-300`}
+                  className={`rounded-2xl border border-border bg-gradient-to-b ${leader.colorClass} p-5 shadow-md relative overflow-hidden group hover:-translate-y-1 transition-all duration-300`}
                 >
                   <div
                     className={`absolute top-0 right-0 w-20 h-20 rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform duration-300 ${leader.glowClass}`}
@@ -98,7 +98,7 @@ export default function PlatformLeaders({ data = [] }: PlatformLeadersProps) {
                     </div>
                   </div>
 
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-550 block mb-1">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-foreground/70 block mb-1">
                     {leader.title}
                   </span>
 
@@ -107,10 +107,10 @@ export default function PlatformLeaders({ data = [] }: PlatformLeadersProps) {
                   </h3>
 
                   <div className="flex items-center justify-between mt-auto">
-                    <span className="text-sm font-black text-zinc-900 dark:text-white">
+                    <span className="text-sm font-black text-foreground dark:text-white">
                       {leader.metric}
                     </span>
-                    <span className="text-[9px] font-bold text-emerald-500 flex items-center gap-0.5 bg-emerald-500/10 px-1.5 py-0.5 rounded-md">
+                    <span className="text-[9px] font-bold text-success flex items-center gap-0.5 bg-success/10 px-1.5 py-0.5 rounded-md">
                       <ArrowUpRight className="w-3 h-3" />
                       Top
                     </span>
@@ -119,7 +119,7 @@ export default function PlatformLeaders({ data = [] }: PlatformLeadersProps) {
               );
             })
           ) : (
-            <div className="col-span-full py-10 flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-500 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl">
+            <div className="col-span-full py-10 flex flex-col items-center justify-center text-foreground/70 border border-dashed border-border rounded-2xl">
               <Trophy className="w-8 h-8 mb-2 opacity-40 animate-pulse" />
               <span className="text-xs font-bold uppercase tracking-wider">Data not available</span>
             </div>

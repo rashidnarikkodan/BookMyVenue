@@ -58,19 +58,16 @@ export const requestWithdrawalService = async (
     );
   }
 
-  const wallet = await walletRepository.getOrCreateByUserId(userId);
-  if (wallet.balance < amount) {
-    throw new AppError(
-      `Insufficient wallet balance for withdrawal. Requested: ₹${amount}, Available: ₹${wallet.balance}`,
-      HTTP_STATUS.BAD_REQUEST
-    );
+  await walletRepository.getOrCreateByUserId(userId);
+
+  // Atomic conditional debit — prevents overdraft from concurrent withdrawal requests
+  const wallet = await walletRepository.debitWalletIfSufficient(userId, amount);
+  if (!wallet) {
+    throw new AppError('Insufficient wallet balance for withdrawal', HTTP_STATUS.BAD_REQUEST);
   }
 
-  const balanceBefore = wallet.balance;
-  const balanceAfter = balanceBefore - amount;
-
-  // Deduct balance
-  await walletRepository.creditRefundToWallet(userId, -amount);
+  const balanceAfter = wallet.balance;
+  const balanceBefore = balanceAfter + amount;
 
   // Record WITHDRAWAL transaction
   const transaction = await WalletTransaction.create({
