@@ -4,6 +4,8 @@ import env from '@/configs/env.config';
 import { AppError } from '@/utils/AppError';
 import { HTTP_STATUS } from '@/constants/http';
 
+import logger from '@/libs/logger';
+
 const razorpay = new Razorpay({
   key_id: env.RAZORPAY_KEY_ID,
   key_secret: env.RAZORPAY_KEY_SECRET,
@@ -11,15 +13,18 @@ const razorpay = new Razorpay({
 
 export const createOrder = async (amount: number, receiptId: string) => {
   try {
-    // Razorpay amount is in paise (minimum 100 paise)
-    if (amount < 1) {
-      throw new AppError('Minimum amount is 1 INR (100 paise)', HTTP_STATUS.BAD_REQUEST);
+    // Razorpay amount is in paise (minimum 100 paise = 1 INR)
+    if (typeof amount !== 'number' || Number.isNaN(amount) || amount < 1) {
+      throw new AppError(
+        `Invalid booking deposit amount: ${amount}. Minimum amount is 1 INR (100 paise).`,
+        HTTP_STATUS.BAD_REQUEST
+      );
     }
 
     const options = {
       amount: Math.round(amount * 100), // convert to paise
       currency: 'INR',
-      receipt: receiptId,
+      receipt: receiptId.slice(0, 40), // Razorpay receipt max 40 chars
     };
 
     const order = await razorpay.orders.create(options);
@@ -29,9 +34,29 @@ export const createOrder = async (amount: number, receiptId: string) => {
       currency: order.currency,
     };
   } catch (error: any) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+
+    const razorpayDescription =
+      error?.error?.description ||
+      error?.description ||
+      error?.message ||
+      'Failed to create Razorpay order';
+
+    logger.error(
+      {
+        err: error,
+        razorpayError: error?.error,
+        amount,
+        receiptId,
+      },
+      `[Razorpay Service] Order creation failed: ${razorpayDescription}`
+    );
+
     throw new AppError(
-      error.message || 'Failed to create Razorpay order',
-      HTTP_STATUS.SERVER_ERROR
+      razorpayDescription,
+      error?.statusCode || HTTP_STATUS.SERVER_ERROR
     );
   }
 };
