@@ -20,7 +20,9 @@ export const otpService = {
     purpose: string = 'email-verification'
   ): Promise<{ otp: string }> {
     const otp = crypto.randomInt(100000, 999999).toString();
-    logger.info(`Otp generated for ${emailAddr}: ${otp}`)
+    if (env.NODE_ENV !== 'production') {
+      logger.info(`Otp generated for ${emailAddr}: ${otp}`);
+    }
     const hashed = await argon2.hash(otp);
 
     // Store hashed OTP with expiry

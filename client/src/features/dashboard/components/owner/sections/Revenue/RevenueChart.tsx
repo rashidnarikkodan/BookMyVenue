@@ -25,8 +25,8 @@ interface CustomTooltipProps {
 const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md border border-zinc-200/80 dark:border-zinc-800/85 p-4 rounded-2xl shadow-xl">
-        <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-2.5">
+      <div className="bg-white/90 dark:bg-card backdrop-blur-md border border-border p-4 rounded-2xl shadow-xl">
+        <p className="text-[10px] font-bold text-foreground/70 uppercase tracking-wider mb-2.5">
           {label}
         </p>
         <div className="space-y-2">
@@ -40,14 +40,14 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
 
             return (
               <div key={index} className="flex items-center justify-between gap-8">
-                <span className="text-xs text-zinc-600 dark:text-zinc-350 flex items-center gap-2 font-medium">
+                <span className="text-xs text-foreground/70 flex items-center gap-2 font-medium">
                   <span
                     className="w-2.5 h-2.5 rounded-full"
                     style={{ backgroundColor: dotColor }}
                   />
                   {entry.name}:
                 </span>
-                <span className="text-xs font-black text-zinc-900 dark:text-white">{valStr}</span>
+                <span className="text-xs font-black text-foreground dark:text-white">{valStr}</span>
               </div>
             );
           })}
@@ -64,15 +64,15 @@ export default function RevenueChart({ data }: RevenueChartProps) {
     <div className="w-full h-[40vh] lg:h-[280px] mt-6 relative z-10">
       {data.length === 0 ? (
         <div className="h-full flex flex-col items-center justify-center">
-          <div className="w-12 h-12 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center mb-3">
-            <BarChart3 className="w-6 h-6 text-zinc-400" />
+          <div className="w-12 h-12 rounded-full bg-card flex items-center justify-center mb-3">
+            <BarChart3 className="w-6 h-6 text-foreground/70" />
           </div>
 
-          <p className="text-sm font-semibold text-zinc-500 dark:text-zinc-400">
+          <p className="text-sm font-semibold text-foreground/70">
             No revenue data available
           </p>
 
-          <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-1">
+          <p className="text-xs text-foreground/70 mt-1">
             Revenue and booking trends will appear here once bookings are made.
           </p>
         </div>
@@ -108,7 +108,7 @@ export default function RevenueChart({ data }: RevenueChartProps) {
               opacity={0.08}
               strokeDasharray="4 4"
               vertical={false}
-              className="text-zinc-200 dark:text-zinc-800"
+              className="text-foreground/45"
             />
 
             <XAxis
@@ -116,7 +116,7 @@ export default function RevenueChart({ data }: RevenueChartProps) {
               axisLine={false}
               tickLine={false}
               tick={{ fill: 'currentColor', fontSize: 11, fontWeight: 550 }}
-              className="text-zinc-400 dark:text-zinc-500"
+              className="text-foreground/70"
               dy={8}
             />
 
@@ -126,7 +126,7 @@ export default function RevenueChart({ data }: RevenueChartProps) {
               tickLine={false}
               tick={{ fill: 'currentColor', fontSize: 11, fontWeight: 550 }}
               tickFormatter={(val) => (val >= 1000 ? `₹${(val / 1000).toFixed(0)}k` : `₹${val}`)}
-              className="text-zinc-400 dark:text-zinc-500"
+              className="text-foreground/70"
               dx={-8}
             />
 
@@ -137,7 +137,7 @@ export default function RevenueChart({ data }: RevenueChartProps) {
               tickLine={false}
               tick={{ fill: 'currentColor', fontSize: 11, fontWeight: 550 }}
               tickFormatter={(val) => `${val}`}
-              className="text-zinc-400 dark:text-zinc-500"
+              className="text-foreground/70"
               dx={8}
             />
 
@@ -158,7 +158,7 @@ export default function RevenueChart({ data }: RevenueChartProps) {
               iconType="circle"
               iconSize={8}
               formatter={(value) => (
-                <span className="text-zinc-500 dark:text-zinc-400 font-bold tracking-wider text-xs uppercase ml-1.5">
+                <span className="text-foreground/70 font-bold tracking-wider text-xs uppercase ml-1.5">
                   {value}
                 </span>
               )}

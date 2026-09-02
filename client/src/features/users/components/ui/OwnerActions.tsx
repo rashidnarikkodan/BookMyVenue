@@ -29,10 +29,10 @@ export default function OwnerActions({ loading = false, onApprove, onReject }: O
           className="
             inline-flex items-center gap-2
             rounded-md
-            bg-emerald-600
+            bg-success
             px-3 py-1.5
             text-xs font-semibold text-white
-            hover:bg-emerald-700
+            hover:bg-success/90
             transition
             disabled:opacity-50
           "
@@ -47,10 +47,10 @@ export default function OwnerActions({ loading = false, onApprove, onReject }: O
           className="
             inline-flex items-center gap-2
             rounded-md
-            bg-red-600
+            bg-error
             px-3 py-1.5
             text-xs font-semibold text-white
-            hover:bg-red-700
+            hover:bg-error/90
             transition
             disabled:opacity-50
           "

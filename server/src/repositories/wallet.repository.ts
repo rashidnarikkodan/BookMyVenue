@@ -150,6 +150,23 @@ export const walletRepository = {
   },
 
   /**
+   * Atomically debits a wallet only if the balance is sufficient.
+   * Returns null if the balance was insufficient (guards against
+   * concurrent double-spend / overdraft).
+   */
+  async debitWalletIfSufficient(
+    userId: string,
+    amount: number,
+    session?: mongoose.ClientSession
+  ): Promise<IWallet | null> {
+    return Wallet.findOneAndUpdate(
+      { userId, balance: { $gte: amount } },
+      { $inc: { balance: -amount } },
+      { session, new: true }
+    );
+  },
+
+  /**
    * Atomically credits an owner's wallet for settlement payout.
    */
   async creditToWallet(

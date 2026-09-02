@@ -10,7 +10,7 @@ type Props = {
 
 const statusStyles: Record<string, string> = {
   pending: 'border-warning/30 bg-warning/10 text-warning',
-  approved: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-500',
+  approved: 'border-success/30 bg-success/10 text-success',
   rejected: 'border-error/30 bg-error/10 text-error',
 };
 

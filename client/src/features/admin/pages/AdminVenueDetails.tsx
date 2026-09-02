@@ -81,7 +81,7 @@ const AdminVenueDetails = () => {
     // Custom pins styling matching primary palette
     const customIcon = L.divIcon({
       className: 'custom-map-pin',
-      html: `<div class="w-8 h-8 rounded-full bg-red-500 border-4 border-white flex items-center justify-center shadow-lg"><span class="w-2.5 h-2.5 rounded-full bg-white animate-pulse"></span></div>`,
+      html: `<div class="w-8 h-8 rounded-full bg-error border-4 border-white flex items-center justify-center shadow-lg"><span class="w-2.5 h-2.5 rounded-full bg-white animate-pulse"></span></div>`,
       iconSize: [32, 32],
       iconAnchor: [16, 32],
     });
@@ -437,8 +437,8 @@ const AdminVenueDetails = () => {
                           key={idx}
                           className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
                             active
-                              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:bg-emerald-500/5'
-                              : 'bg-zinc-100 dark:bg-zinc-800/40 border-border text-muted/50 line-through'
+                              ? 'bg-success/10 border-success/30 text-success'
+                              : 'bg-card border-border text-muted/50 line-through'
                           }`}
                         >
                           {day}
@@ -449,9 +449,9 @@ const AdminVenueDetails = () => {
                 </div>
               </div>
             ) : (
-              <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4 flex items-center gap-3">
-                <AlertTriangle className="text-yellow-600 shrink-0" size={20} />
-                <div className="text-xs text-yellow-800 dark:text-yellow-600 font-medium">
+              <div className="bg-warning/10 border border-warning/20 rounded-xl p-4 flex items-center gap-3">
+                <AlertTriangle className="text-warning shrink-0" size={20} />
+                <div className="text-xs text-warning font-medium">
                   Operating rules and price rates have not been configured by the owner yet.
                   Defaults will apply.
                 </div>
@@ -516,8 +516,8 @@ const AdminVenueDetails = () => {
                 <span
                   className={`px-2 py-0.5 rounded-lg text-[10px] font-extrabold uppercase ${
                     venue.isActive
-                      ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-600'
-                      : 'bg-zinc-500/10 border border-zinc-500/20 text-zinc-500'
+                      ? 'bg-success/10 border border-success/20 text-success'
+                      : 'bg-card border border-border text-foreground/70'
                   }`}
                 >
                   {venue.isActive ? 'Active' : 'Inactive'}
@@ -529,8 +529,8 @@ const AdminVenueDetails = () => {
                 <span
                   className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-extrabold uppercase ${
                     venue.isFeatured
-                      ? 'bg-blue-500/10 border border-blue-500/20 text-blue-600'
-                      : 'bg-zinc-500/10 border border-zinc-500/20 text-zinc-500'
+                      ? 'bg-info/10 border border-info/20 text-info'
+                      : 'bg-card border border-border text-foreground/70'
                   }`}
                 >
                   <Star size={10} className={venue.isFeatured ? 'fill-current' : ''} />
@@ -543,8 +543,8 @@ const AdminVenueDetails = () => {
                 <span
                   className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-extrabold uppercase ${
                     venue.isElite
-                      ? 'bg-amber-500/10 border border-amber-500/20 text-amber-600'
-                      : 'bg-zinc-500/10 border border-zinc-500/20 text-zinc-500'
+                      ? 'bg-warning/10 border border-warning/20 text-warning'
+                      : 'bg-card border border-border text-foreground/70'
                   }`}
                 >
                   <Crown size={10} className={venue.isElite ? 'fill-current' : ''} />

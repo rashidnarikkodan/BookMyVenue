@@ -243,7 +243,7 @@ const GuestSection: React.FC<Props> = ({
         )}
 
         {isExceeded && (
-          <div className="bg-amber-500/10 border border-amber-500/20 text-amber-600 text-xs p-3 rounded-xl flex items-start gap-2">
+          <div className="bg-warning/10 border border-warning/20 text-warning text-xs p-3 rounded-xl flex items-start gap-2">
             <span className="shrink-0">⚠️</span>
             <span className="font-semibold">
               Warning: Guest count ({guests}) exceeds the recommended venue capacity of{' '}
@@ -307,14 +307,14 @@ const GuestSection: React.FC<Props> = ({
           <div className="border border-border bg-card rounded-xl p-3.5 sm:p-4 space-y-3">
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
-                <div className="w-8 h-8 rounded-lg bg-green-500/10 text-green-500 flex items-center justify-center shrink-0">
+                <div className="w-8 h-8 rounded-lg bg-success/10 text-success flex items-center justify-center shrink-0">
                   <FileSpreadsheet size={16} />
                 </div>
                 <div className="min-w-0">
                   <span className="text-xs font-bold text-foreground block truncate">
                     {csvFileName}
                   </span>
-                  <span className="text-[10px] text-green-600 font-semibold flex items-center gap-1">
+                  <span className="text-[10px] text-success font-semibold flex items-center gap-1">
                     <CheckCircle2 size={12} /> {parsedGuests.length} Guests imported
                   </span>
                 </div>
@@ -322,7 +322,7 @@ const GuestSection: React.FC<Props> = ({
               <button
                 type="button"
                 onClick={clearCsv}
-                className="p-2 text-muted hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all shrink-0"
+                className="p-2 text-muted hover:text-error hover:bg-error/10 rounded-lg transition-all shrink-0"
                 title="Remove Guest List"
               >
                 <Trash2 size={14} />

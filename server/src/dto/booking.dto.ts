@@ -53,7 +53,7 @@ export const verifyBalanceSchema = z.object({
 
 export const cancelBookingSchema = z.object({
   body: z.object({
-    cancellationReason: z.string().optional(),
+    reason: z.string().min(1, 'Cancellation reason is required'),
   }),
 });
 

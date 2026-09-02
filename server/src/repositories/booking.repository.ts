@@ -188,17 +188,20 @@ export const confirmDepositPayment = async (
   bookingId: string,
   depositAmount: number
 ): Promise<IBooking | null> => {
-  return Booking.findByIdAndUpdate(
-    bookingId,
+  const updated = await Booking.findOneAndUpdate(
+    { _id: bookingId, bookingStatus: BookingStatus.PENDING },
     {
       bookingStatus: BookingStatus.RESERVED,
       paymentStatus: PaymentStatus.PARTIAL,
       amountPaid: depositAmount,
     },
     { new: true }
-  )
-    .populate('venue', 'name address images')
-    .populate('user', 'fullName email') as Promise<IBooking | null>;
+  );
+  if (!updated) return null;
+  return updated.populate([
+    { path: 'venue', select: 'name address images' },
+    { path: 'user', select: 'fullName email' },
+  ]) as Promise<IBooking | null>;
 };
 
 /**
@@ -209,17 +212,20 @@ export const confirmFullPayment = async (
   bookingId: string,
   totalAmount: number
 ): Promise<IBooking | null> => {
-  return Booking.findByIdAndUpdate(
-    bookingId,
+  const updated = await Booking.findOneAndUpdate(
+    { _id: bookingId, bookingStatus: { $in: [BookingStatus.PENDING, BookingStatus.RESERVED] } },
     {
       bookingStatus: BookingStatus.CONFIRMED,
       paymentStatus: PaymentStatus.PAID,
       amountPaid: totalAmount,
     },
     { new: true }
-  )
-    .populate('venue', 'name address images')
-    .populate('user', 'fullName email') as Promise<IBooking | null>;
+  );
+  if (!updated) return null;
+  return updated.populate([
+    { path: 'venue', select: 'name address images' },
+    { path: 'user', select: 'fullName email' },
+  ]) as Promise<IBooking | null>;
 };
 
 export const updateBookingStatus = async (
@@ -282,7 +288,7 @@ export const updateRefundBookingStatus = async (
     {
       _id: bookingId,
       refundStatus,
-      cancellationType: CancellationType.USER,
+      cancellationType: { $in: [CancellationType.USER, CancellationType.OWNER, CancellationType.ADMIN] },
       bookingStatus: BookingStatus.CANCELLED,
     },
     { refundStatus: RefundStatus.PROCESSING },
@@ -294,7 +300,7 @@ export const updateRefundBookingStatus = async (
 export const findFailedRefundBookings = async () => {
   const docs = await Booking.find({
     bookingStatus: BookingStatus.CANCELLED,
-    cancellationType: CancellationType.USER,
+    cancellationType: { $in: [CancellationType.USER, CancellationType.OWNER, CancellationType.ADMIN] },
     refundStatus: RefundStatus.FAILED,
     refundAmount: { $gt: 0 },
   }).select('_id refundStatus refundAmount user');

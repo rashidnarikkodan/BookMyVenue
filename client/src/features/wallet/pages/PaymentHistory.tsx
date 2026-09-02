@@ -82,7 +82,7 @@ export default function PaymentHistory() {
       key: 'id',
       header: 'Booking ID',
       render: (item) => (
-        <span className="text-xs font-mono text-gray-500 truncate block w-24" title={item.id}>
+        <span className="text-xs font-mono text-foreground/70 truncate block w-24" title={item.id}>
           {item.id}
         </span>
       ),
@@ -110,7 +110,7 @@ export default function PaymentHistory() {
       key: 'amountPaid',
       header: 'Paid',
       render: (item) => (
-        <span className="text-green-600 dark:text-green-400 font-medium">
+        <span className="text-success font-medium">
           ₹{item.amountPaid.toLocaleString()}
         </span>
       ),
@@ -130,14 +130,14 @@ export default function PaymentHistory() {
       render: (item) => (
         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
           item.paymentStatus === 'COMPLETED' || item.paymentStatus === 'PAID'
-            ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+            ? 'bg-success text-success'
             : item.paymentStatus === 'REFUNDED'
             ? 'bg-primary/10 text-primary'
             : item.paymentStatus === 'PENDING'
-            ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
+            ? 'bg-warning text-warning'
             : item.paymentStatus === 'PARTIAL'
-            ? 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400'
-            : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+            ? 'bg-warning text-warning'
+            : 'bg-error text-error'
         }`}>
           {item.paymentStatus.replace(/_/g, ' ')}
         </span>

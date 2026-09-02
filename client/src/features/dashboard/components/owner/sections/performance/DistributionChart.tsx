@@ -11,8 +11,8 @@ const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
-      <div className="bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md border border-zinc-200/80 dark:border-zinc-800/85 p-3 rounded-2xl shadow-xl">
-        <p className="text-[10px] font-bold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider mb-1">
+      <div className="bg-white/95 dark:bg-card backdrop-blur-md border border-border p-3 rounded-2xl shadow-xl">
+        <p className="text-[10px] font-bold text-foreground/70 uppercase tracking-wider mb-1">
           {data.category}
         </p>
         <p className="text-xs font-black text-black dark:text-white">

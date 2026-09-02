@@ -1,9 +1,9 @@
 
 export const STATUS_STYLES: Record<string, string> = {
-  RESERVED: 'border-blue-500/20 bg-blue-500/10 text-blue-500',
-  CONFIRMED: 'border-emerald-500/20 bg-emerald-500/10 text-emerald-500',
+  RESERVED: 'border-info/20 bg-info/10 text-info',
+  CONFIRMED: 'border-success/20 bg-success/10 text-success',
   COMPLETED: 'border-purple-500/20 bg-purple-500/10 text-purple-500',
-  CANCELLED: 'border-rose-500/20 bg-rose-500/10 text-rose-500',
+  CANCELLED: 'border-error/20 bg-error/10 text-error',
 };
 
 export const STATUS_OPTIONS = [

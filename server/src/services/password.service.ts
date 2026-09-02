@@ -63,16 +63,8 @@ const changePassword = async (
   if (!user) {
     throw new AppError('User not found', HTTP_STATUS.NOT_FOUND);
   }
-// if (user && user.password) {
-//   const isSameAsOld = await argon2.verify(user.password, newPassword);
-//   if (isSameAsOld) {
-//     throw new AppError('New password cannot be the same as your current password.', 400);
-//   }
-// }
+
   // Verify OTP (throws AppError if invalid)
-  console.log('the otp from frontend:',otp);
-  console.log('the new password:',newPassword);
-  console.log('the old password:',user.password)
   await otpService.verifyOtp(user.email, otp, OTP_PURPOSE);
 
   // Check new password is not the same as the current one

@@ -86,10 +86,10 @@ function CategoryPanel({ cat, idx }: PanelProps) {
       <div className="absolute inset-0 p-8 flex flex-col justify-between z-20">
         {/* Top bar */}
         <div className="flex justify-between items-start">
-          <span className="text-3xl font-black text-white/20 group-hover:text-[#e21a47]/60 font-mono transition-colors duration-300">
+          <span className="text-3xl font-black text-white/20 group-hover:text-primary/60 font-mono transition-colors duration-300">
             {String(idx + 1).padStart(2, '0')}
           </span>
-          <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-200 bg-[#e21a47] text-white text-[9px] font-bold tracking-[0.15em] px-2.5 py-1 rounded-full uppercase">
+          <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-200 bg-primary text-white text-[9px] font-bold tracking-[0.15em] px-2.5 py-1 rounded-full uppercase">
             {cat.countText}
           </span>
         </div>
@@ -97,7 +97,7 @@ function CategoryPanel({ cat, idx }: PanelProps) {
         {/* Bottom bar */}
         <div className="w-full">
           {/* Category Title */}
-          <h3 className="text-xl md:text-2xl font-extrabold text-white tracking-wide leading-tight group-hover:text-[#e21a47] transition-colors duration-300">
+          <h3 className="text-xl md:text-2xl font-extrabold text-white tracking-wide leading-tight group-hover:text-primary transition-colors duration-300">
             {cat.name}
           </h3>
 
@@ -168,20 +168,20 @@ export default function CategorySection({ categories, loading }: CategorySection
   return (
     <section className="bg-transparent text-foreground py-16 relative overflow-hidden">
       {/* Decorative Glow */}
-      <div className="absolute top-12 left-1/4 w-[500px] h-[500px] bg-[#e21a47]/5 rounded-full blur-[120px] pointer-events-none -z-10" />
+      <div className="absolute top-12 left-1/4 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none -z-10" />
 
       <div className="max-w-6xl mx-auto px-6">
         {/* Header Section */}
         <div className="max-w-xl">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-bold text-[#e21a47] uppercase tracking-[0.25em]">
+            <span className="text-[10px] font-bold text-primary uppercase tracking-[0.25em]">
               Premium Venues
             </span>
-            <span className="w-1.5 h-1.5 rounded-full bg-[#e21a47]" />
+            <span className="w-1.5 h-1.5 rounded-full bg-primary" />
           </div>
           <h2 className="text-4xl md:text-5xl font-black tracking-tight mt-2 text-black dark:text-white leading-none">
             Curated <br />
-            <span className="text-[#e21a47]">Categories</span>
+            <span className="text-primary">Categories</span>
           </h2>
           <p className="text-black dark:text-zinc-400 mt-4 text-sm md:text-base leading-relaxed">
             Find the perfect environment tailored to your exact event specifications. From intimate
@@ -189,7 +189,7 @@ export default function CategorySection({ categories, loading }: CategorySection
           </p>
         </div>
 
-        <div className="mt-8 border-t border-[#e21a47]/5 dark:border-zinc-800" />
+        <div className="mt-8 border-t border-primary/5 dark:border-zinc-800" />
 
         {/* Dynamic Expanding Accordion Panels */}
         <div className="flex flex-col md:flex-row gap-5 h-[700px] md:h-[500px] w-full mt-12">

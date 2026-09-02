@@ -35,7 +35,7 @@ export default function BookingSuccessModal({
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto">
       <div className="bg-card border border-border w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 lg:p-8 shadow-2xl space-y-5 sm:space-y-6 relative overflow-hidden sm:my-8 animate-in fade-in slide-in-from-bottom-4 sm:zoom-in-95 duration-300">
         {/* Glowing top line */}
-        <div className="absolute top-0 inset-x-0 h-1.5 sm:h-2 bg-gradient-to-r from-green-500 to-emerald-400" />
+        <div className="absolute top-0 inset-x-0 h-1.5 sm:h-2 bg-success" />
 
         {/* Drag handle on mobile */}
         <div className="flex justify-center sm:hidden pt-1">
@@ -43,7 +43,7 @@ export default function BookingSuccessModal({
         </div>
 
         <div className="text-center space-y-2 sm:space-y-3 pt-1 sm:pt-2">
-          <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-green-500/10 text-green-500 mb-1 sm:mb-2">
+          <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-success/10 text-success mb-1 sm:mb-2">
             <CheckCircle2 size={36} className="sm:w-10 sm:h-10 animate-bounce" />
           </div>
           <h2 className="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">
@@ -92,7 +92,7 @@ export default function BookingSuccessModal({
 
           <div className="flex justify-between items-center border-t border-border/80 pt-2.5 gap-2">
             <span className="text-muted">Amount Paid Now</span>
-            <span className="font-bold text-green-600 text-right">
+            <span className="font-bold text-success text-right">
               ₹{successData.amountPaid?.toLocaleString('en-IN')}
             </span>
           </div>

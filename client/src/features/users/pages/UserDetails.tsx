@@ -148,8 +148,8 @@ const UserDetails = () => {
     admin:
       'border-purple-200 bg-purple-50 text-purple-700 dark:border-purple-900/30 dark:bg-purple-950/10 dark:text-purple-400',
     owner:
-      'border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900/30 dark:bg-blue-950/10 dark:text-blue-400',
-    user: 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/30 dark:bg-emerald-950/10 dark:text-emerald-400',
+      'border-info bg-info text-info dark:bg-info/10',
+    user: 'border-success bg-success text-success dark:bg-success/10',
   };
 
   const isOwner = user.role === 'owner';

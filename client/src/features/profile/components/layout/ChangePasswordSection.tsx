@@ -60,7 +60,7 @@ const ChangePasswordSection = () => {
 
   const getPasswordStrength = () => {
     if (!newPassword) return null;
-    if (passwordRegex.test(newPassword)) return <span className="text-xs text-green-500 flex items-center gap-1 mt-1"><CheckCircle size={12} /> Strong password</span>;
+    if (passwordRegex.test(newPassword)) return <span className="text-xs text-success flex items-center gap-1 mt-1"><CheckCircle size={12} /> Strong password</span>;
     return <span className="text-xs text-error flex items-center gap-1 mt-1"><AlertCircle size={12} /> Weak password</span>;
   };
 

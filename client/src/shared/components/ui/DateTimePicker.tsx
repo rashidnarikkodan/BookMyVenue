@@ -291,12 +291,12 @@ export default function DateTimePicker({
             h-9 w-9 text-xs font-semibold rounded-xl flex flex-col items-center justify-center transition-all cursor-pointer select-none relative
             ${isSelected ? 'bg-primary text-white shadow-md shadow-primary/20 scale-105' : ''}
             ${!isSelected && !disabled ? 'text-foreground hover:bg-primary/10 hover:text-primary' : ''}
-            ${disabled ? 'text-muted/30 line-through cursor-not-allowed bg-zinc-50/50 dark:bg-zinc-800/10' : ''}
+            ${disabled ? 'text-muted/30 line-through cursor-not-allowed bg-card' : ''}
           `}
         >
           <span>{day}</span>
           {!isSelected && !disabled && hasSomeBookings && (
-            <span className="absolute bottom-1 w-1.5 h-1.5 bg-amber-500 rounded-full" />
+            <span className="absolute bottom-1 w-1.5 h-1.5 bg-warning rounded-full" />
           )}
         </button>
       );
@@ -376,7 +376,7 @@ export default function DateTimePicker({
               ) : (
                 <>
                   {selectedDateBookings.length > 0 && (
-                    <div className="bg-amber-500/10 border border-amber-500/20 text-[10px] text-amber-700 p-2 rounded-lg space-y-0.5 shrink-0">
+                    <div className="bg-warning/10 border border-warning/20 text-[10px] text-warning p-2 rounded-lg space-y-0.5 shrink-0">
                       <span className="font-extrabold block uppercase tracking-wide">
                         Reserved Times Today:
                       </span>
@@ -436,7 +436,7 @@ export default function DateTimePicker({
                               isSelected
                                 ? 'bg-primary border-primary text-white shadow-sm'
                                 : isTimeDisabled
-                                  ? 'bg-zinc-50 dark:bg-zinc-800/10 border-border text-muted/30 line-through'
+                                  ? 'bg-card border-border text-muted/30 line-through'
                                   : 'bg-background border-border text-foreground hover:bg-primary/10 hover:text-primary hover:border-primary/30'
                             }
                           `}

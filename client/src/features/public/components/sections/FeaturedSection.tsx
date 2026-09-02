@@ -102,18 +102,18 @@ export default function FeaturedSection({ venues, loading }: FeaturedSectionProp
           <div className="lg:col-span-5 flex flex-col justify-between h-full relative z-10">
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-bold text-[#e21a47] uppercase tracking-[0.25em]">
+                <span className="text-[10px] font-bold text-primary uppercase tracking-[0.25em]">
                   Most Booked
                 </span>
-                <span className="w-1.5 h-1.5 rounded-full bg-[#e21a47]" />
+                <span className="w-1.5 h-1.5 rounded-full bg-primary" />
               </div>
               <h2 className="text-4xl md:text-5xl font-black tracking-tight mt-2 text-black dark:text-white leading-none">
                 Popular <br />
-                <span className="text-[#e21a47]">Collections</span>
+                <span className="text-primary">Collections</span>
               </h2>
             </div>
 
-            <div className="mt-8 pt-6 border-t border-[#e21a47]/5 dark:border-zinc-800">
+            <div className="mt-8 pt-6 border-t border-primary/5 dark:border-zinc-800">
               <span className="font-mono text-xs font-bold text-black dark:text-zinc-400 tracking-wider">
                 POPULAR SPACE &nbsp;//&nbsp; {String(activeIdx + 1).padStart(2, '0')}
               </span>
@@ -128,15 +128,15 @@ export default function FeaturedSection({ venues, loading }: FeaturedSectionProp
 
               {/* Badges block */}
               <div className="flex flex-wrap gap-2.5 mt-6">
-                <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#e21a47]/5 dark:bg-zinc-900 border border-[#e21a47]/5 dark:border-zinc-800 text-xs font-medium text-black dark:text-zinc-300">
-                  <MapPin className="w-3.5 h-3.5 text-[#e21a47]" />
+                <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-primary/5 dark:bg-zinc-900 border border-primary/5 dark:border-zinc-800 text-xs font-medium text-black dark:text-zinc-300">
+                  <MapPin className="w-3.5 h-3.5 text-primary" />
                   <span>{activeVenue.location}</span>
                 </div>
-                <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#e21a47]/5 dark:bg-zinc-900 border border-[#e21a47]/5 dark:border-zinc-800 text-xs font-medium text-black dark:text-zinc-300">
+                <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-primary/5 dark:bg-zinc-900 border border-primary/5 dark:border-zinc-800 text-xs font-medium text-black dark:text-zinc-300">
                   <Users className="w-3.5 h-3.5 text-zinc-500 dark:text-zinc-400" />
                   <span>{activeVenue.capacity}</span>
                 </div>
-                <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#e21a47]/10 text-xs font-semibold text-[#e21a47]">
+                <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-primary/10 text-xs font-semibold text-primary">
                   <ShieldCheck className="w-3.5 h-3.5" />
                   <span>{activeVenue.price}</span>
                 </div>
@@ -147,14 +147,14 @@ export default function FeaturedSection({ venues, loading }: FeaturedSectionProp
             <div className="flex items-center gap-3 mt-10">
               <button
                 onClick={handlePrev}
-                className="w-11 h-11 rounded-full border border-[#e21a47]/5 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/40 hover:bg-[#e21a47] hover:border-[#e21a47] text-[#e21a47] dark:text-white hover:text-white flex items-center justify-center transition-all duration-300 cursor-pointer"
+                className="w-11 h-11 rounded-full border border-primary/5 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/40 hover:bg-primary hover:border-primary text-primary dark:text-white hover:text-white flex items-center justify-center transition-all duration-300 cursor-pointer"
                 aria-label="Previous Featured Venue"
               >
                 <ArrowLeft className="w-4.5 h-4.5" />
               </button>
               <button
                 onClick={handleNext}
-                className="w-11 h-11 rounded-full border border-[#e21a47]/5 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/40 hover:bg-[#e21a47] hover:border-[#e21a47] text-[#e21a47] dark:text-white hover:text-white flex items-center justify-center transition-all duration-300 cursor-pointer"
+                className="w-11 h-11 rounded-full border border-primary/5 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/40 hover:bg-primary hover:border-primary text-primary dark:text-white hover:text-white flex items-center justify-center transition-all duration-300 cursor-pointer"
                 aria-label="Next Featured Venue"
               >
                 <ArrowRight className="w-4.5 h-4.5" />
@@ -165,7 +165,7 @@ export default function FeaturedSection({ venues, loading }: FeaturedSectionProp
           {/* Right Side: Cinematic Parallax Viewport Slider */}
           <div className="lg:col-span-7 flex flex-col gap-4 w-full">
             {/* Viewport Frame */}
-            <div className="relative w-full aspect-[16/10] md:aspect-[16/9] lg:h-[380px] rounded-[32px] overflow-hidden border border-[#e21a47]/10 dark:border-[#e21a47]/20 hover:border-[#e21a47] dark:hover:border-[#e21a47] transition-colors duration-500 bg-zinc-950 shadow-2xl group">
+            <div className="relative w-full aspect-[16/10] md:aspect-[16/9] lg:h-[380px] rounded-[32px] overflow-hidden border border-primary/10 dark:border-primary/20 hover:border-primary transition-colors duration-500 bg-zinc-950 shadow-2xl group">
               {/* Sliding Track */}
               <div
                 style={{
@@ -209,7 +209,7 @@ export default function FeaturedSection({ venues, loading }: FeaturedSectionProp
                       {/* Floating details inside card */}
                       <div className="absolute bottom-6 left-6 right-6 z-20 flex items-end justify-between pointer-events-none">
                         <div>
-                          <span className="bg-[#e21a47] text-white text-[8px] font-bold tracking-wider px-2.5 py-0.5 rounded uppercase mb-2 block w-fit">
+                          <span className="bg-primary text-white text-[8px] font-bold tracking-wider px-2.5 py-0.5 rounded uppercase mb-2 block w-fit">
                             {item.tag}
                           </span>
                           <h4 className="text-xl font-extrabold text-white leading-none">
@@ -242,7 +242,7 @@ export default function FeaturedSection({ venues, loading }: FeaturedSectionProp
                       }}
                       className={`h-1.5 rounded-full transition-all duration-500 cursor-pointer ${
                         isActive
-                          ? 'bg-[#e21a47]'
+                          ? 'bg-primary'
                           : 'bg-zinc-200 dark:bg-zinc-800/80 hover:bg-zinc-300 dark:hover:bg-zinc-700'
                       }`}
                       aria-label={`Go to slide ${idx + 1}`}

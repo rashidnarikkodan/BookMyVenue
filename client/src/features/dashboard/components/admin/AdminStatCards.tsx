@@ -3,54 +3,54 @@ import { Users, Building2, CalendarDays, IndianRupee, ArrowUpRight } from 'lucid
 function getColorScheme(index: number) {
   if (index === 0) {
     return {
-      text: 'text-blue-500 dark:text-blue-400',
-      bg: 'bg-blue-500/10 dark:bg-blue-500/20',
-      border: 'hover:border-blue-500/40 dark:hover:border-blue-500/50 hover:shadow-blue-500/5',
-      glow: 'bg-blue-500/5',
+      text: 'text-info',
+      bg: 'bg-info/10',
+      border: 'hover:border-info/40 dark:hover:border-info/50 hover:shadow-blue-500/5',
+      glow: 'bg-info/5',
       trend: '0%',
       trendLabel: 'vs last month',
       trendType: 'positive',
       progress: 0,
-      progressColor: 'bg-blue-500',
+      progressColor: 'bg-info',
     };
   }
   if (index === 1) {
     return {
-      text: 'text-emerald-500',
-      bg: 'bg-emerald-500/10 dark:bg-emerald-500/20',
+      text: 'text-success',
+      bg: 'bg-success/10',
       border:
-        'hover:border-emerald-500/40 dark:hover:border-emerald-500/50 hover:shadow-emerald-500/5',
-      glow: 'bg-emerald-500/5',
+        'hover:border-success/40 dark:hover:border-success/50 hover:shadow-emerald-500/5',
+      glow: 'bg-success/5',
       trend: '0 pending',
       trendLabel: 'approval queue',
       trendType: 'warning',
       progress: 0,
-      progressColor: 'bg-emerald-500',
+      progressColor: 'bg-success',
     };
   }
   if (index === 2) {
     return {
-      text: 'text-amber-500',
-      bg: 'bg-amber-500/10 dark:bg-amber-500/20',
-      border: 'hover:border-amber-500/40 dark:hover:border-amber-500/50 hover:shadow-amber-500/5',
-      glow: 'bg-amber-500/5',
+      text: 'text-warning',
+      bg: 'bg-warning/10',
+      border: 'hover:border-warning/40 dark:hover:border-warning/50 hover:shadow-amber-500/5',
+      glow: 'bg-warning/5',
       trend: '0%',
       trendLabel: 'vs last month',
       trendType: 'positive',
       progress: 0,
-      progressColor: 'bg-amber-500',
+      progressColor: 'bg-warning',
     };
   }
   return {
-    text: 'text-[#e21a47]',
-    bg: 'bg-[#e21a47]/10 dark:bg-[#e21a47]/20',
-    border: 'hover:border-[#e21a47]/40 dark:hover:border-[#e21a47]/50 hover:shadow-[#e21a47]/5',
-    glow: 'bg-[#e21a47]/5',
+    text: 'text-primary',
+    bg: 'bg-primary/10 dark:bg-primary/20',
+    border: 'hover:border-primary/40 dark:hover:border-primary/50 hover:shadow-primary/5',
+    glow: 'bg-primary/5',
     trend: '0%',
     trendLabel: 'vs last month',
     trendType: 'positive',
     progress: 0,
-    progressColor: 'bg-[#e21a47]',
+    progressColor: 'bg-primary',
   };
 }
 
@@ -94,14 +94,14 @@ export default function AdminStatCards({ data }: AdminStatCardsProps) {
         return (
           <div
             key={stat.title}
-            className={`rounded-3xl border border-zinc-200/80 dark:border-zinc-800/85 bg-white dark:bg-[#1a1a1a] p-5 shadow-xl relative overflow-hidden group transition-all duration-300 ${color.border}`}
+            className={`rounded-3xl border border-border bg-white dark:bg-[#1a1a1a] p-5 shadow-xl relative overflow-hidden group transition-all duration-300 ${color.border}`}
           >
             <div
               className={`absolute top-0 right-0 w-24 h-24 rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform duration-300 ${color.glow}`}
             />
 
             <div className="flex items-center justify-between mb-4">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-550">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-foreground/70">
                 {stat.title}
               </span>
               <div
@@ -118,20 +118,20 @@ export default function AdminStatCards({ data }: AdminStatCardsProps) {
             </div>
 
             <div className="space-y-2">
-              <div className="w-full h-1 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+              <div className="w-full h-1 bg-card rounded-full overflow-hidden">
                 <div
                   className={`h-full rounded-full transition-all duration-500 ${color.progressColor}`}
                   style={{ width: `${color.progress}%` }}
                 />
               </div>
-              <div className="flex items-center justify-between text-[10px] font-medium text-zinc-400 dark:text-zinc-550">
+              <div className="flex items-center justify-between text-[10px] font-medium text-foreground/70">
                 <span
                   className={`flex items-center gap-0.5 font-bold ${
                     color.trendType === 'positive'
-                      ? 'text-emerald-500'
+                      ? 'text-success'
                       : color.trendType === 'warning'
-                        ? 'text-amber-500'
-                        : 'text-rose-500'
+                        ? 'text-warning'
+                        : 'text-error'
                   }`}
                 >
                   <ArrowUpRight className="w-3.5 h-3.5" />

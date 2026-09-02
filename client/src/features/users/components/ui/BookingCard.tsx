@@ -9,11 +9,11 @@ interface BookingCardProps {
 }
 
 const statusConfig: Record<string, { label: string; color: string }> = {
-  'reserved+pending': { label: 'Pending Payment', color: 'bg-amber-500/10 text-amber-500 border-amber-500/30' },
+  'reserved+pending': { label: 'Pending Payment', color: 'bg-warning/10 text-warning border-warning/30' },
   'reserved+partial': { label: 'Deposit Paid', color: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/30' },
   'reserved+deposit_paid': { label: 'Deposit Paid', color: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/30' },
   'reserved+overdue': { label: 'Overdue', color: 'bg-error/10 text-error border-error/30' },
-  'confirmed+paid': { label: 'Confirmed', color: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30' },
+  'confirmed+paid': { label: 'Confirmed', color: 'bg-success/10 text-success border-success/30' },
   'completed+paid': { label: 'Completed', color: 'bg-info/10 text-info border-info/30' },
   'cancelled+cancelled': { label: 'Cancelled', color: 'bg-error/10 text-error border-error/30' },
   'expired+cancelled': { label: 'Expired', color: 'bg-error/10 text-error border-error/30' },
@@ -75,7 +75,7 @@ const BookingCard = ({ booking, role = 'user' }: BookingCardProps) => {
         <div className="absolute bottom-3 left-3 rounded-xl bg-black/60 backdrop-blur-md px-3 py-1.5 border border-white/10 flex items-baseline gap-1 text-white">
           <span className="text-xl font-black">₹{booking.totalAmount?.toLocaleString('en-IN')}</span>
           {booking.amountPaid > 0 && remainingBalance > 0 && (
-            <span className="text-[11px] text-amber-400 font-bold"> (₹{remainingBalance.toLocaleString('en-IN')} due)</span>
+            <span className="text-[11px] text-warning font-bold"> (₹{remainingBalance.toLocaleString('en-IN')} due)</span>
           )}
         </div>
       </div>

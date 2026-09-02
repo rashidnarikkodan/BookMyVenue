@@ -45,7 +45,7 @@ const statusConfig: Record<string, { label: string; color: string; icon: any }> 
   },
   'confirmed+paid': {
     label: 'Confirmed',
-    color: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/30',
+    color: 'text-success bg-success/10 border-success/30',
     icon: CheckCircle2,
   },
   'completed+paid': {
@@ -244,7 +244,7 @@ export default function SharedBookingDetails({
             onClick={handleCopyId}
             className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-background border border-border/60 text-xs font-bold text-foreground hover:bg-surface transition-all cursor-pointer active:scale-95 shrink-0"
           >
-            <Copy size={14} className={copied ? 'text-emerald-500' : 'text-primary'} />
+            <Copy size={14} className={copied ? 'text-success' : 'text-primary'} />
             {copied ? 'Copied!' : 'Copy Reference ID'}
           </button>
         </div>
@@ -346,7 +346,7 @@ export default function SharedBookingDetails({
 
               {booking.guestFileName && (
                 <div className="bg-surface/40 rounded-2xl p-4 border border-border/30 flex items-center gap-3 mt-3">
-                  <FileSpreadsheet className="w-5 h-5 text-emerald-500 shrink-0" />
+                  <FileSpreadsheet className="w-5 h-5 text-success shrink-0" />
                   <div className="text-xs">
                     <span className="font-bold text-foreground block">Bulk Guest Roster Uploaded</span>
                     <span className="text-muted-foreground">{booking.guestFileName}</span>
@@ -387,7 +387,7 @@ export default function SharedBookingDetails({
 
                 <div className="flex justify-between items-center">
                   <span className="text-muted-foreground font-medium">Amount Paid</span>
-                  <span className="text-base font-bold text-emerald-500">
+                  <span className="text-base font-bold text-success">
                     ₹{booking.amountPaid?.toLocaleString('en-IN')}
                   </span>
                 </div>
@@ -395,14 +395,14 @@ export default function SharedBookingDetails({
                 {booking.remainingBalance > 0 && (
                   <div className="flex justify-between items-center border-t border-border/40 pt-3">
                     <span className="text-muted-foreground font-medium">Balance Due</span>
-                    <span className="text-lg font-black text-amber-500">
+                    <span className="text-lg font-black text-warning">
                       ₹{booking.remainingBalance?.toLocaleString('en-IN')}
                     </span>
                   </div>
                 )}
 
                 {booking.remainingPaymentDueDate && isPartial && (
-                  <div className="bg-amber-500/10 border border-amber-500/20 p-3 rounded-xl text-xs text-amber-600 dark:text-amber-400 font-semibold space-y-1">
+                  <div className="bg-warning/10 border border-warning/20 p-3 rounded-xl text-xs text-warning font-semibold space-y-1">
                     <div className="flex items-center gap-1.5">
                       <Clock size={14} className="shrink-0" />
                       <span>Remaining balance due by {fmtDate(booking.remainingPaymentDueDate)} (EOD)</span>

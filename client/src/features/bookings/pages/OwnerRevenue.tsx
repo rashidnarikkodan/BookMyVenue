@@ -15,7 +15,7 @@ import { Loading } from '@/shared/components/ui';
 
 const statusStyles: Record<string, string> = {
   PENDING: 'bg-warning/10 text-warning border-warning/20',
-  PROCESSING: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
+  PROCESSING: 'bg-info/10 text-info border-info/20',
   SETTLED: 'bg-success/10 text-success border-success/20',
   FAILED: 'bg-error/10 text-error border-error/20',
 };

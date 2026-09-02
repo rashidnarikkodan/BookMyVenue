@@ -273,14 +273,22 @@ export const verifyAndConfirmDepositService = async (
   // ── Live Venue & Host Status Re-Verification ───────────
   await verifyVenueAndHostActive(booking.venue);
 
-  // ── 4. Update booking based on scenario ────────────────
-  if (booking.bookingScenario === BookingScenario.IMMEDIATE) {
-    // Full payment — mark as CONFIRMED + PAID
-    return bookingRepo.confirmFullPayment(bookingId, booking.totalAmount);
+  // ── State re-validation (avoids resurrecting an auto-cancelled
+  //    booking on a replayed/duplicate verification call) ──
+  if (booking.bookingStatus !== BookingStatus.PENDING) {
+    throw new AppError(`Cannot confirm payment for booking in ${booking.bookingStatus} state`, HTTP_STATUS.BAD_REQUEST);
   }
 
-  // Deposit payment — mark as RESERVED + DEPOSIT_PAID
-  return bookingRepo.confirmDepositPayment(bookingId, booking.reservationDeposit);
+  // ── 4. Update booking based on scenario ────────────────
+  const confirmed =
+    booking.bookingScenario === BookingScenario.IMMEDIATE
+      ? await bookingRepo.confirmFullPayment(bookingId, booking.totalAmount)
+      : await bookingRepo.confirmDepositPayment(bookingId, booking.reservationDeposit);
+
+  if (!confirmed) {
+    throw new AppError('Booking state changed concurrently, please retry', HTTP_STATUS.CONFLICT);
+  }
+  return confirmed;
 };
 
 /**
@@ -355,8 +363,28 @@ export const verifyBalancePaymentService = async (
     throw new AppError('Unauthorized access to booking', HTTP_STATUS.UNAUTHORIZED);
   }
 
-  // ── 4. Mark as fully paid ──────────────────────────────
-  return bookingRepo.confirmFullPayment(bookingId, booking.totalAmount);
+  // ── Live Venue & Host Status Re-Verification ───────────
+  await verifyVenueAndHostActive(booking.venue);
+
+  // ── 4. State re-validation (booking may have been auto-cancelled
+  //      or the deadline may have passed since the order was created) ─
+  if (booking.bookingStatus !== BookingStatus.RESERVED) {
+    throw new AppError('Only reserved bookings can have balance paid', HTTP_STATUS.BAD_REQUEST);
+  }
+  const allowedStatuses = [PaymentStatus.PARTIAL, PaymentStatus.DEPOSIT_PAID, PaymentStatus.OVERDUE];
+  if (!allowedStatuses.includes(booking.paymentStatus as PaymentStatus)) {
+    throw new AppError('Deposit must be paid before balance payment', HTTP_STATUS.BAD_REQUEST);
+  }
+  if (booking.remainingPaymentDueDate && new Date() > booking.remainingPaymentDueDate) {
+    throw new AppError('Balance payment deadline has passed', HTTP_STATUS.BAD_REQUEST);
+  }
+
+  // ── 5. Mark as fully paid ──────────────────────────────
+  const confirmed = await bookingRepo.confirmFullPayment(bookingId, booking.totalAmount);
+  if (!confirmed) {
+    throw new AppError('Booking state changed concurrently, please retry', HTTP_STATUS.CONFLICT);
+  }
+  return confirmed;
 };
 
 /**
@@ -751,6 +779,12 @@ export const payBookingWithWalletService = async (userId: string, bookingId: str
   if (booking.paymentStatus === PaymentStatus.PAID) {
     throw new AppError('Booking is already fully paid', HTTP_STATUS.BAD_REQUEST);
   }
+  if (![BookingStatus.PENDING, BookingStatus.RESERVED].includes(booking.bookingStatus as BookingStatus)) {
+    throw new AppError(`Cannot pay for a booking in ${booking.bookingStatus} state`, HTTP_STATUS.BAD_REQUEST);
+  }
+  if (booking.remainingPaymentDueDate && new Date() > booking.remainingPaymentDueDate) {
+    throw new AppError('Payment deadline has passed', HTTP_STATUS.BAD_REQUEST);
+  }
 
   // Live venue and host status re-verification
   await verifyVenueAndHostActive(booking.venue);
@@ -760,57 +794,77 @@ export const payBookingWithWalletService = async (userId: string, bookingId: str
       ? booking.remainingBalance || booking.totalAmount
       : booking.reservationDeposit;
 
-  const wallet = await walletRepository.getOrCreateByUserId(userId);
-  if (wallet.balance < chargeAmount) {
-    throw new AppError(
-      `Insufficient wallet balance. Required: ₹${chargeAmount}, Available: ₹${wallet.balance}`,
-      HTTP_STATUS.BAD_REQUEST
-    );
-  }
-
-  const balanceBefore = wallet.balance;
-  const balanceAfter = balanceBefore - chargeAmount;
-
-  // Deduct wallet balance
-  await walletRepository.creditRefundToWallet(userId, -chargeAmount);
-
-  // Record wallet DEBIT transaction
-  await WalletTransaction.create({
-    walletId: wallet._id,
-    userId: booking.user,
-    type: 'DEBIT',
-    amount: chargeAmount,
-    balanceBefore,
-    balanceAfter,
-    status: 'SUCCESS',
-    source: 'BOOKING_PAYMENT',
-    bookingId: booking._id,
-    description: `Payment for booking ${booking.bookingId || booking._id} via Wallet`,
-  });
-
-  // Update booking state
+  // Validate the resulting transition before touching the wallet
   const targetStatus =
     booking.bookingScenario === BookingScenario.IMMEDIATE || booking.paymentStatus === PaymentStatus.DEPOSIT_PAID
       ? BookingStatus.CONFIRMED
       : BookingStatus.RESERVED;
-
   validateBookingStateTransition(booking.bookingStatus, targetStatus);
 
-  booking.paymentMethod = PaymentMethod.WALLET;
-  if (targetStatus === BookingStatus.CONFIRMED) {
-    booking.bookingStatus = BookingStatus.CONFIRMED;
-    booking.paymentStatus = PaymentStatus.PAID;
-    booking.amountPaid = booking.totalAmount;
-    booking.remainingBalance = 0;
-  } else {
-    booking.bookingStatus = BookingStatus.RESERVED;
-    booking.paymentStatus = PaymentStatus.DEPOSIT_PAID;
-    booking.amountPaid = chargeAmount;
-    booking.remainingBalance = booking.totalAmount - chargeAmount;
-  }
+  const session = await mongoose.startSession();
+  try {
+    session.startTransaction();
 
-  await booking.save();
-  return booking;
+    // Atomic conditional debit — prevents overdraft from concurrent requests
+    const wallet = await walletRepository.debitWalletIfSufficient(userId, chargeAmount, session);
+    if (!wallet) {
+      throw new AppError('Insufficient wallet balance', HTTP_STATUS.BAD_REQUEST);
+    }
+
+    const balanceAfter = wallet.balance;
+    const balanceBefore = balanceAfter + chargeAmount;
+
+    await WalletTransaction.create(
+      [
+        {
+          walletId: wallet._id,
+          userId: booking.user,
+          type: 'DEBIT',
+          amount: chargeAmount,
+          balanceBefore,
+          balanceAfter,
+          status: 'SUCCESS',
+          source: 'BOOKING_PAYMENT',
+          bookingId: booking._id,
+          description: `Payment for booking ${booking.bookingId || booking._id} via Wallet`,
+        },
+      ],
+      { session }
+    );
+
+    const bookingUpdate: Record<string, any> = { paymentMethod: PaymentMethod.WALLET };
+    if (targetStatus === BookingStatus.CONFIRMED) {
+      bookingUpdate.bookingStatus = BookingStatus.CONFIRMED;
+      bookingUpdate.paymentStatus = PaymentStatus.PAID;
+      bookingUpdate.amountPaid = booking.totalAmount;
+      bookingUpdate.remainingBalance = 0;
+    } else {
+      bookingUpdate.bookingStatus = BookingStatus.RESERVED;
+      bookingUpdate.paymentStatus = PaymentStatus.DEPOSIT_PAID;
+      bookingUpdate.amountPaid = chargeAmount;
+      bookingUpdate.remainingBalance = booking.totalAmount - chargeAmount;
+    }
+
+    const updatedBooking = await Booking.findOneAndUpdate(
+      { _id: bookingId, bookingStatus: booking.bookingStatus },
+      { $set: bookingUpdate },
+      { new: true, session }
+    );
+
+    if (!updatedBooking) {
+      throw new AppError('Booking state changed concurrently, please retry', HTTP_STATUS.CONFLICT);
+    }
+
+    await session.commitTransaction();
+    return updatedBooking;
+  } catch (error) {
+    if (session.inTransaction()) {
+      await session.abortTransaction();
+    }
+    throw error;
+  } finally {
+    session.endSession();
+  }
 };
 
 /**
@@ -867,41 +921,39 @@ export const adminForceCancelBookingService = async (
   if (!booking) {
     throw new AppError('Booking not found', HTTP_STATUS.NOT_FOUND);
   }
-  
+
   validateBookingStateTransition(booking.bookingStatus, BookingStatus.CANCELLED);
 
   const factor = Math.max(0, Math.min(100, refundPercentage)) / 100;
   const amountPaid = booking.amountPaid || 0;
   const refundAmount = Math.round(amountPaid * factor);
+  const refundStatus = refundAmount > 0 ? RefundStatus.PENDING : RefundStatus.NOT_ELIGIBLE;
 
-  booking.bookingStatus = BookingStatus.CANCELLED;
-  (booking as any).cancellationType = CancellationType.ADMIN;
-  (booking as any).cancellationReason = reason || 'Admin forced cancellation';
-  (booking as any).refundAmount = refundAmount;
+  // Atomic status transition guarded by the current status to avoid double-processing
+  const updatedBooking = await Booking.findOneAndUpdate(
+    { _id: bookingId, bookingStatus: booking.bookingStatus },
+    {
+      bookingStatus: BookingStatus.CANCELLED,
+      cancellationType: CancellationType.ADMIN,
+      cancellationReason: reason || 'Admin forced cancellation',
+      cancelledAt: new Date(),
+      refundAmount,
+      refundStatus,
+    },
+    { new: true }
+  );
 
-  if (refundAmount > 0) {
-    (booking as any).refundStatus = RefundStatus.COMPLETED;
-    // Credit refund to user's wallet
-    await walletRepository.creditRefundToWallet(booking.user._id.toString(), refundAmount);
-
-    const wallet = await walletRepository.getOrCreateByUserId(booking.user._id.toString());
-    await WalletTransaction.create({
-      walletId: wallet._id,
-      userId: booking.user._id,
-      type: 'CREDIT',
-      amount: refundAmount,
-      balanceBefore: wallet.balance - refundAmount,
-      balanceAfter: wallet.balance,
-      status: 'SUCCESS',
-      source: 'REFUND',
-      bookingId: booking._id,
-      description: `Admin forced refund for booking ${booking.bookingId || booking._id} (${refundPercentage}%)`,
-    });
-  } else {
-    (booking as any).refundStatus = RefundStatus.NOT_ELIGIBLE;
+  if (!updatedBooking) {
+    throw new AppError('Booking state changed concurrently, please retry', HTTP_STATUS.CONFLICT);
   }
 
-  await booking.save();
+  if (refundStatus === RefundStatus.PENDING) {
+    try {
+      await processRefund(bookingId, RefundStatus.PENDING);
+    } catch (err) {
+      logger.error(`Admin forced cancellation refund failed for booking ${bookingId}`);
+    }
+  }
 
   // Log action in AdminAuditLog
   await logAdminAction(adminId, 'FORCE_CANCEL_BOOKING', 'BOOKING', bookingId, reason, {
@@ -909,5 +961,5 @@ export const adminForceCancelBookingService = async (
     refundAmount,
   });
 
-  return booking;
+  return bookingRepo.findBookingById(bookingId);
 };

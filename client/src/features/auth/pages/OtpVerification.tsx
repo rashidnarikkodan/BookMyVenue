@@ -161,20 +161,20 @@ const OtpVerification: React.FC<OtpVerificationProps> = ({ mode = 'signup' }) =>
     <>
       {/* Header */}
       <div className="mb-5 text-center">
-        <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-primary-600/10 border border-primary-500/30 mx-auto mb-3">
-          <ShieldCheck className="w-6 h-6 text-primary-400" />
+        <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-primary/10 border border-primary/30 mx-auto mb-3">
+          <ShieldCheck className="w-6 h-6 text-primary" />
         </div>
-        <h2 className="text-lg font-semibold text-white tracking-tight">Verify Your Email</h2>
-        <p className="text-[11px] text-slate-400 mt-1 leading-5">
+        <h2 className="text-lg font-semibold text-foreground tracking-tight">Verify Your Email</h2>
+        <p className="text-[11px] text-foreground/70 mt-1 leading-5">
           We sent a 6-digit code to
           <br />
-          <span className="text-slate-200 font-medium">{maskedEmail}</span>
+          <span className="text-foreground/45 font-medium">{maskedEmail}</span>
         </p>
       </div>
 
       {/* Alerts */}
       {error && (
-        <div className="bg-red-500/10 border border-red-500/40 text-red-400 text-xs p-3 rounded-xl mb-4 flex items-start gap-2">
+        <div className="bg-error/10 border border-error/40 text-error text-xs p-3 rounded-xl mb-4 flex items-start gap-2">
           <span className="mt-0.5">⚠</span>
           <span>{error}</span>
         </div>
@@ -197,11 +197,11 @@ const OtpVerification: React.FC<OtpVerificationProps> = ({ mode = 'signup' }) =>
             disabled={loading}
             className={`
               w-10 h-12 text-center text-lg font-bold rounded-xl border transition-all duration-150 outline-none
-              bg-bg-base/70 text-white caret-primary-500
+              bg-background/70 text-foreground caret-primary
               ${
                 digit
-                  ? 'border-primary-500 shadow-[0_0_0_1px_rgba(239,68,68,0.3)]'
-                  : 'border-slate-700/60 focus:border-primary-500 focus:shadow-[0_0_0_1px_rgba(239,68,68,0.3)]'
+                  ? 'border-primary shadow-[0_0_0_1px_rgba(239,68,68,0.3)]'
+                  : 'border-border focus:border-primary focus:shadow-[0_0_0_1px_rgba(239,68,68,0.3)]'
               }
               disabled:opacity-50
             `}
@@ -213,7 +213,7 @@ const OtpVerification: React.FC<OtpVerificationProps> = ({ mode = 'signup' }) =>
       <button
         onClick={handleVerify}
         disabled={loading || !allFilled}
-        className="w-full bg-primary hover:bg-primary/80 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold text-sm py-2.5 rounded-xl shadow-lg shadow-primary-600/20 flex items-center justify-center gap-2 transition-all"
+        className="w-full bg-primary hover:bg-primary/80 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold text-sm py-2.5 rounded-xl shadow-lg shadow-primary/20 flex items-center justify-center gap-2 transition-all"
       >
         {loading ? (
           <>
@@ -242,9 +242,9 @@ const OtpVerification: React.FC<OtpVerificationProps> = ({ mode = 'signup' }) =>
       <div className="mt-4 text-center">
         {resendCount < maxResends ? (
           resendTimer > 0 ? (
-            <p className="text-[11px] text-slate-500">
+            <p className="text-[11px] text-foreground/70">
               Resend OTP in{' '}
-              <span className="text-slate-300 font-semibold tabular-nums">
+              <span className="text-foreground/45 font-semibold tabular-nums">
                 {String(Math.floor(resendTimer / 60)).padStart(2, '0')}:
                 {String(resendTimer % 60).padStart(2, '0')}
               </span>
@@ -253,21 +253,21 @@ const OtpVerification: React.FC<OtpVerificationProps> = ({ mode = 'signup' }) =>
             <button
               onClick={handleResend}
               disabled={resending}
-              className="text-[11px] text-primary-400 hover:text-primary-300 transition-colors flex items-center gap-1 mx-auto disabled:opacity-50"
+              className="text-[11px] text-primary hover:text-primary/80 transition-colors flex items-center gap-1 mx-auto disabled:opacity-50"
             >
               <RefreshCw className={`w-3 h-3 ${resending ? 'animate-spin' : ''}`} />
               {resending ? 'Sending…' : 'Resend OTP'}
             </button>
           )
         ) : (
-          <p className="text-[11px] text-slate-500">
+          <p className="text-[11px] text-foreground/70">
             Max resends reached. Please{' '}
             <button
               onClick={() => {
                 if (mode === 'signup') resetSignupFlow();
                 else setForgotPasswordStep('details');
               }}
-              className="text-primary-400 hover:text-primary-300 transition-colors underline"
+              className="text-primary hover:text-primary/80 transition-colors underline"
             >
               start over
             </button>
@@ -281,7 +281,7 @@ const OtpVerification: React.FC<OtpVerificationProps> = ({ mode = 'signup' }) =>
             if (mode === 'signup') setSignupStep('details');
             else setForgotPasswordStep('details');
           }}
-          className="mt-3 text-[11px] text-slate-500 hover:text-slate-300 flex items-center gap-1 mx-auto transition-colors"
+          className="mt-3 text-[11px] text-foreground/70 hover:text-foreground/45 flex items-center gap-1 mx-auto transition-colors"
         >
           <ArrowLeft className="w-3 h-3" />
           Change email address
@@ -289,7 +289,7 @@ const OtpVerification: React.FC<OtpVerificationProps> = ({ mode = 'signup' }) =>
 
         {/* Resend counter badge */}
         {resendCount > 0 && resendCount < maxResends && (
-          <p className="mt-2 text-[10px] text-slate-600">
+          <p className="mt-2 text-[10px] text-foreground/70">
             <Mail className="inline w-3 h-3 mr-1" />
             {maxResends - resendCount} resend{maxResends - resendCount === 1 ? '' : 's'} remaining
           </p>
