@@ -77,3 +77,12 @@ export const verifyPaymentSignature = (
 
   return generatedSignature === signature;
 };
+
+export const fetchOrder = async (orderId: string) => {
+  try {
+    return await razorpay.orders.fetch(orderId);
+  } catch (error: any) {
+    logger.error({ err: error, orderId }, '[Razorpay Service] Failed to fetch order');
+    throw new AppError(error?.message || 'Failed to fetch Razorpay order details', HTTP_STATUS.BAD_REQUEST);
+  }
+};

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { publicVenuesApi, type PublicVenueQuery } from '../services/public-venues.api';
 import { useAsyncFetch } from '@/shared/hooks/useAsyncFetch';
 import { useDebounce } from '@/shared/hooks/useDebounce';
@@ -15,10 +16,14 @@ import VenueLoading from '../components/Venue/VenueLoading';
 import { venueFilterSchema } from '../components/Venue/schemas/venueFilter.schema';
 
 export default function VenueListPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialSearch = searchParams.get('search') || '';
+  const initialCategory = searchParams.get('category') || '';
+
   // Query state
   const [page, setPage] = useState(1);
-  const [search, setSearch] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('');
+  const [search, setSearch] = useState(initialSearch);
+  const [categoryFilter, setCategoryFilter] = useState(initialCategory);
   const [sortBy, setSortBy] = useState<PublicVenueQuery['sort']>('newest');
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
@@ -137,16 +142,44 @@ export default function VenueListPage() {
     debouncedMaxCapacity,
   ]);
 
-  const activeFilterCount = [categoryFilter, minPrice, maxPrice, minCapacity, maxCapacity].filter(
+  // Sync state if URL query params change (e.g. from Header search)
+  useEffect(() => {
+    const urlSearch = searchParams.get('search') ?? '';
+    if (urlSearch !== search) {
+      setSearch(urlSearch);
+    }
+    const urlCategory = searchParams.get('category') ?? '';
+    if (urlCategory !== categoryFilter) {
+      setCategoryFilter(urlCategory);
+    }
+  }, [searchParams]);
+
+  // Keep URL search param in sync with debouncedSearch
+  useEffect(() => {
+    const currentParam = searchParams.get('search') ?? '';
+    if (debouncedSearch !== currentParam) {
+      const nextParams = new URLSearchParams(searchParams);
+      if (debouncedSearch) {
+        nextParams.set('search', debouncedSearch);
+      } else {
+        nextParams.delete('search');
+      }
+      setSearchParams(nextParams, { replace: true });
+    }
+  }, [debouncedSearch]);
+
+  const activeFilterCount = [search, categoryFilter, minPrice, maxPrice, minCapacity, maxCapacity].filter(
     Boolean
   ).length;
 
   const clearAllFilters = () => {
+    setSearch('');
     setCategoryFilter('');
     setMinPrice('');
     setMaxPrice('');
     setMinCapacity('');
     setMaxCapacity('');
+    setSearchParams({});
   };
 
   return (

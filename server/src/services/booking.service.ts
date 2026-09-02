@@ -15,7 +15,7 @@ import { AppError } from '@/utils/AppError';
 import * as bookingRepo from '@/repositories/booking.repository';
 import { walletRepository } from '@/repositories/wallet.repository';
 import { WalletTransaction } from '@/models/walletTransaction.model';
-import { verifyPaymentSignature } from './razorpay.service';
+import { verifyPaymentSignature, fetchOrder } from './razorpay.service';
 import { processRefund } from './refund.service';
 import logger from '@/libs/logger';
 import mongoose from 'mongoose';
@@ -127,14 +127,15 @@ export const getBookingByVenueId = async (id: string) => {
 export const calculateQuoteService = async (
   venueId: string,
   startDateTime: string | Date,
-  endDateTime: string | Date
+  endDateTime: string | Date,
+  userId?: string
 ) => {
   const start = new Date(startDateTime);
   const end = new Date(endDateTime);
   const now = new Date();
 
   // Run comprehensive availability validation
-  const availability = await validateVenueAvailability(venueId, start, end);
+  const availability = await validateVenueAvailability(venueId, start, end, undefined, userId);
 
   // Calculate total amount (base + GST + platform fee)
   const durationInHours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
@@ -181,20 +182,27 @@ export const calculateQuoteService = async (
 export const createBookingService = async (userId: string, payload: CreateBookingPayload) => {
   const start = new Date(payload.startDateTime);
   const end = new Date(payload.endDateTime);
+  const now = new Date();
+  const tenMinutesAgo = new Date(now.getTime() - 10 * 60 * 1000);
 
-  // 1. Double-click idempotency check (created within last 10 seconds for same slot)
-  const tenSecondsAgo = new Date(Date.now() - 10 * 1000);
-  const recentDuplicate = await Booking.findOne({
+  // 1. Check if user already holds an active pending reservation for this exact slot
+  const existingUserPending = await Booking.findOne({
     user: userId,
     venue: payload.venueId,
     startDateTime: start,
     endDateTime: end,
     bookingStatus: BookingStatus.PENDING,
-    createdAt: { $gte: tenSecondsAgo },
+    $or: [
+      { reservationExpiresAt: { $gt: now } },
+      { reservationExpiresAt: null, createdAt: { $gte: tenMinutesAgo } },
+    ],
   });
 
-  if (recentDuplicate) {
-    return { booking: recentDuplicate, razorpayChargeAmount: recentDuplicate.reservationDeposit };
+  if (existingUserPending) {
+    // User is continuing or retrying checkout — refresh hold window to 10 minutes from now
+    existingUserPending.reservationExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
+    await existingUserPending.save();
+    return { booking: existingUserPending, razorpayChargeAmount: existingUserPending.reservationDeposit };
   }
 
   // 2. Execute availability validation and booking creation in a Mongo transaction session
@@ -202,8 +210,9 @@ export const createBookingService = async (userId: string, payload: CreateBookin
   try {
     session.startTransaction();
 
-    await validateVenueAvailability(payload.venueId, start, end, session);
-    const quote = await calculateQuoteService(payload.venueId, start, end);
+    await validateVenueAvailability(payload.venueId, start, end, session, userId);
+    const quote = await calculateQuoteService(payload.venueId, start, end, userId);
+    const reservationExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
     const booking = await bookingRepo.createBooking(
       userId,
@@ -215,6 +224,7 @@ export const createBookingService = async (userId: string, payload: CreateBookin
         bookingScenario: quote.bookingScenario,
         remainingPaymentDueDate: quote.remainingPaymentDueDate,
         autoCancellationDate: quote.autoCancellationDate,
+        reservationExpiresAt,
         isImmediatePaymentRequired: quote.isImmediatePaymentRequired,
       },
       session
@@ -279,6 +289,20 @@ export const verifyAndConfirmDepositService = async (
     throw new AppError(`Cannot confirm payment for booking in ${booking.bookingStatus} state`, HTTP_STATUS.BAD_REQUEST);
   }
 
+  // ── Check 10-minute hold expiration ─────────────────────
+  const now = new Date();
+  const tenMinutesAgo = new Date(now.getTime() - 10 * 60 * 1000);
+  const isHoldExpired =
+    (booking.reservationExpiresAt && booking.reservationExpiresAt < now) ||
+    (!booking.reservationExpiresAt && booking.createdAt < tenMinutesAgo);
+
+  if (isHoldExpired) {
+    throw new AppError(
+      'Your 10-minute payment reservation window has expired. If amount was deducted, it will be refunded.',
+      HTTP_STATUS.BAD_REQUEST
+    );
+  }
+
   // ── 4. Update booking based on scenario ────────────────
   const confirmed =
     booking.bookingScenario === BookingScenario.IMMEDIATE
@@ -295,7 +319,11 @@ export const verifyAndConfirmDepositService = async (
  * Processes the remaining balance payment for RESERVED bookings.
  * Called when the user clicks "Pay Balance" on their bookings page.
  */
-export const payBalanceService = async (userId: string, bookingId: string) => {
+export const payBalanceService = async (
+  userId: string,
+  bookingId: string,
+  customAmount?: number
+) => {
   // ── 1. Find the booking ────────────────────────────────
   const booking = await bookingRepo.findBookingById(bookingId);
   if (!booking) {
@@ -328,23 +356,39 @@ export const payBalanceService = async (userId: string, bookingId: string) => {
     throw new AppError('Balance payment deadline has passed', HTTP_STATUS.BAD_REQUEST);
   }
 
-  // ── 5. Return the remaining balance for Razorpay order ─
+  // ── 5. Calculate charge amount (full remaining balance or flexible partial) ─
+  let razorpayChargeAmount = booking.remainingBalance;
+
+  if (customAmount !== undefined && customAmount !== null) {
+    if (customAmount < 1) {
+      throw new AppError('Payment amount must be at least ₹1', HTTP_STATUS.BAD_REQUEST);
+    }
+    if (customAmount > booking.remainingBalance) {
+      throw new AppError(
+        `Payment amount (₹${customAmount}) cannot exceed remaining balance of ₹${booking.remainingBalance}`,
+        HTTP_STATUS.BAD_REQUEST
+      );
+    }
+    razorpayChargeAmount = Math.round(customAmount);
+  }
+
   return {
     booking,
-    razorpayChargeAmount: booking.remainingBalance,
+    razorpayChargeAmount,
   };
 };
 
 /**
- * Verifies the Razorpay payment for the balance and confirms
- * the booking fully.
+ * Verifies the Razorpay payment for the balance (partial or full)
+ * and updates the booking financial state.
  */
 export const verifyBalancePaymentService = async (
   userId: string,
   bookingId: string,
   orderId: string,
   paymentId: string,
-  signature: string
+  signature: string,
+  customAmount?: number
 ) => {
   // ── 1. Verify Razorpay signature ───────────────────────
   const isValid = verifyPaymentSignature(orderId, paymentId, signature);
@@ -366,8 +410,7 @@ export const verifyBalancePaymentService = async (
   // ── Live Venue & Host Status Re-Verification ───────────
   await verifyVenueAndHostActive(booking.venue);
 
-  // ── 4. State re-validation (booking may have been auto-cancelled
-  //      or the deadline may have passed since the order was created) ─
+  // ── 4. State re-validation ─────────────────────────────
   if (booking.bookingStatus !== BookingStatus.RESERVED) {
     throw new AppError('Only reserved bookings can have balance paid', HTTP_STATUS.BAD_REQUEST);
   }
@@ -379,8 +422,19 @@ export const verifyBalancePaymentService = async (
     throw new AppError('Balance payment deadline has passed', HTTP_STATUS.BAD_REQUEST);
   }
 
-  // ── 5. Mark as fully paid ──────────────────────────────
-  const confirmed = await bookingRepo.confirmFullPayment(bookingId, booking.totalAmount);
+  // ── 5. Determine actual paid amount securely from Razorpay order ─
+  let paidAmount = customAmount || booking.remainingBalance;
+  try {
+    const order = await fetchOrder(orderId);
+    if (order && order.amount) {
+      paidAmount = Math.round(Number(order.amount) / 100);
+    }
+  } catch (err) {
+    logger.warn(`Could not fetch Razorpay order ${orderId}, using requested amount ${paidAmount}`);
+  }
+
+  // ── 6. Confirm flexible (partial or full) balance payment ─
+  const confirmed = await bookingRepo.confirmBalancePayment(bookingId, paidAmount);
   if (!confirmed) {
     throw new AppError('Booking state changed concurrently, please retry', HTTP_STATUS.CONFLICT);
   }

@@ -15,7 +15,7 @@ export default function VenueTitleBlock({
     <div className="space-y-3">
       <div className="flex items-center gap-2">
       </div>
-      <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-foreground leading-tight">
+      <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-foreground leading-tight break-words">
         {venueName}
       </h1>
       <div className="flex items-center gap-2 text-base text-muted font-medium">

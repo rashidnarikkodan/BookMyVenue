@@ -39,6 +39,7 @@ export const payWalletSchema = z.object({
 export const payBalanceSchema = z.object({
   body: z.object({
     bookingId: z.string().optional(),
+    amount: z.number().positive('Payment amount must be positive').optional(),
   }),
 });
 
@@ -48,6 +49,7 @@ export const verifyBalanceSchema = z.object({
     razorpay_order_id: z.string().min(1, 'razorpay_order_id is required'),
     razorpay_signature: z.string().min(1, 'razorpay_signature is required'),
     bookingId: z.string().optional(),
+    amount: z.number().positive('Payment amount must be positive').optional(),
   }),
 });
 

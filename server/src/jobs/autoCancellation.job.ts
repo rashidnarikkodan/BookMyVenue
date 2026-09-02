@@ -5,13 +5,41 @@ import { BookingStatus, PaymentStatus, CancellationType, RefundStatus } from '..
 import logger from '../libs/logger';
 
 export const startAutoCancellationJob = () => {
-  cron.schedule('*/15 * * * *', async () => {
-    logger.info('Running Auto Cancellation Scheduler...');
-
+  // Runs every minute to promptly free expired 10-minute checkout reservations and handle overdue balances
+  cron.schedule('* * * * *', async () => {
     try {
       const now = new Date();
+      const tenMinutesAgo = new Date(now.getTime() - 10 * 60 * 1000);
 
-      // Find bookings that are RESERVED or CONFIRMED where payment deadline has passed and payment is not fully paid
+      // ── Step 1: Clean up expired PENDING checkout holds (10-Minute Soft Lock) ──
+      const expiredPendingBookings = await Booking.find({
+        bookingStatus: BookingStatus.PENDING,
+        paymentStatus: PaymentStatus.PENDING,
+        $or: [
+          { reservationExpiresAt: { $lte: now, $ne: null } },
+          { reservationExpiresAt: null, createdAt: { $lte: tenMinutesAgo } },
+        ],
+      });
+
+      if (expiredPendingBookings.length > 0) {
+        logger.info(`[AutoCancellation] Found ${expiredPendingBookings.length} expired checkout holds to release.`);
+
+        for (const pendingBooking of expiredPendingBookings) {
+          try {
+            await Booking.findByIdAndUpdate(pendingBooking._id, {
+              bookingStatus: BookingStatus.EXPIRED,
+              cancellationType: CancellationType.SYSTEM,
+              cancelledAt: new Date(),
+              cancellationReason: 'Checkout hold expired: 10-minute payment window timed out',
+            });
+            logger.info(`[AutoCancellation] Successfully expired checkout hold for booking ${pendingBooking._id}, slot is now free.`);
+          } catch (err) {
+            logger.error(`[AutoCancellation] Failed to expire pending booking ${pendingBooking._id}: ${err instanceof Error ? err.message : 'Unknown error'}`);
+          }
+        }
+      }
+
+      // ── Step 2: Handle overdue balance cancellations for RESERVED/CONFIRMED bookings ──
       const expiredBookings = await Booking.find({
         bookingStatus: { $in: [BookingStatus.RESERVED, BookingStatus.CONFIRMED] },
         paymentStatus: { $ne: PaymentStatus.PAID },
@@ -22,7 +50,7 @@ export const startAutoCancellationJob = () => {
         return;
       }
 
-      logger.info(`Found ${expiredBookings.length} bookings for auto-cancellation.`);
+      logger.info(`[AutoCancellation] Found ${expiredBookings.length} overdue bookings for auto-cancellation.`);
 
       for (const booking of expiredBookings) {
         const session = await mongoose.startSession();

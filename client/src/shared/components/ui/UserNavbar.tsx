@@ -18,6 +18,7 @@ const UserNavbar = () => {
   const [profileOpen, setProfileOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const { pathname } = useLocation();
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -26,6 +27,17 @@ const UserNavbar = () => {
   const user = useAppStore((state) => state.user);
   const handleLogout = useLogout();
   const navigate = useNavigate();
+
+  const handleSearchSubmit = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const trimmed = searchQuery.trim();
+    if (trimmed) {
+      navigate(`/venues?search=${encodeURIComponent(trimmed)}`);
+    } else {
+      navigate('/venues');
+    }
+    setSearchOpen(false);
+  };
 
   const handleOwnerFlow = () => {
     if (user?.role === 'owner') {
@@ -192,22 +204,43 @@ const UserNavbar = () => {
       {/* Header Search Overlay */}
       {searchOpen && (
         <div className="absolute inset-0 bg-background z-50 flex items-center px-4 sm:px-6 lg:px-8 border-b border-border animate-in fade-in duration-200">
-          <div className="mx-auto w-full max-w-3xl flex items-center gap-3">
-            <Search className="text-primary w-5 h-5 shrink-0" />
+          <form
+            onSubmit={handleSearchSubmit}
+            className="mx-auto w-full max-w-3xl flex items-center gap-3"
+          >
+            <button
+              type="submit"
+              className="text-primary hover:text-primary/80 transition-colors p-1 cursor-pointer"
+              aria-label="Submit search"
+            >
+              <Search className="w-5 h-5 shrink-0" />
+            </button>
             <input
               autoFocus
               type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search for venues, categories, or cities..."
               className="w-full text-[14px] bg-transparent border-none text-foreground placeholder-foreground/50 focus:outline-none py-2"
             />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="text-xs text-muted-foreground hover:text-foreground px-2 py-1 rounded-md transition-colors cursor-pointer"
+              >
+                Clear
+              </button>
+            )}
             <button
+              type="button"
               onClick={() => setSearchOpen(false)}
-              className="p-1.5 rounded-xl hover:bg-muted/50 text-foreground/75 hover:text-foreground transition-all duration-200"
+              className="p-1.5 rounded-xl hover:bg-muted/50 text-foreground/75 hover:text-foreground transition-all duration-200 cursor-pointer"
               aria-label="Close search"
             >
               <X size={18} />
             </button>
-          </div>
+          </form>
         </div>
       )}
 

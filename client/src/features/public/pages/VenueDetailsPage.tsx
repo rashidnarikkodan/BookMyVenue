@@ -57,9 +57,9 @@ export default function VenueDetailsPage() {
         />
       </div>
 
-      <div className="grid gap-10 lg:grid-cols-[1fr_400px]">
+      <div className="grid gap-8 lg:gap-10 lg:grid-cols-[minmax(0,1fr)_380px] xl:grid-cols-[minmax(0,1fr)_400px] items-start">
         {/* Left Column — Open Whitespace Layout */}
-        <div className="space-y-8">
+        <div className="min-w-0 space-y-8">
           <VenueImageGallery images={venue.images} venueName={venue.name} />
           <VenueDescription description={venue.description} />
           <VenueAmenities amenities={venue.amenities} />
@@ -75,7 +75,7 @@ export default function VenueDetailsPage() {
         </div>
 
         {/* Right Column — Single Cohesive Sticky Sidebar */}
-        <div className="space-y-4 lg:sticky lg:top-24 lg:self-start">
+        <div className="w-full min-w-0 space-y-4 lg:sticky lg:top-24 lg:self-start">
           <VenuePricingCard
             venueId={venue._id}
             pricePerHour={venue.availability?.pricePerHour || 0}

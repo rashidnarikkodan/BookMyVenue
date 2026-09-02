@@ -1,6 +1,7 @@
 import Venue from '@/models/venue.model';
 import User from '@/models/user.model';
 import Booking from '@/models/booking.model';
+import Category from '@/models/category.model';
 import { BookingStatus } from '@/constants/booking';
 import { escapeRegex } from '@/utils/escapeRegex';
 import { VenueDocument } from '@/types/venue.types';
@@ -212,9 +213,20 @@ export const findPublicVenues = async (query: GetPublicVenuesQueryDTO) => {
   
   if (search) {
     const escaped = escapeRegex(search);
+
+    // Find any categories matching the search term
+    const matchedCategories = await Category.find({
+      name: { $regex: escaped, $options: 'i' },
+    }).select('_id');
+    const matchedCategoryIds = matchedCategories.map((c) => c._id);
+
     filter.$or = [
       { name: { $regex: escaped, $options: 'i' } },
       { description: { $regex: escaped, $options: 'i' } },
+      { 'address.city': { $regex: escaped, $options: 'i' } },
+      { 'address.district': { $regex: escaped, $options: 'i' } },
+      { 'address.state': { $regex: escaped, $options: 'i' } },
+      ...(matchedCategoryIds.length > 0 ? [{ categoryId: { $in: matchedCategoryIds } }] : []),
     ];
   }
 

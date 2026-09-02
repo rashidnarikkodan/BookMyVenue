@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { Menu, X, Building2 } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { Menu, X, Building2, Search } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ThemeToggle } from '@/shared/components/ui';
 import logoImg from '@/assets/logo.png';
 
@@ -27,8 +27,22 @@ function useScrollLock(active: boolean) {
 
 const PublicNavbar = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const drawerRef = useRef<HTMLDivElement>(null);
+
+  const handleSearchSubmit = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const trimmed = searchQuery.trim();
+    if (trimmed) {
+      navigate(`/venues?search=${encodeURIComponent(trimmed)}`);
+    } else {
+      navigate('/venues');
+    }
+    setSearchOpen(false);
+  };
 
   useScrollLock(drawerOpen);
 
@@ -86,6 +100,16 @@ const PublicNavbar = () => {
 
           {/* Desktop right actions */}
           <div className="hidden md:flex items-center gap-2.5">
+            {/* Search Toggle */}
+            <button
+              onClick={() => setSearchOpen(true)}
+              type="button"
+              className="p-2 rounded-xl text-foreground/85 hover:bg-muted/30 hover:text-primary transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer"
+              aria-label="Search"
+            >
+              <Search className="w-5 h-5" />
+            </button>
+
             <ThemeToggle />
 
             <div className="w-px h-5 bg-border mx-1" aria-hidden="true" />
@@ -119,6 +143,15 @@ const PublicNavbar = () => {
 
           {/* Mobile right — theme toggle + hamburger */}
           <div className="flex items-center gap-2 md:hidden">
+            <button
+              onClick={() => setSearchOpen(true)}
+              type="button"
+              className="grid place-items-center h-9 w-9 rounded-xl border border-border bg-surface text-foreground hover:bg-muted/40 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary"
+              aria-label="Search"
+            >
+              <Search size={18} />
+            </button>
+
             <ThemeToggle />
 
             <button
@@ -132,6 +165,49 @@ const PublicNavbar = () => {
             </button>
           </div>
         </nav>
+
+        {/* Header Search Overlay */}
+        {searchOpen && (
+          <div className="absolute inset-0 bg-background z-50 flex items-center px-4 sm:px-6 lg:px-8 border-b border-border animate-in fade-in duration-200">
+            <form
+              onSubmit={handleSearchSubmit}
+              className="mx-auto w-full max-w-3xl flex items-center gap-3"
+            >
+              <button
+                type="submit"
+                className="text-primary hover:text-primary/80 transition-colors p-1 cursor-pointer"
+                aria-label="Submit search"
+              >
+                <Search className="w-5 h-5 shrink-0" />
+              </button>
+              <input
+                autoFocus
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search for venues, categories, or cities..."
+                className="w-full text-[14px] bg-transparent border-none text-foreground placeholder-foreground/50 focus:outline-none py-2"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="text-xs text-muted-foreground hover:text-foreground px-2 py-1 rounded-md transition-colors cursor-pointer"
+                >
+                  Clear
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => setSearchOpen(false)}
+                className="p-1.5 rounded-xl hover:bg-muted/50 text-foreground/75 hover:text-foreground transition-all duration-200 cursor-pointer"
+                aria-label="Close search"
+              >
+                <X size={18} />
+              </button>
+            </form>
+          </div>
+        )}
       </header>
 
       {/* Mobile drawer overlay */}

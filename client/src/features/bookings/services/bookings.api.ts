@@ -40,8 +40,12 @@ export const bookingsApi = {
     return res.data;
   },
 
-  payBalance: async (bookingId: string): Promise<any> => {
-    const res = await apiClient.post('/bookings/pay-balance', { bookingId });
+  payBalance: async (bookingId: string, amount?: number): Promise<any> => {
+    const payload: { bookingId: string; amount?: number } = { bookingId };
+    if (amount !== undefined && amount !== null) {
+      payload.amount = amount;
+    }
+    const res = await apiClient.post('/bookings/pay-balance', payload);
     return res.data;
   },
 
@@ -50,6 +54,7 @@ export const bookingsApi = {
     razorpay_order_id: string;
     razorpay_signature: string;
     bookingId: string;
+    amount?: number;
   }): Promise<any> => {
     const res = await apiClient.post('/bookings/verify-balance', paymentData);
     return res.data;

@@ -121,6 +121,12 @@ const bookingSchema = new Schema(
       default: null,
     },
 
+    reservationExpiresAt: {
+      type: Date,
+      default: null,
+      index: true,
+    },
+
     isImmediatePaymentRequired: {
       type: Boolean,
       default: false,
@@ -186,6 +192,12 @@ bookingSchema.index(
 bookingSchema.index(
   { bookingStatus: 1, remainingPaymentDueDate: 1 },
   { partialFilterExpression: { bookingStatus: BookingStatus.RESERVED } }
+);
+
+// 6. Soft Lock Checkout Expiration Cron Partial Index
+bookingSchema.index(
+  { bookingStatus: 1, reservationExpiresAt: 1 },
+  { partialFilterExpression: { bookingStatus: BookingStatus.PENDING } }
 );
 
 bookingSchema.pre('save', async function () {
