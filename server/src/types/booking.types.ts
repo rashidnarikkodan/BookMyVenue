@@ -23,6 +23,7 @@ export interface IBooking extends Document {
   amountPaid: number;
   remainingPaymentDueDate: Date | null;
   autoCancellationDate: Date | null;
+  reservationExpiresAt?: Date | null;
   isImmediatePaymentRequired: boolean;
   cancellationReason: string;
   settlementStatus: SettlementStatus | null;

@@ -7,9 +7,24 @@ import { toast } from 'sonner';
 
 interface VenueCardProps {
   venue: Venue;
+  userCoords?: { lat: number; lng: number } | null;
 }
 
-export default function VenueCard({ venue }: VenueCardProps) {
+function calculateDistanceKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return Math.round(R * c * 10) / 10;
+}
+
+export default function VenueCard({ venue, userCoords }: VenueCardProps) {
   const navigate = useNavigate();
   const { wishlist, setWishlist, isAuthenticated } = useAppStore();
 
@@ -21,6 +36,18 @@ export default function VenueCard({ venue }: VenueCardProps) {
   const isWishlisted = wishlist.includes(venue._id);
 
   const price = venue.availability?.pricePerHour ?? venue.pricing?.amount ?? 0;
+
+  const distance =
+    userCoords &&
+    venue.location?.coordinates &&
+    venue.location.coordinates.length >= 2
+      ? calculateDistanceKm(
+          userCoords.lat,
+          userCoords.lng,
+          venue.location.coordinates[1],
+          venue.location.coordinates[0]
+        )
+      : null;
 
   const handleWishlistToggle = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -108,11 +135,18 @@ export default function VenueCard({ venue }: VenueCardProps) {
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5 text-sm text-muted-foreground font-medium">
-            <MapPin size={15} className="shrink-0 text-primary" />
-            <span className="truncate">
-              {venue.address.city}, {venue.address.state}
-            </span>
+          <div className="flex items-center justify-between gap-1 text-sm text-muted-foreground font-medium">
+            <div className="flex items-center gap-1.5 min-w-0">
+              <MapPin size={15} className="shrink-0 text-primary" />
+              <span className="truncate">
+                {venue.address.city}, {venue.address.state}
+              </span>
+            </div>
+            {distance !== null && (
+              <span className="shrink-0 text-[11px] font-bold text-primary bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-md">
+                {distance} km away
+              </span>
+            )}
           </div>
         </div>
 

@@ -12,6 +12,7 @@ interface ReservationDetails {
   bookingScenario: BookingScenario;
   remainingPaymentDueDate: Date | null;
   autoCancellationDate: Date | null;
+  reservationExpiresAt?: Date | null;
   isImmediatePaymentRequired: boolean;
 }
 
@@ -45,6 +46,7 @@ export const createBooking = async (
         amountPaid: 0,
         remainingPaymentDueDate: reservation.remainingPaymentDueDate,
         autoCancellationDate: reservation.autoCancellationDate,
+        reservationExpiresAt: reservation.reservationExpiresAt || new Date(Date.now() + 10 * 60 * 1000),
         isImmediatePaymentRequired: reservation.isImmediatePaymentRequired,
       },
     ],
@@ -63,13 +65,24 @@ export const findBookingById = async (id: string): Promise<IBooking | null> => {
 };
 
 export const getBookingByVenueId = async (id: string): Promise<IBooking[] | null> => {
-  const today = new Date();
+  const now = new Date();
+  const tenMinutesAgo = new Date(now.getTime() - 10 * 60 * 1000);
 
   const filter = {
     venue: new mongoose.Types.ObjectId(id),
-    startDateTime: {
-      $gte: today,
+    endDateTime: {
+      $gte: now,
     },
+    $or: [
+      { bookingStatus: { $in: [BookingStatus.RESERVED, BookingStatus.CONFIRMED] } },
+      {
+        bookingStatus: BookingStatus.PENDING,
+        $or: [
+          { reservationExpiresAt: { $gt: now } },
+          { reservationExpiresAt: null, createdAt: { $gte: tenMinutesAgo } },
+        ],
+      },
+    ],
   };
 
   return Booking.find(filter);
@@ -164,9 +177,21 @@ export const hasOverlappingBooking = async (
   endDateTime: Date,
   excludeBookingId?: string
 ): Promise<boolean> => {
+  const now = new Date();
+  const tenMinutesAgo = new Date(now.getTime() - 10 * 60 * 1000);
+
   const filter: Record<string, any> = {
     venue: new mongoose.Types.ObjectId(venueId),
-    bookingStatus: { $in: [BookingStatus.CONFIRMED, BookingStatus.RESERVED] },
+    $or: [
+      { bookingStatus: { $in: [BookingStatus.CONFIRMED, BookingStatus.RESERVED] } },
+      {
+        bookingStatus: BookingStatus.PENDING,
+        $or: [
+          { reservationExpiresAt: { $gt: now } },
+          { reservationExpiresAt: null, createdAt: { $gte: tenMinutesAgo } },
+        ],
+      },
+    ],
     startDateTime: { $lt: endDateTime },
     endDateTime: { $gt: startDateTime },
   };
@@ -194,6 +219,7 @@ export const confirmDepositPayment = async (
       bookingStatus: BookingStatus.RESERVED,
       paymentStatus: PaymentStatus.PARTIAL,
       amountPaid: depositAmount,
+      reservationExpiresAt: null,
     },
     { new: true }
   );
@@ -218,10 +244,51 @@ export const confirmFullPayment = async (
       bookingStatus: BookingStatus.CONFIRMED,
       paymentStatus: PaymentStatus.PAID,
       amountPaid: totalAmount,
+      reservationExpiresAt: null,
     },
     { new: true }
   );
   if (!updated) return null;
+  return updated.populate([
+    { path: 'venue', select: 'name address images' },
+    { path: 'user', select: 'fullName email' },
+  ]) as Promise<IBooking | null>;
+};
+
+/**
+ * Records a flexible (partial or full) balance payment.
+ * Automatically transitions to CONFIRMED + PAID if remaining balance reaches 0,
+ * or keeps RESERVED + PARTIAL if balance remains.
+ */
+export const confirmBalancePayment = async (
+  bookingId: string,
+  paidAmount: number
+): Promise<IBooking | null> => {
+  const current = await Booking.findById(bookingId);
+  if (!current) return null;
+
+  const currentPaid = current.amountPaid || 0;
+  const newAmountPaid = Math.min(current.totalAmount, currentPaid + paidAmount);
+  const newRemainingBalance = Math.max(0, current.totalAmount - newAmountPaid);
+  const isFullyPaid = newRemainingBalance <= 0;
+
+  const updateData: Record<string, any> = {
+    amountPaid: newAmountPaid,
+    remainingBalance: newRemainingBalance,
+    reservationExpiresAt: null,
+  };
+
+  if (isFullyPaid) {
+    updateData.bookingStatus = BookingStatus.CONFIRMED;
+    updateData.paymentStatus = PaymentStatus.PAID;
+  } else {
+    updateData.bookingStatus = BookingStatus.RESERVED;
+    updateData.paymentStatus = PaymentStatus.PARTIAL;
+  }
+
+  const updated = await Booking.findByIdAndUpdate(bookingId, updateData, { new: true });
+  if (!updated) return null;
+
   return updated.populate([
     { path: 'venue', select: 'name address images' },
     { path: 'user', select: 'fullName email' },

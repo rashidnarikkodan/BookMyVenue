@@ -11,7 +11,8 @@ export const validateVenueAvailability = async (
   venueId: string,
   startDateTime: Date,
   endDateTime: Date,
-  session?: mongoose.ClientSession
+  session?: mongoose.ClientSession,
+  requestingUserId?: string
 ): Promise<IAvailability> => {
   const now = new Date();
 
@@ -106,10 +107,20 @@ export const validateVenueAvailability = async (
   const bufferMs = (availability.bufferTime || 0) * 60 * 1000;
   const bufferedStart = new Date(startDateTime.getTime() - bufferMs);
   const bufferedEnd = new Date(endDateTime.getTime() + bufferMs);
+  const tenMinutesAgo = new Date(now.getTime() - 10 * 60 * 1000);
 
   const overlapQuery = Booking.findOne({
     venue: venueId,
-    bookingStatus: { $in: [BookingStatus.RESERVED, BookingStatus.CONFIRMED] },
+    $or: [
+      { bookingStatus: { $in: [BookingStatus.RESERVED, BookingStatus.CONFIRMED] } },
+      {
+        bookingStatus: BookingStatus.PENDING,
+        $or: [
+          { reservationExpiresAt: { $gt: now } },
+          { reservationExpiresAt: null, createdAt: { $gte: tenMinutesAgo } },
+        ],
+      },
+    ],
     startDateTime: { $lt: bufferedEnd },
     endDateTime: { $gt: bufferedStart },
   });
@@ -118,7 +129,23 @@ export const validateVenueAvailability = async (
 
   const overlappingBooking = await overlapQuery;
   if (overlappingBooking) {
-    throw new AppError('Venue is already reserved or buffered during the requested time slot', HTTP_STATUS.CONFLICT);
+    // If it is an active PENDING booking
+    if (overlappingBooking.bookingStatus === BookingStatus.PENDING) {
+      const isSameUser =
+        requestingUserId &&
+        overlappingBooking.user &&
+        overlappingBooking.user.toString() === requestingUserId.toString();
+
+      // If it belongs to the same user who holds the soft lock, allow them to proceed
+      if (!isSameUser) {
+        throw new AppError(
+          'This venue slot is temporarily reserved by another customer completing payment (held for 10 minutes). Please try another time slot or check back shortly.',
+          HTTP_STATUS.CONFLICT
+        );
+      }
+    } else {
+      throw new AppError('Venue is already reserved or buffered during the requested time slot', HTTP_STATUS.CONFLICT);
+    }
   }
 
   return availability;

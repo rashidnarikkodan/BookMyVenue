@@ -55,9 +55,23 @@ const DateTimeSection: React.FC<Props> = ({
     // Overlap checks
     if (existingBookings && existingBookings.length > 0) {
       const hasOverlap = existingBookings.some((booking) => {
-        if (booking.bookingStatus === 'CANCELLED' || booking.bookingStatus === 'REFUNDED') {
+        if (
+          booking.bookingStatus === 'CANCELLED' ||
+          booking.bookingStatus === 'REFUNDED' ||
+          booking.bookingStatus === 'EXPIRED'
+        ) {
           return false;
         }
+
+        // If it's a pending soft-lock that has already passed its 10-minute hold window
+        if (
+          booking.bookingStatus === 'PENDING' &&
+          booking.reservationExpiresAt &&
+          new Date(booking.reservationExpiresAt).getTime() <= now
+        ) {
+          return false;
+        }
+
         const bStart = new Date(booking.startDateTime).getTime();
         const bEnd = new Date(booking.endDateTime).getTime();
         return start < bEnd && end > bStart;

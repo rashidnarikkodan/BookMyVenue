@@ -94,17 +94,18 @@ export default function BookingDetailPage() {
     rzp.open();
   };
 
-  const handlePayBalance = async () => {
+  const handlePayBalance = async (amount?: number) => {
     if (!booking) return;
     setActionLoading(true);
     try {
       await openRazorpay(
-        () => bookingsApi.payBalance(booking._id),
+        () => bookingsApi.payBalance(booking._id, amount),
         (r) => bookingsApi.verifyBalancePayment({
           razorpay_payment_id: r.razorpay_payment_id,
           razorpay_order_id: r.razorpay_order_id,
           razorpay_signature: r.razorpay_signature,
           bookingId: booking._id,
+          amount,
         })
       );
     } catch (err: any) {

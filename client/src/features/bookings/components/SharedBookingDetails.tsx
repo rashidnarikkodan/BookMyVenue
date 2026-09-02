@@ -92,7 +92,7 @@ interface SharedBookingDetailsProps {
   role: 'user' | 'owner';
   actionLoading?: boolean;
   onCancel?: (reason?: string) => void;
-  onPayBalance?: () => void;
+  onPayBalance?: (amount?: number) => void;
   backUrl: string;
   backText: string;
 }
@@ -110,6 +110,25 @@ export default function SharedBookingDetails({
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelReason, setCancelReason] = useState('');
 
+  // Flexible balance payment state
+  const [payOption, setPayOption] = useState<'full' | 'custom'>('full');
+  const [customPayAmount, setCustomPayAmount] = useState<string>('');
+
+  const remainingBalance = booking.remainingBalance || 0;
+  const parsedCustom = parseFloat(customPayAmount);
+  const effectivePayAmount =
+    payOption === 'full'
+      ? remainingBalance
+      : !isNaN(parsedCustom) && parsedCustom > 0
+      ? Math.min(remainingBalance, Math.round(parsedCustom))
+      : remainingBalance;
+
+  const isValidCustom =
+    payOption === 'full' ||
+    (!isNaN(parsedCustom) && parsedCustom >= 1 && parsedCustom <= remainingBalance);
+
+  const balanceAfter = Math.max(0, remainingBalance - effectivePayAmount);
+
   const statusKey = `${booking.bookingStatus?.toLowerCase()}+${booking.paymentStatus?.toLowerCase()}`;
   const status = statusConfig[statusKey] ?? {
     label: booking.bookingStatus?.toUpperCase() || 'UNKNOWN',
@@ -118,14 +137,18 @@ export default function SharedBookingDetails({
   };
   const StatusIcon = status.icon;
 
-  const isPending = booking.bookingStatus === 'pending' && booking.paymentStatus === 'pending';
+  const bookingStatusLower = booking.bookingStatus?.toLowerCase();
+  const paymentStatusLower = booking.paymentStatus?.toLowerCase();
+
+  const isPending = bookingStatusLower === 'pending' && paymentStatusLower === 'pending';
   const isPartial =
-    booking.bookingStatus === 'reserved' &&
-    ['partial', 'deposit_paid', 'overdue'].includes(booking.paymentStatus?.toLowerCase());
+    (Number(booking.remainingBalance) > 0 || ['partial', 'deposit_paid', 'overdue'].includes(paymentStatusLower)) &&
+    ['reserved', 'pending'].includes(bookingStatusLower) &&
+    paymentStatusLower !== 'paid';
 
   const isCancellable =
     booking.isCancellable ||
-    ['reserved', 'pending', 'confirmed'].includes(booking.bookingStatus?.toLowerCase());
+    ['reserved', 'pending', 'confirmed'].includes(bookingStatusLower);
 
   const venue = booking.venue;
   const imageUrl = venue?.images?.[0] || venue?.imageUrl || null;
@@ -415,18 +438,159 @@ export default function SharedBookingDetails({
               {role === 'user' && (isPending || isPartial || isCancellable) && (
                 <div className="space-y-3 pt-2">
                   {isPartial && onPayBalance && (
-                    <button
-                      onClick={onPayBalance}
-                      disabled={actionLoading}
-                      className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-primary hover:bg-primary/95 text-white font-extrabold text-base rounded-2xl transition-all shadow-lg shadow-primary/20 cursor-pointer active:scale-[0.99] disabled:opacity-60"
-                    >
-                      {actionLoading ? (
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                      ) : (
-                        <CreditCard className="w-5 h-5" />
+                    <div className="bg-surface border border-border/70 rounded-2xl p-4 sm:p-5 space-y-4 shadow-sm">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="text-sm font-bold text-foreground flex items-center gap-1.5">
+                            <CreditCard className="w-4 h-4 text-primary" /> Pay Due Money
+                          </h4>
+                          <p className="text-xs text-muted-foreground mt-0.5">
+                            Pay all at once or choose a flexible partial amount.
+                          </p>
+                        </div>
+                        <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20">
+                          Due: ₹{remainingBalance.toLocaleString('en-IN')}
+                        </span>
+                      </div>
+
+                      {/* Mode Toggle: Full vs Custom */}
+                      <div className="grid grid-cols-2 gap-2 p-1 bg-background rounded-xl border border-border/60">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setPayOption('full');
+                            setCustomPayAmount('');
+                          }}
+                          className={`py-2 px-3 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                            payOption === 'full'
+                              ? 'bg-primary text-white shadow-xs'
+                              : 'text-muted-foreground hover:text-foreground'
+                          }`}
+                        >
+                          Pay All at Once (₹{remainingBalance.toLocaleString('en-IN')})
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setPayOption('custom');
+                            if (!customPayAmount) {
+                              setCustomPayAmount(String(Math.max(1, Math.round(remainingBalance / 2))));
+                            }
+                          }}
+                          className={`py-2 px-3 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                            payOption === 'custom'
+                              ? 'bg-primary text-white shadow-xs'
+                              : 'text-muted-foreground hover:text-foreground'
+                          }`}
+                        >
+                          Flexible / Partial
+                        </button>
+                      </div>
+
+                      {/* If Custom Mode Selected */}
+                      {payOption === 'custom' && (
+                        <div className="space-y-3 pt-1">
+                          {/* Quick preset chips */}
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className="text-[11px] font-semibold text-muted-foreground">Quick select:</span>
+                            {[0.25, 0.5, 0.75, 1.0].map((ratio) => {
+                              const chipAmount = Math.max(1, Math.round(remainingBalance * ratio));
+                              const isSelected = parsedCustom === chipAmount;
+                              return (
+                                <button
+                                  key={ratio}
+                                  type="button"
+                                  onClick={() => setCustomPayAmount(String(chipAmount))}
+                                  className={`px-2 py-1 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${
+                                    isSelected
+                                      ? 'bg-primary/15 border-primary text-primary font-bold'
+                                      : 'border-border/60 bg-background text-muted-foreground hover:border-foreground/30 hover:text-foreground'
+                                  }`}
+                                >
+                                  {ratio * 100}% (₹{chipAmount.toLocaleString('en-IN')})
+                                </button>
+                              );
+                            })}
+                          </div>
+
+                          {/* Amount input */}
+                          <div className="space-y-1.5">
+                            <label className="text-xs font-semibold text-foreground flex items-center justify-between">
+                              <span>Enter Amount to Pay</span>
+                              <span className="text-[11px] text-muted-foreground">
+                                Min: ₹1 • Max: ₹{remainingBalance.toLocaleString('en-IN')}
+                              </span>
+                            </label>
+                            <div className="relative">
+                              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-bold text-foreground">
+                                ₹
+                              </span>
+                              <input
+                                type="number"
+                                min={1}
+                                max={remainingBalance}
+                                value={customPayAmount}
+                                onChange={(e) => setCustomPayAmount(e.target.value)}
+                                placeholder={`e.g. ${Math.round(remainingBalance / 2)}`}
+                                className="w-full pl-8 pr-4 py-2.5 bg-background border border-border/80 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl text-sm font-bold text-foreground outline-none transition-all"
+                              />
+                            </div>
+                            {customPayAmount && !isValidCustom && (
+                              <p className="text-[11px] text-error font-medium">
+                                {parsedCustom < 1
+                                  ? 'Amount must be at least ₹1.'
+                                  : `Amount cannot exceed remaining due balance of ₹${remainingBalance.toLocaleString('en-IN')}.`}
+                              </p>
+                            )}
+                          </div>
+                        </div>
                       )}
-                      {actionLoading ? 'Opening Checkout...' : 'Pay Remaining Balance'}
-                    </button>
+
+                      {/* Projection summary card */}
+                      <div className="bg-background/80 rounded-xl p-3 border border-border/40 text-xs space-y-1.5">
+                        <div className="flex justify-between items-center text-muted-foreground">
+                          <span>Amount Paying Now:</span>
+                          <span className="font-bold text-foreground text-sm">
+                            ₹{effectivePayAmount.toLocaleString('en-IN')}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center text-muted-foreground">
+                          <span>Remaining Balance After:</span>
+                          <span className={`font-bold ${balanceAfter === 0 ? 'text-success' : 'text-foreground'}`}>
+                            ₹{balanceAfter.toLocaleString('en-IN')}
+                          </span>
+                        </div>
+                        {balanceAfter === 0 ? (
+                          <div className="pt-1 flex items-center gap-1.5 text-[11px] font-semibold text-success">
+                            <CheckCircle2 size={13} className="shrink-0" />
+                            <span>This payment will completely settle your balance and Confirm the booking!</span>
+                          </div>
+                        ) : (
+                          <div className="pt-1 flex items-center gap-1.5 text-[11px] font-semibold text-warning">
+                            <Clock size={13} className="shrink-0" />
+                            <span>
+                              Remaining ₹{balanceAfter.toLocaleString('en-IN')} due before {fmtDate(booking.remainingPaymentDueDate)} (EOD).
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Submit Button */}
+                      <button
+                        onClick={() => onPayBalance(effectivePayAmount)}
+                        disabled={actionLoading || !isValidCustom || effectivePayAmount <= 0}
+                        className="w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-primary hover:bg-primary/95 text-white font-extrabold text-sm sm:text-base rounded-xl transition-all shadow-lg shadow-primary/20 cursor-pointer active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed"
+                      >
+                        {actionLoading ? (
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                        ) : (
+                          <CreditCard className="w-5 h-5" />
+                        )}
+                        {actionLoading
+                          ? 'Opening Checkout...'
+                          : `Pay ₹${effectivePayAmount.toLocaleString('en-IN')}`}
+                      </button>
+                    </div>
                   )}
 
                   {onCancel && (isPending || isCancellable) && booking.bookingStatus !== 'cancelled' && (

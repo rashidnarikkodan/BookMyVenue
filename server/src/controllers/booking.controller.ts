@@ -87,7 +87,8 @@ export const getBookingQuote = async (req: Request, res: Response, next: NextFun
       );
     }
 
-    const quote = await calculateQuoteService(venueId, startDateTime, endDateTime);
+    const userId = req.user?.id;
+    const quote = await calculateQuoteService(venueId, startDateTime, endDateTime, userId);
     success(res, HTTP_STATUS.OK, quote, 'Quote calculated successfully');
   } catch (error) {
     next(error);
@@ -143,7 +144,8 @@ export const payBalance = async (req: Request, res: Response, next: NextFunction
       throw new AppError('Booking ID is required', HTTP_STATUS.BAD_REQUEST);
     }
 
-    const { booking, razorpayChargeAmount } = await payBalanceService(userId, bookingId);
+    const amount = req.body?.amount !== undefined && req.body?.amount !== null ? Number(req.body.amount) : undefined;
+    const { booking, razorpayChargeAmount } = await payBalanceService(userId, bookingId, amount);
 
     // Create Razorpay order for the remaining balance
     const orderDetails = await createRazorpayOrder(
@@ -170,6 +172,7 @@ export const verifyBalancePayment = async (req: Request, res: Response, next: Ne
 
     const { razorpay_payment_id, razorpay_order_id, razorpay_signature } = req.body;
     const bookingId = req.params.bookingId || req.body.bookingId;
+    const amount = req.body?.amount !== undefined && req.body?.amount !== null ? Number(req.body.amount) : undefined;
 
     if (!razorpay_payment_id || !razorpay_order_id || !razorpay_signature || !bookingId) {
       throw new AppError('Missing payment verification details', HTTP_STATUS.BAD_REQUEST);
@@ -180,10 +183,11 @@ export const verifyBalancePayment = async (req: Request, res: Response, next: Ne
       bookingId,
       razorpay_order_id,
       razorpay_payment_id,
-      razorpay_signature
+      razorpay_signature,
+      amount
     );
 
-    success(res, HTTP_STATUS.OK, booking, 'Balance payment verified and booking confirmed');
+    success(res, HTTP_STATUS.OK, booking, 'Balance payment verified successfully');
   } catch (error) {
     next(error);
   }

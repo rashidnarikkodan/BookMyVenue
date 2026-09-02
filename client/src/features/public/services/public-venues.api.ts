@@ -11,7 +11,10 @@ export interface PublicVenueQuery {
   maxCapacity?: number;
   minPrice?: number;
   maxPrice?: number;
-  sort?: 'newest' | 'oldest' | 'price_asc' | 'price_desc' | 'capacity_asc' | 'capacity_desc';
+  sort?: 'newest' | 'oldest' | 'price_asc' | 'price_desc' | 'capacity_asc' | 'capacity_desc' | 'distance';
+  lat?: number;
+  lng?: number;
+  radius?: number;
 }
 
 export const publicVenuesApi = {
@@ -26,6 +29,9 @@ export const publicVenuesApi = {
     if (query.minPrice) params.set('minPrice', String(query.minPrice));
     if (query.maxPrice) params.set('maxPrice', String(query.maxPrice));
     if (query.sort) params.set('sort', query.sort);
+    if (query.lat !== undefined) params.set('lat', String(query.lat));
+    if (query.lng !== undefined) params.set('lng', String(query.lng));
+    if (query.radius !== undefined) params.set('radius', String(query.radius));
 
     const res = await apiClient.get(`/venues?${params.toString()}`);
     return res.data;
