@@ -126,7 +126,7 @@ export const usersApi = {
     const params = new URLSearchParams();
     params.append('page', String(page));
     params.append('limit', String(limit));
-    if (status && status !== 'all') {
+    if (status && status.toLowerCase() !== 'all') {
       params.append('status', status);
     }
     const res = await apiClient.get(`/users/bookings?${params.toString()}`);

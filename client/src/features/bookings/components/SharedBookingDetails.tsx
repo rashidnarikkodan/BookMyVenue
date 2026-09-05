@@ -177,28 +177,57 @@ export default function SharedBookingDetails({
 
   const mapSearchUrl = venue?.address
     ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-        `${venue.name}, ${venue.address.street}, ${venue.address.city}, ${venue.address.state}`
+        `${venue.name}, ${venue.address.street || ''}, ${venue.address.city || ''}, ${venue.address.state || ''}`
       )}`
     : null;
 
   return (
-    <div className="min-h-screen bg-background pb-24 text-foreground">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-8 print:p-0 print:max-w-full">
-        {/* Top Header & Navigation */}
-        <div className="flex flex-wrap items-center justify-between gap-4 print:hidden">
-          <Link
-            to={backUrl}
-            className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" /> {backText}
-          </Link>
+    <div className="min-h-screen bg-background text-foreground pb-24">
+      {/* Full-width stretched wrapper matching marketplace layout */}
+      <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 py-6 sm:py-8 space-y-6 sm:space-y-8 print:p-0 print:max-w-full">
+        {/* Top Header & Actions Bar */}
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border/40 pb-5 print:hidden">
+          <div className="flex items-center gap-4">
+            <Link
+              to={backUrl}
+              className="inline-flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-foreground transition-colors group"
+            >
+              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+              <span>{backText}</span>
+            </Link>
 
-          <div className="flex items-center gap-2">
+            <span className="hidden sm:inline-block text-border">|</span>
+
+            <div className="hidden sm:flex items-center gap-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Reference:</span>
+              <span className="font-mono text-xs font-extrabold px-2.5 py-1 rounded-lg bg-surface border border-border/60 text-foreground">
+                {confirmationId}
+              </span>
+              <button
+                onClick={handleCopyId}
+                title="Copy Reference ID"
+                className="p-1 rounded-lg hover:bg-surface text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+              >
+                <Copy size={13} className={copied ? 'text-success' : ''} />
+              </button>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2.5">
+            <button
+              onClick={handleCopyId}
+              className="sm:hidden inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-border/60 bg-surface text-xs font-bold text-foreground hover:bg-surface/80 transition-all cursor-pointer shadow-2xs"
+            >
+              <Copy size={13} className={copied ? 'text-success' : 'text-primary'} />
+              {copied ? 'Copied' : 'Copy ID'}
+            </button>
+
             <button
               onClick={handlePrint}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-border/50 bg-surface text-xs font-bold text-foreground hover:bg-surface/80 transition-all cursor-pointer shadow-2xs"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-border/60 bg-surface text-xs font-bold text-foreground hover:bg-surface/80 transition-all cursor-pointer shadow-2xs"
             >
-              <Printer className="w-4 h-4 text-primary" /> Print Receipt
+              <Printer className="w-4 h-4 text-primary" />
+              <span>Print Receipt</span>
             </button>
 
             {mapSearchUrl && (
@@ -206,228 +235,271 @@ export default function SharedBookingDetails({
                 href={mapSearchUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-border/50 bg-surface text-xs font-bold text-foreground hover:bg-surface/80 transition-all cursor-pointer shadow-2xs"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-border/60 bg-surface text-xs font-bold text-foreground hover:bg-surface/80 transition-all cursor-pointer shadow-2xs"
               >
-                <ExternalLink className="w-4 h-4 text-primary" /> Directions
+                <ExternalLink className="w-4 h-4 text-primary" />
+                <span>Directions</span>
               </a>
             )}
           </div>
         </div>
 
-        {/* Hero Banner — Open Whitespace Layout */}
-        <div className="relative rounded-3xl overflow-hidden border border-border/40 bg-card shadow-lg">
-          <div className="relative h-56 sm:h-72 w-full bg-black/40">
+        {/* Grand Hero Showcase Banner */}
+        <div className="relative rounded-3xl overflow-hidden border border-border/40 bg-card shadow-xl shadow-black/10">
+          <div className="relative h-60 sm:h-72 md:h-80 w-full bg-surface">
             {imageUrl ? (
               <img src={imageUrl} alt={venue?.name} className="w-full h-full object-cover" />
             ) : (
-              <div className="w-full h-full bg-surface flex items-center justify-center text-muted-foreground">
-                <Building2 size={56} className="stroke-[1.2]" />
+              <div className="w-full h-full bg-surface flex items-center justify-center text-muted-foreground/40">
+                <Building2 size={72} className="stroke-[1]" />
               </div>
             )}
 
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+            {/* Gradient Scrims for depth and contrast */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/20" />
 
-            {/* Status Pill Overlay */}
-            <div className="absolute top-4 right-4">
+            {/* Top Status & Reference Badges */}
+            <div className="absolute top-4 sm:top-6 left-4 sm:left-6 right-4 sm:right-6 flex items-center justify-between gap-3">
               <span
                 className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider backdrop-blur-md shadow-lg border ${status.color}`}
               >
                 <StatusIcon className="w-4 h-4" />
                 {status.label}
               </span>
-            </div>
 
-            {/* Venue Info Title overlay */}
-            <div className="absolute bottom-6 left-6 right-6 space-y-1 text-white">
-              <h1 className="text-2xl sm:text-4xl font-black tracking-tight drop-shadow-md">
-                {venue?.name || 'Venue Booking'}
-              </h1>
-              {venue?.address && (
-                <p className="text-xs sm:text-sm text-white/80 font-medium flex items-center gap-1.5">
-                  <MapPin className="w-4 h-4 text-primary shrink-0" />
-                  {venue.address.street}, {venue.address.city}, {venue.address.state}
-                </p>
+              {venue?._id && (
+                <Link
+                  to={`/venues/${venue._id}`}
+                  className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-black/50 hover:bg-black/70 backdrop-blur-md text-white text-xs font-bold border border-white/20 transition-all"
+                >
+                  <span>Explore Venue Listing</span>
+                  <ExternalLink size={13} />
+                </Link>
               )}
             </div>
-          </div>
-        </div>
 
-        {/* Confirmation ID Banner */}
-        <div className="bg-surface/60 border border-border/40 rounded-2xl p-4 sm:p-5 flex flex-wrap items-center justify-between gap-3 shadow-2xs">
-          <div className="space-y-0.5">
-            <span className="text-[11px] font-extrabold uppercase tracking-wider text-muted-foreground block">
-              Booking Reference Number
-            </span>
-            <span className="font-mono text-base sm:text-lg font-black text-foreground tracking-wide">
-              {confirmationId}
-            </span>
-          </div>
-
-          <button
-            onClick={handleCopyId}
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-background border border-border/60 text-xs font-bold text-foreground hover:bg-surface transition-all cursor-pointer active:scale-95 shrink-0"
-          >
-            <Copy size={14} className={copied ? 'text-success' : 'text-primary'} />
-            {copied ? 'Copied!' : 'Copy Reference ID'}
-          </button>
-        </div>
-
-        {/* Main Content Sections — Borderless Open Whitespace */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Left Column: Timeline, Guests, Contact */}
-          <div className="lg:col-span-7 xl:col-span-8 space-y-8">
-            {/* 1. Schedule & Timeline */}
-            <div className="py-4 border-b border-border/50 space-y-4">
-              <div className="flex items-center gap-2.5">
-                <Calendar className="w-5 h-5 text-primary" />
-                <h2 className="text-xl font-extrabold text-foreground tracking-tight">
-                  Reservation Schedule
-                </h2>
+            {/* Bottom Venue Meta Info */}
+            <div className="absolute bottom-5 sm:bottom-7 left-5 sm:left-8 right-5 sm:right-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4 text-white">
+              <div className="space-y-1.5 max-w-3xl">
+                <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight drop-shadow-md">
+                  {venue?.name || 'Venue Booking'}
+                </h1>
+                {venue?.address && (
+                  <p className="text-xs sm:text-sm md:text-base text-white/90 font-medium flex items-center gap-1.5 drop-shadow-sm">
+                    <MapPin className="w-4 h-4 text-primary shrink-0" />
+                    <span>
+                      {[venue.address.street, venue.address.city, venue.address.state]
+                        .filter(Boolean)
+                        .join(', ')}
+                    </span>
+                  </p>
+                )}
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                <div className="bg-surface/50 rounded-2xl p-4 border border-border/40 space-y-1">
-                  <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider block">
-                    Check In (Start)
+              {/* Reference ID Pill on mobile */}
+              <div className="sm:hidden">
+                <span className="font-mono text-xs font-semibold px-2.5 py-1 rounded-md bg-black/60 backdrop-blur-md border border-white/20 text-white">
+                  Ref: {confirmationId.substring(0, 12)}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Main Grid: Left Primary Content (8 cols) vs Right Financials (4 cols) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 xl:gap-10 items-start">
+          {/* Left Column: Timeline, Contact, Venue Notes */}
+          <div className="lg:col-span-7 xl:col-span-8 space-y-6 sm:space-y-8">
+            {/* 1. Schedule & Timeline Card */}
+            <div className="bg-surface/50 border border-border/50 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
+              <div className="flex items-center justify-between border-b border-border/40 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 rounded-2xl bg-primary/10 text-primary border border-primary/20">
+                    <Calendar className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl sm:text-2xl font-black text-foreground tracking-tight">
+                      Reservation Schedule
+                    </h2>
+                    <p className="text-xs text-muted-foreground">Confirmed event date, time and duration</p>
+                  </div>
+                </div>
+
+                <div className="hidden sm:flex items-center gap-2">
+                  <span className="text-xs font-bold px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20">
+                    {durationHours} Hour{durationHours > 1 ? 's' : ''} Session
                   </span>
-                  <span className="text-sm font-extrabold text-foreground block">
+                </div>
+              </div>
+
+              {/* Start & End Dates Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="bg-background/80 rounded-2xl p-5 border border-border/60 space-y-2">
+                  <span className="text-[11px] font-extrabold text-muted-foreground uppercase tracking-wider block flex items-center gap-1.5">
+                    <Clock size={12} className="text-primary" /> Check In (Start)
+                  </span>
+                  <span className="text-base sm:text-lg font-black text-foreground block">
                     {fmtFull(booking.startDateTime)}
                   </span>
                 </div>
 
-                <div className="bg-surface/50 rounded-2xl p-4 border border-border/40 space-y-1">
-                  <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider block">
-                    Check Out (End)
+                <div className="bg-background/80 rounded-2xl p-5 border border-border/60 space-y-2">
+                  <span className="text-[11px] font-extrabold text-muted-foreground uppercase tracking-wider block flex items-center gap-1.5">
+                    <Clock size={12} className="text-primary" /> Check Out (End)
                   </span>
-                  <span className="text-sm font-extrabold text-foreground block">
+                  <span className="text-base sm:text-lg font-black text-foreground block">
                     {fmtFull(booking.endDateTime)}
                   </span>
                 </div>
               </div>
 
-              <div className="flex flex-wrap gap-4 pt-2 text-xs font-semibold text-muted-foreground">
-                <div className="flex items-center gap-1.5 bg-surface/70 border border-border/40 px-3.5 py-2 rounded-xl">
-                  <Clock size={14} className="text-primary" />
-                  <span>Duration: {durationHours} Hour(s)</span>
+              {/* Metadata Badges */}
+              <div className="flex flex-wrap gap-3 pt-1">
+                <div className="flex items-center gap-2 bg-background/90 border border-border/60 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold text-foreground">
+                  <Clock size={16} className="text-primary" />
+                  <span>Duration: {durationHours} Hour{durationHours > 1 ? 's' : ''}</span>
                 </div>
 
-                <div className="flex items-center gap-1.5 bg-surface/70 border border-border/40 px-3.5 py-2 rounded-xl">
-                  <Users size={14} className="text-primary" />
-                  <span>Attendees: {booking.guests} Guests</span>
+                <div className="flex items-center gap-2 bg-background/90 border border-border/60 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold text-foreground">
+                  <Users size={16} className="text-primary" />
+                  <span>Attendees: {booking.guests || 1} Guests</span>
                 </div>
               </div>
             </div>
 
-            {/* 2. Customer Contact Info */}
-            <div className="py-4 border-b border-border/50 space-y-4">
-              <div className="flex items-center gap-2.5">
-                <Users className="w-5 h-5 text-primary" />
-                <h2 className="text-xl font-extrabold text-foreground tracking-tight">
-                  Primary Contact Info
-                </h2>
+            {/* 2. Customer Contact Information Card */}
+            <div className="bg-surface/50 border border-border/50 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
+              <div className="flex items-center gap-3 border-b border-border/40 pb-4">
+                <div className="p-2.5 rounded-2xl bg-primary/10 text-primary border border-primary/20">
+                  <Users className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 className="text-xl sm:text-2xl font-black text-foreground tracking-tight">
+                    Primary Contact Info
+                  </h2>
+                  <p className="text-xs text-muted-foreground">Organizer details for venue communications</p>
+                </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 text-sm">
-                <div className="bg-surface/50 rounded-2xl p-4 border border-border/40 space-y-1">
-                  <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider block flex items-center gap-1">
-                    <Users size={12} /> Contact Name
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-background/80 rounded-2xl p-5 border border-border/60 space-y-1.5 min-w-0">
+                  <span className="text-[11px] font-extrabold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                    <Users size={12} className="text-primary" /> Contact Name
                   </span>
-                  <span className="font-extrabold text-foreground block truncate">
+                  <span className="text-sm sm:text-base font-extrabold text-foreground block truncate" title={booking.contactName || booking.user?.fullName}>
                     {booking.contactName || booking.user?.fullName || 'N/A'}
                   </span>
                 </div>
 
-                <div className="bg-surface/50 rounded-2xl p-4 border border-border/40 space-y-1">
-                  <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider block flex items-center gap-1">
-                    <Mail size={12} /> Email Address
+                <div className="bg-background/80 rounded-2xl p-5 border border-border/60 space-y-1.5 min-w-0">
+                  <span className="text-[11px] font-extrabold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                    <Mail size={12} className="text-primary" /> Email Address
                   </span>
-                  <span className="font-extrabold text-foreground block truncate">
+                  <span className="text-sm sm:text-base font-extrabold text-foreground block break-all" title={booking.contactEmail || booking.user?.email}>
                     {booking.contactEmail || booking.user?.email || 'N/A'}
                   </span>
                 </div>
 
-                <div className="bg-surface/50 rounded-2xl p-4 border border-border/40 space-y-1">
-                  <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider block flex items-center gap-1">
-                    <Phone size={12} /> Phone Number
+                <div className="bg-background/80 rounded-2xl p-5 border border-border/60 space-y-1.5 min-w-0">
+                  <span className="text-[11px] font-extrabold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                    <Phone size={12} className="text-primary" /> Phone Number
                   </span>
-                  <span className="font-extrabold text-foreground block truncate">
+                  <span className="text-sm sm:text-base font-extrabold text-foreground block truncate">
                     {booking.contactPhone || 'N/A'}
                   </span>
                 </div>
               </div>
 
               {booking.specialRequests && (
-                <div className="bg-surface/40 rounded-2xl p-4 border border-border/30 space-y-1 mt-3">
-                  <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider block">
+                <div className="bg-background/80 rounded-2xl p-5 border border-border/50 space-y-2">
+                  <span className="text-[11px] font-extrabold text-muted-foreground uppercase tracking-wider block">
                     Special Instructions / Requests
                   </span>
-                  <p className="text-sm font-medium text-foreground/90 italic">
+                  <p className="text-sm font-medium text-foreground/90 leading-relaxed bg-surface/40 p-3.5 rounded-xl border border-border/40 italic">
                     "{booking.specialRequests}"
                   </p>
                 </div>
               )}
 
               {booking.guestFileName && (
-                <div className="bg-surface/40 rounded-2xl p-4 border border-border/30 flex items-center gap-3 mt-3">
+                <div className="bg-background/80 rounded-2xl p-4 border border-border/50 flex items-center gap-3">
                   <FileSpreadsheet className="w-5 h-5 text-success shrink-0" />
                   <div className="text-xs">
-                    <span className="font-bold text-foreground block">Bulk Guest Roster Uploaded</span>
+                    <span className="font-bold text-foreground block">Bulk Guest Roster Attached</span>
                     <span className="text-muted-foreground">{booking.guestFileName}</span>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* 3. Venue Details Link */}
+            {/* 3. Venue Details Card & Quick Action */}
             {venue && (
-              <div className="py-2 flex items-center justify-between text-sm">
-                <span className="text-muted-foreground font-medium">Need venue information or rules?</span>
+              <div className="bg-surface/30 border border-border/40 rounded-3xl p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-3 text-sm">
+                  <div className="p-2 rounded-xl bg-primary/10 text-primary">
+                    <Building2 size={20} />
+                  </div>
+                  <div>
+                    <span className="font-bold text-foreground block">{venue.name}</span>
+                    <span className="text-xs text-muted-foreground font-medium">Need venue rules, parking, or amenities information?</span>
+                  </div>
+                </div>
+
                 <Link
                   to={`/venues/${venue._id}`}
-                  className="inline-flex items-center gap-1.5 font-bold text-primary hover:underline"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-surface hover:bg-surface/80 border border-border/60 text-xs font-bold text-primary transition-all shrink-0 cursor-pointer"
                 >
-                  View Venue Listing <ExternalLink size={14} />
+                  <span>View Venue Listing</span>
+                  <ExternalLink size={13} />
                 </Link>
               </div>
             )}
           </div>
 
-          {/* Right Column: Financial Summary & Actions */}
+          {/* Right Column: Financial Summary & Flexible Payment Card */}
           <div className="lg:col-span-5 xl:col-span-4 space-y-6">
-            {/* Sticky Pricing Card */}
             <div className="rounded-3xl border border-border/60 bg-card p-6 sm:p-8 shadow-xl shadow-black/5 space-y-6 lg:sticky lg:top-24">
-              <h3 className="text-xl font-extrabold text-foreground tracking-tight border-b border-border/40 pb-4">
-                Financial Summary
-              </h3>
+              <div className="border-b border-border/40 pb-4 flex items-center justify-between">
+                <div>
+                  <h3 className="text-xl sm:text-2xl font-black text-foreground tracking-tight">
+                    Financial Summary
+                  </h3>
+                  <p className="text-xs text-muted-foreground">Payment breakdown & balance</p>
+                </div>
+                <div className="p-2 rounded-xl bg-primary/10 text-primary">
+                  <CreditCard size={20} />
+                </div>
+              </div>
 
-              <div className="space-y-3.5 text-sm">
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground font-medium">Total Amount</span>
+              {/* Price Breakdown */}
+              <div className="space-y-4 text-sm">
+                <div className="flex justify-between items-center bg-surface/40 p-3.5 rounded-2xl border border-border/40">
+                  <span className="text-muted-foreground font-medium">Total Booking Amount</span>
                   <span className="text-lg font-black text-foreground">
                     ₹{booking.totalAmount?.toLocaleString('en-IN')}
                   </span>
                 </div>
 
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center bg-surface/40 p-3.5 rounded-2xl border border-border/40">
                   <span className="text-muted-foreground font-medium">Amount Paid</span>
-                  <span className="text-base font-bold text-success">
+                  <span className="text-base font-black text-success">
                     ₹{booking.amountPaid?.toLocaleString('en-IN')}
                   </span>
                 </div>
 
                 {booking.remainingBalance > 0 && (
-                  <div className="flex justify-between items-center border-t border-border/40 pt-3">
-                    <span className="text-muted-foreground font-medium">Balance Due</span>
-                    <span className="text-lg font-black text-warning">
+                  <div className="flex justify-between items-center bg-warning/10 p-4 rounded-2xl border border-warning/30">
+                    <span className="text-warning font-extrabold text-sm uppercase tracking-wide">Balance Due</span>
+                    <span className="text-xl font-black text-warning">
                       ₹{booking.remainingBalance?.toLocaleString('en-IN')}
                     </span>
                   </div>
                 )}
 
                 {booking.remainingPaymentDueDate && isPartial && (
-                  <div className="bg-warning/10 border border-warning/20 p-3 rounded-xl text-xs text-warning font-semibold space-y-1">
-                    <div className="flex items-center gap-1.5">
-                      <Clock size={14} className="shrink-0" />
+                  <div className="bg-warning/10 border border-warning/20 p-3.5 rounded-2xl text-xs text-warning font-semibold space-y-1">
+                    <div className="flex items-center gap-2">
+                      <Clock size={15} className="shrink-0" />
                       <span>Remaining balance due by {fmtDate(booking.remainingPaymentDueDate)} (EOD)</span>
                     </div>
                   </div>
@@ -436,32 +508,32 @@ export default function SharedBookingDetails({
 
               {/* Action Buttons */}
               {role === 'user' && (isPending || isPartial || isCancellable) && (
-                <div className="space-y-3 pt-2">
+                <div className="space-y-4 pt-2">
                   {isPartial && onPayBalance && (
-                    <div className="bg-surface border border-border/70 rounded-2xl p-4 sm:p-5 space-y-4 shadow-sm">
+                    <div className="bg-surface/80 border border-border/80 rounded-3xl p-5 space-y-4 shadow-sm">
                       <div className="flex items-center justify-between">
                         <div>
-                          <h4 className="text-sm font-bold text-foreground flex items-center gap-1.5">
+                          <h4 className="text-sm font-extrabold text-foreground flex items-center gap-1.5">
                             <CreditCard className="w-4 h-4 text-primary" /> Pay Due Money
                           </h4>
                           <p className="text-xs text-muted-foreground mt-0.5">
                             Pay all at once or choose a flexible partial amount.
                           </p>
                         </div>
-                        <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20">
+                        <span className="text-xs font-black px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20">
                           Due: ₹{remainingBalance.toLocaleString('en-IN')}
                         </span>
                       </div>
 
                       {/* Mode Toggle: Full vs Custom */}
-                      <div className="grid grid-cols-2 gap-2 p-1 bg-background rounded-xl border border-border/60">
+                      <div className="grid grid-cols-2 gap-2 p-1 bg-background rounded-2xl border border-border/60">
                         <button
                           type="button"
                           onClick={() => {
                             setPayOption('full');
                             setCustomPayAmount('');
                           }}
-                          className={`py-2 px-3 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                          className={`py-2 px-3 text-xs font-bold rounded-xl transition-all cursor-pointer ${
                             payOption === 'full'
                               ? 'bg-primary text-white shadow-xs'
                               : 'text-muted-foreground hover:text-foreground'
@@ -477,7 +549,7 @@ export default function SharedBookingDetails({
                               setCustomPayAmount(String(Math.max(1, Math.round(remainingBalance / 2))));
                             }
                           }}
-                          className={`py-2 px-3 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                          className={`py-2 px-3 text-xs font-bold rounded-xl transition-all cursor-pointer ${
                             payOption === 'custom'
                               ? 'bg-primary text-white shadow-xs'
                               : 'text-muted-foreground hover:text-foreground'
@@ -501,9 +573,9 @@ export default function SharedBookingDetails({
                                   key={ratio}
                                   type="button"
                                   onClick={() => setCustomPayAmount(String(chipAmount))}
-                                  className={`px-2 py-1 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${
+                                  className={`px-2.5 py-1 text-xs font-bold rounded-xl border transition-all cursor-pointer ${
                                     isSelected
-                                      ? 'bg-primary/15 border-primary text-primary font-bold'
+                                      ? 'bg-primary/20 border-primary text-primary'
                                       : 'border-border/60 bg-background text-muted-foreground hover:border-foreground/30 hover:text-foreground'
                                   }`}
                                 >
@@ -517,7 +589,7 @@ export default function SharedBookingDetails({
                           <div className="space-y-1.5">
                             <label className="text-xs font-semibold text-foreground flex items-center justify-between">
                               <span>Enter Amount to Pay</span>
-                              <span className="text-[11px] text-muted-foreground">
+                              <span className="text-[11px] text-muted-foreground font-mono">
                                 Min: ₹1 • Max: ₹{remainingBalance.toLocaleString('en-IN')}
                               </span>
                             </label>
@@ -547,27 +619,27 @@ export default function SharedBookingDetails({
                       )}
 
                       {/* Projection summary card */}
-                      <div className="bg-background/80 rounded-xl p-3 border border-border/40 text-xs space-y-1.5">
+                      <div className="bg-background/80 rounded-2xl p-4 border border-border/50 text-xs space-y-2">
                         <div className="flex justify-between items-center text-muted-foreground">
                           <span>Amount Paying Now:</span>
-                          <span className="font-bold text-foreground text-sm">
+                          <span className="font-extrabold text-foreground text-sm">
                             ₹{effectivePayAmount.toLocaleString('en-IN')}
                           </span>
                         </div>
                         <div className="flex justify-between items-center text-muted-foreground">
                           <span>Remaining Balance After:</span>
-                          <span className={`font-bold ${balanceAfter === 0 ? 'text-success' : 'text-foreground'}`}>
+                          <span className={`font-extrabold text-sm ${balanceAfter === 0 ? 'text-success' : 'text-foreground'}`}>
                             ₹{balanceAfter.toLocaleString('en-IN')}
                           </span>
                         </div>
                         {balanceAfter === 0 ? (
-                          <div className="pt-1 flex items-center gap-1.5 text-[11px] font-semibold text-success">
-                            <CheckCircle2 size={13} className="shrink-0" />
+                          <div className="pt-1.5 flex items-center gap-1.5 text-[11px] font-bold text-success border-t border-border/40">
+                            <CheckCircle2 size={14} className="shrink-0" />
                             <span>This payment will completely settle your balance and Confirm the booking!</span>
                           </div>
                         ) : (
-                          <div className="pt-1 flex items-center gap-1.5 text-[11px] font-semibold text-warning">
-                            <Clock size={13} className="shrink-0" />
+                          <div className="pt-1.5 flex items-center gap-1.5 text-[11px] font-semibold text-warning border-t border-border/40">
+                            <Clock size={14} className="shrink-0" />
                             <span>
                               Remaining ₹{balanceAfter.toLocaleString('en-IN')} due before {fmtDate(booking.remainingPaymentDueDate)} (EOD).
                             </span>
@@ -579,7 +651,7 @@ export default function SharedBookingDetails({
                       <button
                         onClick={() => onPayBalance(effectivePayAmount)}
                         disabled={actionLoading || !isValidCustom || effectivePayAmount <= 0}
-                        className="w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-primary hover:bg-primary/95 text-white font-extrabold text-sm sm:text-base rounded-xl transition-all shadow-lg shadow-primary/20 cursor-pointer active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed"
+                        className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-primary hover:bg-primary/95 text-white font-black text-base rounded-2xl transition-all shadow-lg shadow-primary/20 cursor-pointer active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed"
                       >
                         {actionLoading ? (
                           <Loader2 className="w-5 h-5 animate-spin" />
@@ -597,7 +669,7 @@ export default function SharedBookingDetails({
                     <button
                       onClick={() => setShowCancelModal(true)}
                       disabled={actionLoading}
-                      className="w-full flex items-center justify-center gap-2 px-5 py-3 border border-error/30 text-error hover:bg-error/10 font-bold text-sm rounded-2xl transition-all cursor-pointer disabled:opacity-60"
+                      className="w-full flex items-center justify-center gap-2 px-5 py-3.5 border border-error/30 text-error hover:bg-error/10 font-extrabold text-sm rounded-2xl transition-all cursor-pointer disabled:opacity-60"
                     >
                       {actionLoading ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -612,7 +684,7 @@ export default function SharedBookingDetails({
 
               {/* Help & Support Info */}
               <div className="pt-4 border-t border-border/40 text-xs text-muted-foreground flex items-center gap-2">
-                <HelpCircle size={14} className="shrink-0 text-primary" />
+                <HelpCircle size={15} className="shrink-0 text-primary" />
                 <span>Questions about this booking? Contact support anytime.</span>
               </div>
             </div>
@@ -622,9 +694,9 @@ export default function SharedBookingDetails({
 
       {/* Cancellation Confirmation Modal */}
       {showCancelModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
           <div className="bg-card border border-border/60 w-full max-w-md rounded-3xl shadow-2xl overflow-hidden p-6 space-y-5 animate-in fade-in zoom-in-95 duration-200">
-            <div className="space-y-1">
+            <div className="space-y-1.5">
               <h3 className="text-xl font-extrabold text-foreground tracking-tight">Cancel Reservation</h3>
               <p className="text-xs text-muted-foreground font-medium">
                 Are you sure you want to cancel your booking for <span className="text-foreground font-bold">{venue?.name}</span>?

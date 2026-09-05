@@ -44,18 +44,7 @@ export default function UserBookings() {
   };
 
   const fetchBookings = useCallback(() => {
-    let apiStatus: string | undefined;
-    if (selectedFilter === 'PENDING_PAYMENT') {
-      apiStatus = 'reserved';
-    } else if (selectedFilter === 'CANCELLED') {
-      apiStatus = 'cancelled';
-    } else if (selectedFilter === 'COMPLETED') {
-      apiStatus = 'completed';
-    } else if (selectedFilter === 'UPCOMING') {
-      apiStatus = 'confirmed';
-    }
-
-    execute(() => usersApi.getBookings(page, limit, apiStatus));
+    execute(() => usersApi.getBookings(page, limit, selectedFilter));
   }, [execute, page, limit, selectedFilter]);
 
   useEffect(() => {
@@ -90,29 +79,6 @@ export default function UserBookings() {
 
   const bookings = response?.data?.bookings || [];
 
-  const filteredBookings = bookings.filter((b) => {
-    if (selectedFilter === 'ALL') return true;
-    if (selectedFilter === 'PENDING_PAYMENT') {
-      return (
-        b.bookingStatus === 'reserved' &&
-        (b.paymentStatus === 'pending' ||
-          b.paymentStatus === 'partial' ||
-          b.paymentStatus === 'overdue')
-      );
-    }
-    if (selectedFilter === 'CANCELLED')
-      return b.bookingStatus === 'cancelled' || b.bookingStatus === 'expired';
-    if (selectedFilter === 'COMPLETED') return b.bookingStatus === 'completed';
-    if (selectedFilter === 'UPCOMING') {
-      const isSecured =
-        b.bookingStatus === 'confirmed' ||
-        (b.bookingStatus === 'reserved' &&
-          (b.paymentStatus === 'partial' || b.paymentStatus === 'overdue'));
-      return isSecured && new Date(b.startDateTime) > new Date();
-    }
-    return true;
-  });
-
   return (
     <div className="w-full max-w-[1600px] mx-auto py-8 px-4 sm:px-6 lg:px-10 space-y-8">
       {/* Header */}
@@ -134,10 +100,10 @@ export default function UserBookings() {
       </div>
 
       {/* Bookings Grid — Minimal Open Cards */}
-      {filteredBookings.length > 0 ? (
+      {bookings.length > 0 ? (
         <div className="space-y-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {filteredBookings.map((booking) => (
+            {bookings.map((booking) => (
               <BookingCard key={booking.id} booking={booking} onCancelSuccess={fetchBookings} />
             ))}
           </div>
