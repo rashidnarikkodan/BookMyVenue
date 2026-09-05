@@ -88,6 +88,44 @@ export const getBookingByVenueId = async (id: string): Promise<IBooking[] | null
   return Booking.find(filter);
 };
 
+// ── Booking Status Filter Helper ────────────────────────────
+
+export const buildBookingStatusFilter = (status?: string): Record<string, any> | null => {
+  if (!status || status.toLowerCase() === 'all') return null;
+
+  const normalized = status.toUpperCase().trim();
+
+  switch (normalized) {
+    case 'CANCELLED':
+    case 'EXPIRED':
+      return { bookingStatus: { $in: [BookingStatus.CANCELLED, BookingStatus.EXPIRED] } };
+
+    case 'PENDING_PAYMENT':
+    case 'PENDING':
+    case 'RESERVED':
+      return {
+        bookingStatus: { $in: [BookingStatus.RESERVED, BookingStatus.PENDING] },
+        paymentStatus: { $ne: PaymentStatus.PAID },
+      };
+
+    case 'UPCOMING':
+    case 'CONFIRMED':
+      return {
+        bookingStatus: { $in: [BookingStatus.CONFIRMED, BookingStatus.RESERVED] },
+        startDateTime: { $gte: new Date() },
+      };
+
+    case 'COMPLETED':
+      return { bookingStatus: BookingStatus.COMPLETED };
+
+    default:
+      if (Object.values(BookingStatus).includes(normalized as BookingStatus)) {
+        return { bookingStatus: normalized };
+      }
+      return { bookingStatus: new RegExp(`^${status}$`, 'i') };
+  }
+};
+
 export const findBookingsByUser = async (
   userId: string,
   page: number,
@@ -95,7 +133,10 @@ export const findBookingsByUser = async (
   status?: string
 ) => {
   const filter: Record<string, any> = { user: new mongoose.Types.ObjectId(userId) };
-  if (status && status !== 'all') filter.bookingStatus = status;
+  const statusFilter = buildBookingStatusFilter(status);
+  if (statusFilter) {
+    Object.assign(filter, statusFilter);
+  }
 
   const skip = (page - 1) * limit;
   const [bookings, total] = await Promise.all([
@@ -120,7 +161,10 @@ export const findBookingsByVenue = async (
   status?: string
 ) => {
   const filter: Record<string, any> = { venue: new mongoose.Types.ObjectId(venueId) };
-  if (status && status !== 'all') filter.bookingStatus = status;
+  const statusFilter = buildBookingStatusFilter(status);
+  if (statusFilter) {
+    Object.assign(filter, statusFilter);
+  }
 
   const skip = (page - 1) * limit;
   const [bookings, total] = await Promise.all([
@@ -145,7 +189,10 @@ export const findAllBookings = async (
   venueId?: string
 ) => {
   const filter: Record<string, any> = {};
-  if (status && status !== 'all') filter.bookingStatus = status;
+  const statusFilter = buildBookingStatusFilter(status);
+  if (statusFilter) {
+    Object.assign(filter, statusFilter);
+  }
   if (venueId) filter.venue = new mongoose.Types.ObjectId(venueId);
 
   const skip = (page - 1) * limit;
@@ -382,7 +429,10 @@ export const findBookingsByVenueIds = async (
   status?: string
 ) => {
   const filter: Record<string, any> = { venue: { $in: venueIds } };
-  if (status && status !== 'all') filter.bookingStatus = status;
+  const statusFilter = buildBookingStatusFilter(status);
+  if (statusFilter) {
+    Object.assign(filter, statusFilter);
+  }
 
   const skip = (page - 1) * limit;
   const [bookings, total] = await Promise.all([
@@ -436,8 +486,9 @@ export const getAdminBookings = async (
   const matchStage: Record<string, any> = {};
 
   // Status filter
-  if (status && status !== 'all') {
-    matchStage.bookingStatus = status;
+  const statusFilter = buildBookingStatusFilter(status);
+  if (statusFilter) {
+    Object.assign(matchStage, statusFilter);
   }
 
   // Build the aggregation pipeline

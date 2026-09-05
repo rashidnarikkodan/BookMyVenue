@@ -42,19 +42,7 @@ export default function OwnerBookingsList() {
       setLoading(true);
       setError(null);
 
-      // Maps UI filter to backend API status param
-      let apiStatus: string | undefined;
-      if (selectedFilter === 'PENDING_PAYMENT') {
-        apiStatus = 'reserved'; // Reserved bookings that are pending payment
-      } else if (selectedFilter === 'CANCELLED') {
-        apiStatus = 'cancelled';
-      } else if (selectedFilter === 'COMPLETED') {
-        apiStatus = 'completed';
-      } else if (selectedFilter === 'UPCOMING') {
-        apiStatus = 'confirmed';
-      }
-
-      const res = await bookingsApi.getOwnerBookings(page, limit, apiStatus);
+      const res = await bookingsApi.getOwnerBookings(page, limit, selectedFilter);
       if (res.success && res.data) {
         setBookings(res.data.bookings || []);
         setPagination(res.data.pagination || null);
